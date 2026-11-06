@@ -167,9 +167,6 @@
 </div>
 
 <script type="module">
-// ============================================================
-//  1) 把 Firebase 控制台给你的 firebaseConfig 粘贴到这里
-// ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyCl-p-EXhfxwZ1IeKMpfoMwbrt8uLBDSUo",
   authDomain: "chat-r-f42c4.firebaseapp.com",
@@ -178,7 +175,6 @@ const firebaseConfig = {
   messagingSenderId: "200928609457",
   appId: "1:200928609457:web:850e04ca2ecafd5c930e90"
 };
-// ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -370,8 +366,14 @@ function termLine(html){
   while (term.childElementCount > 300) term.firstChild.remove();
   if (near) term.scrollTop = term.scrollHeight;
 }
-(function tick(){ termLine(pick(GEN)()); setTimeout(tick, 250 + Math.random()*1300); })();
-for (let i=0;i<14;i++) termLine(pick(GEN)());
+const SPEEDS = { off: null, slow: [2500, 4500], normal: [900, 2200], fast: [250, 1300] };
+let logSpeed = store.get('logs', 'slow');
+(function tick(){
+  const sp = SPEEDS[logSpeed];
+  if (sp) termLine(pick(GEN)());
+  setTimeout(tick, sp ? sp[0] + Math.random()*sp[1] : 1000);
+})();
+for (let i=0;i<8;i++) termLine(pick(GEN)());
 
 // ---------- quick input (room code / name) ----------
 function ask(title, placeholder, value='', password=false){
@@ -395,6 +397,7 @@ const HELP = [
   '<span class="help">commands:</span>',
   '<span class="help">  :nick &lt;name&gt;           change your display name</span>',
   '<span class="help">  :style comment|log|str  how messages look in the code</span>',
+  '<span class="help">  :logs off|slow|normal|fast  terminal log speed</span>',
   '<span class="help">  :room                   switch to another room code</span>',
   '<span class="help">  :clear                  delete all of YOUR messages in this room</span>',
   '<span class="help">  Esc                     boss key: hide all chat lines / show again</span>',
@@ -411,6 +414,10 @@ async function command(c){
   else if (cmd === 'style') {
     if (['comment','log','str'].includes(arg)) { style = arg; store.set('style', style); render(); termLine(`<span class="d1">✔ style → ${arg}</span>`); }
     else termLine('<span class="r1">usage: :style comment|log|str</span>');
+  }
+  else if (cmd === 'logs') {
+    if (arg in SPEEDS) { logSpeed = arg; store.set('logs', arg); termLine(`<span class="d1">✔ logs → ${arg}</span>`); }
+    else termLine('<span class="r1">usage: :logs off|slow|normal|fast</span>');
   }
   else if (cmd === 'room') {
     const code = await ask('Connect to Remote Workspace', 'Enter workspace token', '', true);
