@@ -238,6 +238,67 @@
   .skin-terminal .status .btn:hover{background:#00c400}
   .skin-terminal .status.alert{animation:salertt .5s steps(1) 4}
   @keyframes salertt{0%{background:#c5602e}50%{background:#00aa00}}
+
+  .activity .acct{margin-top:auto;margin-bottom:10px;cursor:pointer}
+  .activity .acct:hover svg{stroke:#fff}
+  .qlist{max-height:300px;overflow:auto;margin-top:4px}
+  .qlist[hidden]{display:none}
+  .qit{display:flex;justify-content:space-between;gap:16px;padding:4px 8px;border-radius:3px;cursor:pointer;color:#ccc}
+  .qit small{color:#8b8b8b;font-size:12px;white-space:nowrap}
+  .qit.on{background:#04395e;color:#fff}.qit.on small{color:#c8d6e5}
+  .qit.dim{color:#888;cursor:default}
+  .skin-excel .qit,.skin-notion .qit{color:#37352f}.skin-excel .qit.on,.skin-notion .qit.on{background:#e8f0fa;color:#111}
+  .qi .qt.err{color:#f48771}
+  .cbtn{position:fixed;z-index:72;background:#0e639c;color:#fff;font:12px -apple-system,'Segoe UI',sans-serif;padding:4px 9px;border-radius:3px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);user-select:none}
+  .cbtn[hidden]{display:none}
+  /* ===== read together ===== */
+  .bk{font-family:var(--mono);font-size:13px;line-height:22px;padding:0 0 30px;color:#d4d4d4}
+  .bkhead{position:sticky;top:0;z-index:3;background:var(--bg);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:5px 16px;border-bottom:1px solid #2b2b2b;color:#9d9d9d;font:12px -apple-system,'Segoe UI',sans-serif}
+  .bkhead .bkt{color:#ccc}
+  .bkhead .sp{flex:1}
+  .bkb{cursor:pointer;color:#3794ff;user-select:none}.bkb:hover{text-decoration:underline}
+  .bkr{cursor:pointer;color:var(--mc)}.bkr:hover{text-decoration:underline}
+  .bp{display:grid;grid-template-columns:62px 1fr;padding:3px 0}
+  .bpn{color:var(--gutter);text-align:right;padding-right:22px;cursor:pointer;user-select:none;font-size:12px}
+  .bpn:hover{color:#ccc}
+  .bpn.has{color:#3794ff}
+  .bpt{white-space:pre-wrap;overflow-wrap:anywhere;padding-right:28px}
+  .bm{background:color-mix(in srgb,var(--mc) 24%,transparent);color:inherit;border-bottom:2px solid var(--mc);border-radius:2px}
+  .bth{margin:4px 28px 10px 62px;border:1px solid #454545;border-left:3px solid #3794ff;border-radius:4px;background:#252526;font:13px/19px -apple-system,'Segoe UI','PingFang SC',sans-serif}
+  .bn{padding:8px 12px;border-top:1px solid #333}.bn:first-child{border-top:none}
+  .bnh{display:flex;gap:8px;align-items:center}
+  .bav{width:18px;height:18px;border-radius:50%;background:var(--mc);color:#111;font-size:11px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .bnh b{color:var(--mc)}
+  .bnt{color:#888;font-size:12px}
+  .bnx{margin-left:auto;cursor:pointer;color:#888;padding:0 3px}.bnx:hover{color:#f48771}
+  .bnq{color:#9d9d9d;font-style:italic;margin:4px 0 2px;border-left:2px solid var(--mc);padding-left:6px}
+  .bnb{margin-top:2px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .bnr2{margin:6px 0 0 26px;display:flex;gap:6px;align-items:baseline}.bnr2 b{color:var(--mc);flex:none}.bnr2 span.tx{flex:1;overflow-wrap:anywhere}
+  .bnrep{display:inline-block;margin-top:6px;color:#3794ff;cursor:pointer;font-size:12px}
+  .bknav{display:flex;gap:18px;justify-content:center;padding:16px;color:#9d9d9d;font:12px -apple-system,'Segoe UI',sans-serif}
+  .bkempty{padding:30px;color:#888;text-align:center}
+  .skin-excel .bk{font-family:Calibri,'Segoe UI',Arial,'PingFang SC',sans-serif;font-size:14px;line-height:21px;color:#222}
+  .skin-excel .bkhead{background:#f3f3f3;border-color:#d4d4d4;color:#555}.skin-excel .bkhead .bkt{color:#222}
+  .skin-excel .bp{border-bottom:1px solid #e3e3e3;padding:0;grid-template-columns:42px 1fr}
+  .skin-excel .bpn{background:#f3f3f3;border-right:1px solid #d4d4d4;text-align:center;padding:2px 0;color:#555}
+  .skin-excel .bpt{padding:2px 6px}
+  .skin-excel .bth{margin:6px 20px 8px 48px;background:#fffbe6;border-color:#d9cf9c;border-left-color:#d9a400;color:#333}
+  .skin-excel .bn{border-color:#eee3b4}.skin-excel .bnq{color:#777}
+  .skin-excel .bkb,.skin-excel .bnrep{color:#0563c1}
+  .skin-notion .bk{font-family:ui-sans-serif,-apple-system,'Segoe UI','PingFang SC','Hiragino Sans',sans-serif;font-size:16px;line-height:1.75;color:#37352f;max-width:760px;margin:0 auto}
+  .skin-notion .bkhead{background:#fff;border-color:#ededec;color:#9b9a97;padding:8px 20px}.skin-notion .bkhead .bkt{color:#37352f;font-weight:600}
+  .skin-notion .bp{grid-template-columns:34px 1fr;padding:3px 0}
+  .skin-notion .bpn{color:transparent;padding-right:10px}.skin-notion .bp:hover .bpn{color:#c7c6c4}.skin-notion .bpn.has{color:#d9a400}
+  .skin-notion .bm{background:rgba(255,212,0,.22);border-bottom-color:#e6b800}
+  .skin-notion .bth{margin:4px 20px 12px 34px;background:#fff;border-color:#ededec;border-left-color:#e6b800;box-shadow:0 1px 4px rgba(0,0,0,.06);color:#37352f}
+  .skin-notion .bn{border-color:#f1f1ef}.skin-notion .bav{color:#fff}
+  .skin-notion .bkb,.skin-notion .bnrep{color:#2383e2}
+  .skin-terminal .bk{font-size:12.5px;line-height:19px}
+  .skin-terminal .bkhead{background:#ccc;color:#000;border:none;font-family:var(--mono)}.skin-terminal .bkhead .bkt{color:#000;font-weight:700}
+  .skin-terminal .bkb{color:#000;text-decoration:underline}
+  .skin-terminal .bp{grid-template-columns:52px 1fr}
+  .skin-terminal .bpn{color:#666}
+  .skin-terminal .bth{background:#111;border-color:#333;border-left-color:#00aa00;font-family:var(--mono);font-size:12px}
   .md-h{color:#569cd6;font-weight:600}.md-q{color:#6a9955}.md-c{color:#ce9178}.md-b{color:#dcdcaa;font-weight:600}.md-l{color:#6796e6}
   .new{animation:flash 1.4s ease-out}
   @keyframes flash{from{background:#264f78}to{background:transparent}}
@@ -296,6 +357,10 @@
     .skin-terminal .editor{font-size:11px;line-height:16px;padding:4px 8px}
     .skin-terminal .panel{height:26% !important}
     .chip{max-width:40%}
+    .bp{grid-template-columns:34px 1fr}.bpn{padding-right:8px}.bpt{padding-right:10px}
+    .bth{margin:4px 8px 10px 34px}
+    .bk{font-size:14px;line-height:23px}
+    .bkhead{padding:5px 10px}
     .ln.msg .g::after{right:3px}
     .toast{bottom:calc(30px + env(safe-area-inset-bottom));right:8px}
   }
@@ -310,10 +375,12 @@
 <div class="qi" id="qi" hidden>
   <div class="qt" id="qiTitle">Connect to Remote Workspace</div>
   <input id="qiInput" spellcheck="false" autocomplete="off">
+  <div class="qlist" id="qiList" hidden></div>
   <div class="qh" id="qiHint">Press 'Enter' to confirm or 'Escape' to cancel</div>
 </div>
 <div class="dropdown" id="dropdown" hidden></div>
 <div class="imgpop" id="imgPop" hidden></div>
+<div class="cbtn" id="cbtn" hidden>💬 Comment</div>
 <div class="lightbox" id="lightbox" hidden></div>
 <div class="toast" id="toast" hidden><span class="ti">ⓘ</span><div class="tt" id="toastText"></div><span class="tx" id="toastX">✕</span></div>
 <div class="app" id="app">
@@ -331,6 +398,7 @@
       <div><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 5-12 3-12 7"/></svg></div>
       <div><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg></div>
       <div><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg></div>
+      <div class="acct" id="acctBtn" title="Accounts"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div>
     </div>
     <div class="sidebar">
       <h4>EXPLORER</h4>
@@ -370,6 +438,7 @@
           <span class="chip" id="replyChip" hidden><span id="replyText"></span><b id="replyX" title="Cancel reply">✕</b></span>
           <input id="inp" spellcheck="false" maxlength="600" autocomplete="off">
           <input type="file" id="fileIn" accept="image/*" hidden>
+          <input type="file" id="bookIn" accept=".txt,.md,text/plain" hidden>
         </form>
       </div>
     </div>
@@ -398,8 +467,8 @@ const firebaseConfig = {
 };
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, getDoc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, linkWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, getDoc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getDatabase, ref as dbRef, set as dbSet, update as dbUpdate, remove as dbRemove, onValue, onDisconnect, serverTimestamp as rtdbNow } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // ---------- helpers ----------
@@ -538,16 +607,18 @@ function tabLabel(i){
 }
 function windowTitle(){
   if (skin === 'excel') return 'Q4_order_sync.xlsx - Excel';
-  if (skin === 'notion') return view === 'recipe' ? 'recipe' : PAGES[active % PAGES.length];
+  if (skin === 'notion') return view === 'recipe' ? 'recipe' : view === 'book' && book ? bookTabLabel() : PAGES[active % PAGES.length];
   if (skin === 'terminal') return 'zsh — api-gateway';
-  return `${view === 'recipe' ? 'recipe.md' : fileOf(active)[0]} — api-gateway — Visual Studio Code`;
+  return `${view === 'recipe' ? 'recipe.md' : view === 'book' && book ? bookFile(book.id) : fileOf(active)[0]} — api-gateway — Visual Studio Code`;
 }
 
 // ---------- state ----------
 let myId = null, db = null, rtdb = null;
 let style = store.get('style', 'comment');
 let skin = SKINS.includes(store.get('skin', '')) ? store.get('skin', '') : 'vscode';
-let nick = store.get('nick', '');
+let nick = '';            // = account display name (fixed at registration)
+let auth = null;
+let book = null;          // open book: {room, id, meta, chunks, page, total, notes, seen, first, unsub}
 let panic = false, scrollBottom = true;
 let view = 'room', recipeOpen = false;
 let alertMode = store.get('alert', 'on');
@@ -589,10 +660,10 @@ const imgName = id => 'IMG_' + String(1000 + hash(String(id)) % 9000);
 // ---------- presence (who is here / typing) ----------
 function peersOf(r){
   const p = (r && r.peers) || {};
-  return Object.entries(p).filter(([, v]) => v && typeof v === 'object').map(([uid, v]) => ({ uid, name: String(v.name || 'dev').slice(0,16), typing: !!v.typing, away: !!v.away }));
+  return Object.entries(p).filter(([, v]) => v && typeof v === 'object').map(([uid, v]) => ({ uid, name: String(v.name || 'dev').slice(0,16), typing: !!v.typing, away: !!v.away, rb: typeof v.rb === 'string' ? v.rb : null, rp: typeof v.rp === 'number' ? v.rp : null }));
 }
 function typers(){
-  if (panic || view === 'recipe') return [];
+  if (panic || view !== 'room') return [];
   return peersOf(cur()).filter(p => p.typing && p.uid !== myId);
 }
 let lastTypersKey = '';
@@ -601,6 +672,7 @@ function updatePeers(){
   $('peerN').textContent = Math.max(1, ps.length || (myId ? 1 : 0));
   const key = typers().map(p => p.uid).join(',');
   if (key !== lastTypersKey) { lastTypersKey = key; render(); }
+  else if (view === 'book') { const h = document.querySelector('.bkreaders'); if (h) h.innerHTML = readersHtml(); }
 }
 
 // ---------- message rendering: VS Code ----------
@@ -774,10 +846,14 @@ const RECIPE = [
   '> 给朋友的使用说明。看完点标签上的 ✕ 关掉，或按 Esc 直接隐藏。',
   '',
   '## 开始',
-  '- 打开网址 → 输入名字 → 输入房间码（暗号）',
+  '- 打开网址 → 登录账号 → 输入房间码（暗号）',
+  '- 第一次用：选「＋ Create a new account」，起一个名字、设一个密码',
+  '- 名字注册后就固定了，不分大小写，别人不能再用同一个名字',
+  '- 换电脑或手机：用同一个账号登录，消息都还算你的；这台设备用过的账号会列在登录页',
+  '- **没有找回密码**，密码要自己记住',
   '- 房间码相同的人在同一个聊天室',
   '- 朋友发来的邀请链接：点开就直接进房间，不用输房间码',
-  '- 名字和房间会记在这个浏览器里，下次直接进入',
+  '- 打开过的房间会记在这个浏览器里，下次直接进入',
   '',
   '## 聊天',
   '- 在下面的输入框打字，回车发送',
@@ -807,6 +883,16 @@ const RECIPE = [
   '- 点标签切换，点 ✕ 关闭（记录还在，用房间码能再打开）',
   '- File › Copy Invite Link（或 `:invite`）复制当前房间的邀请链接，发给朋友',
   '',
+  '## 一起读书',
+  '- File › Read Together…（或 `:read`）：看这个房间里的书，或上传一本 .txt',
+  '- 书会显示成一份文档（VS Code 里叫 RFC-xxxx.md），按 Esc 一样会隐藏',
+  '- 翻页：顶部 / 底部的 ‹ Prev / Next ›，或 `:p 页码`；每本书会记住你读到哪',
+  '- 顶部会显示朋友在读第几页，点一下跳过去',
+  '- **划线批注**：选中一段文字 → 点「💬 Comment」→ 写下想法',
+  '- 点段落前的编号 = 给整段写批注；批注下面可以 Reply 互相讨论',
+  '- 朋友写了新批注会弹提醒，点提醒直接跳到那一页',
+  '- 只能删自己的批注；上传书的人可以在 Edit › Delete This Book… 删掉整本书',
+  '',
   '## 换皮肤',
   '- View › Skin，或 `:skin vscode|excel|notion|terminal`',
   '- Excel：消息是表格里的行，房间是底部的工作表；输入框在公式栏',
@@ -818,7 +904,9 @@ const RECIPE = [
   '',
   '## 指令',
   '- `:help`                         列出所有指令',
-  '- `:nick 名字`                    改显示名',
+  '- `:read`                         一起读书（打开 / 上传）',
+  '- `:p 页码`                        跳到书的某一页',
+  '- `:signout`                      登出 / 切换账号',
   '- `:skin vscode|excel|notion|terminal`  换伪装',
   '- `:style comment|log|str`        VS Code 里消息的样子',
   '- `:room` / `:close`              开 / 关房间',
@@ -858,6 +946,7 @@ function renderRecipe(){
 // ---------- main render ----------
 function render(){
   if (view === 'recipe') { renderRecipe(); return; }
+  if (view === 'book') { renderBook(); return; }
   const msgs = cur()?.msgs || [];
   const nearBottom = editor.scrollHeight - editor.scrollTop - editor.clientHeight < 80;
   editor.innerHTML = skin === 'excel' ? renderExcel(msgs) : skin === 'notion' ? renderNotion(msgs) : skin === 'terminal' ? renderTmux(msgs) : renderCode(msgs);
@@ -899,11 +988,14 @@ function renderTabs(){
   const recipeLabel = skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> recipe.md' : skin === 'terminal' ? `${list.length}:recipe` : 'recipe';
   tabs.innerHTML = list.map((r, i) =>
     `<div class="tab${i===active && view==='room'?' on':''}${r && r.unread ? ' unread' : ''}" data-i="${i}">${esc(tabLabel(i))} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
-  ).join('') + (recipeOpen ? `<div class="tab${view==='recipe'?' on':''}" data-doc="recipe">${recipeLabel} <span class="x" data-xdoc="recipe">✕</span></div>` : '');
+  ).join('') + (recipeOpen ? `<div class="tab${view==='recipe'?' on':''}" data-doc="recipe">${recipeLabel} <span class="x" data-xdoc="recipe">✕</span></div>` : '')
+    + (book ? `<div class="tab${view==='book'?' on':''}" data-doc="book">${skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> ' : ''}${esc(bookTabLabel())} <span class="x" data-xdoc="book">✕</span></div>` : '');
   const [file, dir, cls] = fileOf(active);
-  const shown = view === 'recipe' ? 'recipe.md' : file;
-  if (skin === 'notion') $('crumbs').innerHTML = `Engineering &nbsp;/&nbsp; ${esc(view === 'recipe' ? 'recipe' : PAGES[active % PAGES.length])}`;
-  else $('crumbs').innerHTML = view === 'recipe'
+  const shown = view === 'recipe' ? 'recipe.md' : view === 'book' && book ? bookFile(book.id) : file;
+  if (skin === 'notion') $('crumbs').innerHTML = `Engineering &nbsp;/&nbsp; ${esc(view === 'recipe' ? 'recipe' : view === 'book' && book ? bookTabLabel() : PAGES[active % PAGES.length])}`;
+  else $('crumbs').innerHTML = view === 'book' && book
+    ? `docs › <span style="color:#519aba;font-size:10px">M↓</span> ${esc(bookFile(book.id))}`
+    : view === 'recipe'
     ? `<span style="color:#519aba;font-size:10px">M↓</span> recipe.md › # recipe`
     : `src › ${dir} › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> ${file} › <span style="color:#ee9d28">◇</span> ${cls}`;
   $('ttl').textContent = skin === 'vscode' ? `${shown} — api-gateway` : skin === 'excel' ? 'Q4_order_sync.xlsx  ·  Saved' : skin === 'notion' ? windowTitle() : 'zsh — api-gateway — 132×43';
@@ -915,7 +1007,7 @@ function renderTabs(){
 }
 
 // ---------- unread + alerts ----------
-let baseTitle = document.title, blinkTimer = null, toastTimer = null, toastRoom = -1;
+let baseTitle = document.title, blinkTimer = null, toastTimer = null, toastAction = null;
 const totalUnread = () => rooms.reduce((a, r) => a + r.unread, 0);
 function updateUnread(){
   const n = totalUnread();
@@ -938,22 +1030,21 @@ function startBlink(){
   blinkTimer = setInterval(() => { on = !on; document.title = on ? `(${totalUnread()}) ● ${baseTitle}` : baseTitle; }, 1000);
 }
 function stopBlink(){ if (blinkTimer) { clearInterval(blinkTimer); blinkTimer = null; } document.title = (totalUnread() ? '● ' : '') + baseTitle; }
-function showToast(html, roomIdx){
+function showToast(html, action){
   const t = $('toast');
   $('toastText').innerHTML = html;
-  toastRoom = roomIdx;
+  toastAction = typeof action === 'number' ? (action >= 0 ? goRoomFn(action) : null) : action || null;
   t.hidden = false; requestAnimationFrame(() => t.classList.add('show'));
   clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 5000);
 }
 function hideToast(){ const t = $('toast'); t.classList.remove('show'); setTimeout(() => { if (!t.classList.contains('show')) t.hidden = true; }, 200); }
 $('toast').addEventListener('click', e => {
   hideToast();
-  if (e.target.id === 'toastX') return;
-  if (toastRoom < 0) return;
+  if (e.target.id === 'toastX' || !toastAction) return;
   if (panic) togglePanic(false);
-  if (view === 'recipe') view = 'room';
-  switchRoom(toastRoom); renderTabs(); render(); clearActiveUnread();
+  toastAction();
 });
+const goRoomFn = idx => () => { if (view !== 'room') view = 'room'; switchRoom(idx); renderTabs(); render(); clearActiveUnread(); };
 function notify(r, newMsgs){
   if (alertMode === 'quiet' || panic) return;   // boss mode: count silently
   const idx = rooms.indexOf(r);
@@ -977,7 +1068,7 @@ document.addEventListener('visibilitychange', () => {
 });
 $('bell').addEventListener('click', () => {
   const i = rooms.findIndex(r => r.unread);
-  if (i < 0) { showToast('No new notifications', -1); return; }
+  if (i < 0) { showToast('No new notifications', null); return; }
   if (panic) togglePanic(false);
   if (view === 'recipe') view = 'room';
   switchRoom(i); renderTabs(); render(); clearActiveUnread();
@@ -986,7 +1077,7 @@ $('bell').addEventListener('click', () => {
 // ---------- rooms / tabs ----------
 function switchRoom(i){
   if (!rooms[i]) return;
-  if (view === 'recipe') view = 'room';
+  if (view !== 'room') view = 'room';
   else if (i === active) return;
   stopTyping();
   active = i; saveRooms();
@@ -1015,11 +1106,13 @@ function closeRecipe(){
   renderTabs(); render();
 }
 $('tabs').addEventListener('click', e => {
-  if (e.target.closest('[data-xdoc]')) { e.stopPropagation(); closeRecipe(); return; }
+  const xd = e.target.closest('[data-xdoc]');
+  if (xd) { e.stopPropagation(); xd.dataset.xdoc === 'book' ? closeBook() : closeRecipe(); return; }
   const x = e.target.closest('[data-x]');
   if (x) { e.stopPropagation(); closeRoom(+x.dataset.x); return; }
   const t = e.target.closest('.tab'); if (!t) return;
   if (t.dataset.doc === 'recipe') { if (view !== 'recipe') { view = 'recipe'; renderTabs(); render(); } return; }
+  if (t.dataset.doc === 'book') { if (view !== 'book') { view = 'book'; renderTabs(); render(); editor.scrollTop = 0; } else togglePanic(); return; }
   const i = +t.dataset.i;
   if (i === active && view === 'room') togglePanic(); else switchRoom(i);
 });
@@ -1064,6 +1157,7 @@ function ask(title, placeholder, value='', password=false){
     const qi = $('qi'), qin = $('qiInput');
     $('qiTitle').textContent = title;
     qin.placeholder = placeholder; qin.value = value; qin.type = password ? 'password' : 'text';
+    $('qiList').hidden = true; $('qiTitle').classList.remove('err');
     qi.hidden = false; setTimeout(() => { qin.focus(); if (value) qin.select(); }, 0);
     const done = v => { qi.hidden = true; qin.removeEventListener('keydown', onKey); resolve(v); };
     const onKey = e => {
@@ -1073,6 +1167,365 @@ function ask(title, placeholder, value='', password=false){
     };
     qin.addEventListener('keydown', onKey);
   });
+}
+
+
+// ---------- quick pick (VS Code style list) ----------
+function quickPick(title, items, placeholder = 'Type to filter', isError = false){
+  return new Promise(resolve => {
+    const qi = $('qi'), qin = $('qiInput'), list = $('qiList');
+    $('qiTitle').textContent = title; $('qiTitle').classList.toggle('err', isError);
+    $('qiHint').textContent = '↑↓ to select · Enter to confirm';
+    qin.type = 'text'; qin.value = ''; qin.placeholder = placeholder;
+    let sel = 0, shown = items;
+    const draw = () => {
+      const f = qin.value.trim().toLowerCase();
+      shown = items.filter(it => !f || it.label.toLowerCase().includes(f) || it.always);
+      sel = Math.min(sel, Math.max(0, shown.length - 1));
+      list.innerHTML = shown.map((it, i) => `<div class="qit${i === sel ? ' on' : ''}" data-i="${i}"><span>${esc(it.label)}</span>${it.detail ? `<small>${esc(it.detail)}</small>` : ''}</div>`).join('') || '<div class="qit dim">No matches</div>';
+    };
+    const done = v => {
+      qi.hidden = true; list.hidden = true; list.innerHTML = ''; $('qiTitle').classList.remove('err');
+      $('qiHint').textContent = "Press 'Enter' to confirm or 'Escape' to cancel";
+      qin.removeEventListener('keydown', onKey); qin.removeEventListener('input', onInput); list.removeEventListener('mousedown', onClick);
+      resolve(v);
+    };
+    const onInput = () => { sel = 0; draw(); };
+    const onKey = e => {
+      e.stopPropagation();
+      if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, shown.length - 1); draw(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { sel = Math.max(sel - 1, 0); draw(); e.preventDefault(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (shown[sel]) done(shown[sel].value); }
+      else if (e.key === 'Escape') done(null);
+    };
+    const onClick = e => { const el = e.target.closest('[data-i]'); if (el) { e.preventDefault(); done(shown[+el.dataset.i].value); } };
+    qin.addEventListener('keydown', onKey); qin.addEventListener('input', onInput); list.addEventListener('mousedown', onClick);
+    list.hidden = false; qi.hidden = false; draw(); setTimeout(() => qin.focus(), 0);
+  });
+}
+
+// ---------- accounts ----------
+// account name -> fixed, case-insensitive login id (an internal address nobody ever sees or receives mail at)
+const emailOf = name => 'u.' + b64u(name.trim().toLowerCase()) + '@getaway-r.app';
+const knownAccounts = () => { try { return JSON.parse(store.get('accounts', '[]')) || []; } catch(e){ return []; } };
+function rememberAccount(name){ const a = knownAccounts().filter(x => x.toLowerCase() !== name.toLowerCase()); a.unshift(name); store.set('accounts', JSON.stringify(a.slice(0, 8))); }
+const AUTH_ERR = {
+  'auth/invalid-credential': 'Wrong account name or password', 'auth/wrong-password': 'Wrong account name or password',
+  'auth/user-not-found': 'Wrong account name or password', 'auth/invalid-login-credentials': 'Wrong account name or password',
+  'auth/email-already-in-use': 'That name is already taken — sign in instead, or pick another name',
+  'auth/credential-already-in-use': 'That name is already taken — sign in instead, or pick another name',
+  'auth/weak-password': 'Password must be at least 6 characters',
+  'auth/too-many-requests': 'Too many attempts — wait a minute and try again',
+  'auth/operation-not-allowed': 'Email/Password sign-in is not enabled in Firebase yet',
+  'auth/network-request-failed': 'Network error — check your connection',
+};
+const authMsg = e => AUTH_ERR[e?.code] || `Sign-in failed (${e?.code || e?.message || 'unknown'})`;
+async function accountFlow(anonUser){
+  let err = '';
+  for (;;) {
+    const items = knownAccounts().map(n => ({ label: n, detail: 'used on this device', value: { mode: 'in', name: n } }));
+    items.push({ label: '＋ Create a new account', detail: anonUser ? 'keeps this browser\'s chat history' : 'pick a name — it stays yours', value: { mode: 'up' }, always: true });
+    items.push({ label: 'Sign in with another account…', detail: 'name + password', value: { mode: 'in' }, always: true });
+    const ch = await quickPick(err || 'Accounts — sign in to sync your workspace', items, 'Select an account', !!err);
+    err = '';
+    if (!ch) continue;
+    if (ch.mode === 'in') {
+      const name = ch.name || await ask('Sign in', 'Account name');
+      if (!name) continue;
+      const pw = await ask(`Sign in as ${name}`, 'Password', '', true);
+      if (!pw) continue;
+      try { const r = await signInWithEmailAndPassword(auth, emailOf(name), pw); return r.user; }
+      catch (e) { err = authMsg(e); }
+    } else {
+      const name = await ask('Create account', 'Account name: 2–12 characters, this is what friends see (cannot be changed)');
+      if (!name) continue;
+      const n = name.trim();
+      if ([...n].length < 2 || [...n].length > 12 || /[\s:@<>"'`\\]/.test(n)) { err = 'Names must be 2–12 characters, no spaces or :@<>"\'`\\'; continue; }
+      const pw = await ask(`Choose a password for ${n}`, 'At least 6 characters — there is no reset, remember it', '', true);
+      if (!pw) continue;
+      const pw2 = await ask('Confirm password', 'Type the password again', '', true);
+      if (pw !== pw2) { err = 'Passwords did not match'; continue; }
+      try {
+        let user;
+        if (anonUser && anonUser.isAnonymous) {
+          const r = await linkWithCredential(anonUser, EmailAuthProvider.credential(emailOf(n), pw));
+          user = r.user;
+        } else {
+          const r = await createUserWithEmailAndPassword(auth, emailOf(n), pw);
+          user = r.user;
+        }
+        await updateProfile(user, { displayName: n });
+        return user;
+      } catch (e) { err = authMsg(e); }
+    }
+  }
+}
+async function doSignOut(){
+  rooms.forEach(r => leavePresence(r));
+  try { await signOut(auth); } catch(e){}
+  location.reload();
+}
+
+// ---------- read together ----------
+const bookFile = id => 'RFC-' + String(1000 + hash(String(id)) % 9000) + '.md';
+function bookTabLabel(){
+  if (!book) return '';
+  const n = bookFile(book.id).slice(4, 8);
+  if (skin === 'excel') return 'Ref-' + n;
+  if (skin === 'notion') return 'RFC ' + n;
+  if (skin === 'terminal') return `${rooms.length + (recipeOpen ? 1 : 0)}:less`;
+  return bookFile(book.id);
+}
+function decodeText(buf){
+  const bytes = new Uint8Array(buf);
+  if (bytes[0] === 0xFF && bytes[1] === 0xFE) return new TextDecoder('utf-16le').decode(bytes);
+  if (bytes[0] === 0xFE && bytes[1] === 0xFF) return new TextDecoder('utf-16be').decode(bytes);
+  for (const enc of ['utf-8', 'gb18030', 'big5', 'shift_jis']) { try { return new TextDecoder(enc, { fatal: true }).decode(bytes); } catch(e){} }
+  return new TextDecoder('utf-8').decode(bytes);
+}
+const PAGE_CHARS = 1500, CHUNK_CHARS = 150000;
+function paginate(text){
+  const paras = [];
+  text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n').forEach(line => {
+    const p = line.replace(/^[\s　]+|\s+$/g, '');
+    if (!p) return;
+    for (let i = 0; i < p.length; i += 1200) paras.push(p.slice(i, i + 1200));   // very long lines become several paragraphs
+  });
+  const pageStarts = []; let acc = Infinity;
+  paras.forEach((p, i) => { if (acc >= PAGE_CHARS) { pageStarts.push(i); acc = 0; } acc += p.length; });
+  const chunks = []; let c = null, cchars = 0;
+  pageStarts.forEach((ps, pi) => {
+    const pe = pageStarts[pi + 1] ?? paras.length;
+    const len = paras.slice(ps, pe).reduce((a, x) => a + x.length, 0);
+    if (!c || cchars + len > CHUNK_CHARS || pe - c.start > 4000) { c = { start: ps, end: ps, pageStarts: [] }; chunks.push(c); cchars = 0; }
+    c.pageStarts.push(ps - c.start); c.end = pe; cchars += len;
+  });
+  return chunks.map(x => ({ paras: paras.slice(x.start, x.end), pageStarts: x.pageStarts }));
+}
+async function uploadBook(file){
+  const r = cur();
+  if (!file) return;
+  if (!db || !r?.id || !myId) { termLine('<span class="r1">fatal: not connected — open a workspace first</span>'); return; }
+  if (file.size > 8 * 1024 * 1024) { termLine('<span class="r1">error: file too large (max 8 MB)</span>'); return; }
+  termLine(`<span class="d1">reading ${esc(file.name)}…</span>`);
+  try {
+    const text = decodeText(await file.arrayBuffer());
+    const chunks = paginate(text);
+    if (!chunks.length) { termLine('<span class="r1">error: the file is empty</span>'); return; }
+    if (chunks.length > 60) { termLine('<span class="r1">error: book too long</span>'); return; }
+    const title = (file.name.replace(/\.[^.]+$/, '') || 'untitled').slice(0, 80);
+    const meta = { uid: myId, name: nick, title, ts: serverTimestamp(), chunks: chunks.length,
+      pages: chunks.map(c => c.pageStarts.length), paras: chunks.map(c => c.paras.length), chars: text.length };
+    const ref = await addDoc(collection(db, 'rooms', r.id, 'books'), meta);
+    for (let i = 0; i < chunks.length; i++) {
+      termLine(`<span class="d1">uploading part ${i + 1}/${chunks.length}…</span>`);
+      await setDoc(doc(db, 'rooms', r.id, 'books', ref.id, 'chunks', String(i)), chunks[i]);
+    }
+    termLine(`<span class="g1">✔ uploaded</span> <span class="d1">${meta.pages.reduce((a, b) => a + b, 0)} pages</span>`);
+    await openBook(r, ref.id);
+  } catch (e) { termLine(`<span class="r1">error: upload failed (${esc(e?.code || e?.message || 'unknown')})</span>`); }
+}
+$('bookIn').addEventListener('change', () => { const f = $('bookIn').files[0]; $('bookIn').value = ''; uploadBook(f); });
+
+async function readTogether(){
+  const r = cur();
+  if (!db || !r?.id) { termLine('<span class="r1">open a workspace first (:room)</span>'); return; }
+  let items = [];
+  try {
+    const s = await getDocs(query(collection(db, 'rooms', r.id, 'books'), orderBy('ts', 'desc'), limit(30)));
+    items = s.docs.map(d => { const x = d.data(); return { label: String(x.title || 'untitled'), detail: `${x.name || ''} · ${(x.pages || []).reduce((a, b) => a + b, 0)} pages`, value: { id: d.id } }; });
+  } catch (e) { termLine(`<span class="r1">error: could not list books (${esc(e?.code || 'unknown')})</span>`); }
+  items.push({ label: '＋ Upload a .txt book…', detail: 'UTF-8 / GBK / Big5 / Shift_JIS', value: { upload: true }, always: true });
+  const v = await quickPick(`Read together — ${tabLabel(active)}`, items, items.length > 1 ? 'Pick a book' : 'No books yet — upload one');
+  if (!v) { if (!isMobile()) inp.focus(); return; }
+  if (v.upload) $('bookIn').click(); else await openBook(r, v.id);
+}
+function pageLoc(p){
+  let c = 0, base = 0, acc = 0;
+  for (; c < book.meta.pages.length; c++) {
+    if (p < acc + book.meta.pages[c]) break;
+    acc += book.meta.pages[c]; base += book.meta.paras[c];
+  }
+  return { c: Math.min(c, book.meta.pages.length - 1), lp: p - acc, base };
+}
+async function ensurePage(){
+  const L = pageLoc(book.page);
+  if (book.chunks.has(L.c)) return;
+  const b = book;
+  const snap = await getDoc(doc(db, 'rooms', b.room.id, 'books', b.id, 'chunks', String(L.c)));
+  if (snap.exists()) b.chunks.set(L.c, snap.data());
+}
+async function openBook(r, id){
+  if (book && book.unsub) book.unsub();
+  let snap;
+  try { snap = await getDoc(doc(db, 'rooms', r.id, 'books', id)); } catch (e) { termLine(`<span class="r1">error: ${esc(e?.code || 'unknown')}</span>`); return; }
+  if (!snap.exists()) { termLine('<span class="r1">error: book not found</span>'); return; }
+  const meta = snap.data();
+  book = { room: r, id, meta, chunks: new Map(), page: 0, total: (meta.pages || []).reduce((a, b) => a + b, 0), notes: [], seen: new Set(), first: true, unsub: null };
+  book.page = Math.max(0, Math.min(+store.get('bp_' + id, '0') || 0, book.total - 1));
+  const b = book;
+  b.unsub = onSnapshot(query(collection(db, 'rooms', r.id, 'books', id, 'notes'), orderBy('ts', 'asc'), limit(1000)), s => {
+    const list = s.docs.map(d => { const x = d.data({ serverTimestamps: 'estimate' });
+      return { id: d.id, uid: x.uid, name: x.name, para: x.para, quote: x.quote || '', text: x.text || '', parent: x.parent || null, ms: x.ts?.toMillis ? x.ts.toMillis() : Date.now() }; });
+    const fresh = list.filter(n => !b.seen.has(n.id)); fresh.forEach(n => b.seen.add(n.id));
+    b.notes = list;
+    if (!b.first) { const others = fresh.filter(n => n.uid !== myId); if (others.length && (view !== 'book' || isAway())) notifyNote(b, others); }
+    b.first = false;
+    if (view === 'book' && book === b) render();
+  }, e => termLine(`<span class="r1">error: notes unavailable (${esc(e?.code || 'unknown')})</span>`));
+  if (panic) togglePanic(false);
+  view = 'book'; scrollBottom = false;
+  renderTabs(); render(); editor.scrollTop = 0;
+  setReading();
+}
+function closeBook(){
+  if (!book) return;
+  if (book.unsub) book.unsub();
+  if (rtdb && myId && book.room.id) dbUpdate(presRefFor(book.room), { rb: null, rp: null }).catch(() => {});
+  book = null; view = 'room'; scrollBottom = true;
+  $('cbtn').hidden = true;
+  renderTabs(); render();
+}
+function setReading(){
+  if (!book || !rtdb || !myId || !book.room.id) return;
+  dbUpdate(presRefFor(book.room), { rb: book.id, rp: book.page + 1 }).catch(() => {});
+}
+async function goPage(p){
+  if (!book) return;
+  book.page = Math.max(0, Math.min(p, book.total - 1));
+  store.set('bp_' + book.id, String(book.page));
+  render(); editor.scrollTop = 0;
+  setReading();
+}
+function readersHtml(){
+  if (!book) return '';
+  const rs = peersOf(book.room).filter(p => p.rb === book.id && p.uid !== myId && p.rp);
+  return rs.map(p => `<span class="bkr" style="--mc:${colorOfUid(p.uid, p.name)}" data-jump="${p.rp - 1}">● ${esc(p.name)} p.${p.rp}</span>`).join(' ');
+}
+function highlightPara(text, notes){
+  const ranges = notes.filter(n => n.quote).map(n => { const i = text.indexOf(n.quote); return i < 0 ? null : { s: i, e: i + n.quote.length, n }; })
+    .filter(Boolean).sort((a, b) => a.s - b.s);
+  let out = '', pos = 0;
+  for (const r of ranges) {
+    if (r.s < pos) continue;
+    out += esc(text.slice(pos, r.s)) + `<mark class="bm" style="--mc:${colorOf(r.n)}">${esc(text.slice(r.s, r.e))}</mark>`;
+    pos = r.e;
+  }
+  return out + esc(text.slice(pos));
+}
+function renderBook(){
+  if (!book) { view = 'room'; render(); return; }
+  const L = pageLoc(book.page);
+  const ch = book.chunks.get(L.c);
+  const nav = `<span class="bkb" data-nav="-1">‹ Prev</span><span>${book.page + 1} / ${book.total}</span><span class="bkb" data-nav="1">Next ›</span><span class="bkb" data-nav="go">Go to…</span>`;
+  const head = `<div class="bkhead"><span class="bkt">${esc(book.meta.title || 'untitled')}</span>${nav}<span class="sp"></span><span class="bkreaders">${readersHtml()}</span></div>`;
+  if (!ch) {
+    editor.innerHTML = `<div class="bk">${head}<div class="bkempty">loading…</div></div>`;
+    const b = book;
+    ensurePage().then(() => { if (view === 'book' && book === b) render(); }).catch(e => { editor.innerHTML = `<div class="bk">${head}<div class="bkempty">could not load (${esc(e?.code || 'error')})</div></div>`; });
+    return;
+  }
+  const s = ch.pageStarts[L.lp], e = ch.pageStarts[L.lp + 1] ?? ch.paras.length;
+  const tops = book.notes.filter(n => !n.parent), reps = book.notes.filter(n => n.parent);
+  const rows = [];
+  for (let i = s; i < e; i++) {
+    const g = L.base + i;
+    const ns = tops.filter(n => n.para === g);
+    rows.push(`<div class="bp" data-p="${g}"><span class="bpn${ns.length ? ' has' : ''}" data-pcomment="${g}" title="Comment on this paragraph">${g + 1}</span><span class="bpt">${highlightPara(String(ch.paras[i]), ns)}</span></div>`);
+    if (ns.length) rows.push(`<div class="bth">${ns.map(n => `<div class="bn" style="--mc:${colorOf(n)}"><div class="bnh"><span class="bav">${esc(displayName(n).slice(0, 1).toUpperCase())}</span><b>${esc(displayName(n))}</b><span class="bnt">${hhmm(n.ms)}</span>${n.uid === myId ? `<span class="bnx" data-delnote="${esc(n.id)}" title="Delete">✕</span>` : ''}</div>${n.quote ? `<div class="bnq">“${esc(n.quote)}”</div>` : ''}<div class="bnb">${esc(n.text)}</div>${reps.filter(x => x.parent === n.id).map(x => `<div class="bnr2" style="--mc:${colorOf(x)}"><b>${esc(displayName(x))}</b><span class="tx">${esc(x.text)}</span>${x.uid === myId ? `<span class="bnx" data-delnote="${esc(x.id)}" title="Delete">✕</span>` : ''}</div>`).join('')}<span class="bnrep" data-reply="${esc(n.id)}">Reply</span></div>`).join('')}</div>`);
+  }
+  editor.innerHTML = `<div class="bk">${head}${rows.join('')}<div class="bknav">${nav}</div></div>`;
+  $('cursorPos').textContent = skin === 'vscode' ? `Ln ${s + 1}, Col 1` : '';
+}
+async function addNote(para, quote, text, parent){
+  if (!book || !db || !myId) return;
+  const d = { uid: myId, name: nick, para, quote: (quote || '').slice(0, 300), text: text.slice(0, 1000), ts: serverTimestamp() };
+  if (parent) d.parent = parent;
+  try { await addDoc(collection(db, 'rooms', book.room.id, 'books', book.id, 'notes'), d); }
+  catch (e) { termLine(`<span class="r1">error: comment failed (${esc(e?.code || 'unknown')})</span>`); }
+}
+async function bookClick(e){
+  const nav = e.target.closest('[data-nav]');
+  if (nav) {
+    const v = nav.dataset.nav;
+    if (v === 'go') { const p = await ask(`Go to page (1–${book.total})`, 'Page number'); if (p) goPage((parseInt(p, 10) || 1) - 1); }
+    else goPage(book.page + (+v));
+    return;
+  }
+  const j = e.target.closest('[data-jump]'); if (j) { goPage(+j.dataset.jump); return; }
+  const del = e.target.closest('[data-delnote]');
+  if (del) { try { await deleteDoc(doc(db, 'rooms', book.room.id, 'books', book.id, 'notes', del.dataset.delnote)); } catch (err) { termLine(`<span class="r1">error: ${esc(err?.code || 'unknown')}</span>`); } return; }
+  const rp = e.target.closest('[data-reply]');
+  if (rp) { const n = book.notes.find(x => x.id === rp.dataset.reply); const t = await ask(`Reply to ${n ? displayName(n) : ''}`, 'Your reply'); if (t && n) addNote(n.para, '', t, n.id); return; }
+  const pc = e.target.closest('[data-pcomment]');
+  if (pc) { const g = +pc.dataset.pcomment; const t = await ask(`Comment on paragraph ${g + 1}`, 'Your comment'); if (t) addNote(g, '', t); }
+}
+// select text in the book -> floating "Comment" button
+let pendingSel = null;
+function checkSelection(){
+  if (view !== 'book' || panic || !book) { $('cbtn').hidden = true; return; }
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !sel.rangeCount) { $('cbtn').hidden = true; pendingSel = null; return; }
+  const a = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement)?.closest('.bp');
+  const f = sel.focusNode && (sel.focusNode.nodeType === 1 ? sel.focusNode : sel.focusNode.parentElement)?.closest('.bp');
+  const quote = sel.toString().trim();
+  if (!a || a !== f || !quote) { $('cbtn').hidden = true; pendingSel = null; return; }
+  pendingSel = { para: +a.dataset.p, quote: quote.slice(0, 300) };
+  const r = sel.getRangeAt(0).getBoundingClientRect();
+  const btn = $('cbtn'); btn.hidden = false;
+  btn.style.left = Math.min(window.innerWidth - 110, Math.max(4, r.right - 40)) + 'px';
+  btn.style.top = Math.min(window.innerHeight - 40, r.bottom + 6) + 'px';
+}
+document.addEventListener('selectionchange', () => { clearTimeout(checkSelection.t); checkSelection.t = setTimeout(checkSelection, 120); });
+$('cbtn').addEventListener('mousedown', e => e.preventDefault());
+$('cbtn').addEventListener('click', async () => {
+  const p = pendingSel; $('cbtn').hidden = true;
+  if (!p) return;
+  const t = await ask(`Comment on “${p.quote.slice(0, 24)}${p.quote.length > 24 ? '…' : ''}”`, 'Your comment');
+  window.getSelection()?.removeAllRanges();
+  if (t) addNote(p.para, p.quote, t);
+});
+function notifyNote(b, notes){
+  if (alertMode === 'quiet' || panic) return;
+  const from = [...new Set(notes.map(n => displayName(n)))].slice(0, 3).map(esc).join(', ');
+  const p = notes[notes.length - 1];
+  const label = esc(bookFile(b.id));
+  const text = skin === 'excel' ? `${from} added a comment<small>Ref-${label.slice(4, 8)} · click to view</small>`
+    : skin === 'notion' ? `${from} commented on <b>RFC ${label.slice(4, 8)}</b><small>click to open</small>`
+    : skin === 'terminal' ? `Activity in window less<small>${notes.length} new · click to switch</small>`
+    : `Review: ${from} commented on ${label}<small>click to open</small>`;
+  showToast(text, async () => {
+    if (book !== b) return;
+    view = 'book'; renderTabs();
+    // jump to the page holding the newest comment
+    let acc = 0, base = 0;
+    for (let c = 0; c < b.meta.paras.length; c++) {
+      if (p.para < base + b.meta.paras[c]) {
+        if (!b.chunks.has(c)) { const s = await getDoc(doc(db, 'rooms', b.room.id, 'books', b.id, 'chunks', String(c))); if (s.exists()) b.chunks.set(c, s.data()); }
+        const ch = b.chunks.get(c); const local = p.para - base; let lp = 0;
+        if (ch) ch.pageStarts.forEach((ps, i) => { if (ps <= local) lp = i; });
+        goPage(acc + lp); return;
+      }
+      acc += b.meta.pages[c]; base += b.meta.paras[c];
+    }
+    render();
+  });
+  const st = document.querySelector('.status');
+  st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
+  if (document.hidden || !document.hasFocus()) startBlink();
+}
+async function deleteBook(){
+  if (!book || book.meta.uid !== myId) return;
+  const ok = await ask(`Delete “${book.meta.title}” and all its comments?`, "Type 'yes' to confirm — this cannot be undone");
+  if (!ok || ok.toLowerCase() !== 'yes') return;
+  const b = book;
+  try {
+    const ns = await getDocs(collection(db, 'rooms', b.room.id, 'books', b.id, 'notes'));
+    for (const d of ns.docs) await deleteDoc(d.ref);
+    for (let i = 0; i < b.meta.chunks; i++) await deleteDoc(doc(db, 'rooms', b.room.id, 'books', b.id, 'chunks', String(i)));
+    await deleteDoc(doc(db, 'rooms', b.room.id, 'books', b.id));
+    closeBook(); termLine('<span class="g1">✔ book deleted</span>');
+  } catch (e) { termLine(`<span class="r1">error: delete failed (${esc(e?.code || 'unknown')})</span>`); }
 }
 
 // ---------- reply ----------
@@ -1168,6 +1621,7 @@ $('lightbox').addEventListener('click', () => { $('lightbox').hidden = true; });
 // click a message = reply to it; click an image = open it
 editor.addEventListener('click', e => {
   if (panic || view === 'recipe') return;
+  if (view === 'book') { bookClick(e); return; }
   const img = e.target.closest('[data-img]');
   if (img) { $('imgPop').hidden = true; openLightbox(img.dataset.img); return; }
   const sel = window.getSelection && String(window.getSelection());
@@ -1183,14 +1637,16 @@ async function copyInvite(){
   const r = cur();
   if (!r) { termLine('<span class="r1">no workspace open — :room first</span>'); return; }
   const link = inviteLink(r.code);
-  try { await navigator.clipboard.writeText(link); showToast(`Invite link copied<small>anyone with this link joins ${esc(tabLabel(active))}</small>`, -1); termLine('<span class="g1">✔ invite link copied to clipboard</span>'); }
+  try { await navigator.clipboard.writeText(link); showToast(`Invite link copied<small>anyone with this link joins ${esc(tabLabel(active))}</small>`, null); termLine('<span class="g1">✔ invite link copied to clipboard</span>'); }
   catch(e){ await ask('Copy this invite link', '', link); }
 }
 
 // ---------- commands ----------
 const HELP = [
   '<span class="help">commands:</span>',
-  '<span class="help">  :nick &lt;name&gt;           change your display name</span>',
+  '<span class="help">  :read                   read together: open / upload a book in this room</span>',
+  '<span class="help">  :p &lt;n&gt;                  jump to page n of the open book</span>',
+  '<span class="help">  :signout                sign out / switch account</span>',
   '<span class="help">  :skin vscode|excel|notion|terminal   change the disguise</span>',
   '<span class="help">  :style comment|log|str  how messages look in VS Code</span>',
   '<span class="help">  :logs off|slow|normal|fast  terminal log speed</span>',
@@ -1209,12 +1665,12 @@ const HELP = [
 async function command(c){
   const [cmd, ...rest] = c.slice(1).trim().split(/\s+/); const arg = rest.join(' ');
   if (cmd === 'help' || cmd === 'h') HELP.forEach(termLine);
-  else if (cmd === 'nick') {
-    if (!arg) { termLine('<span class="r1">usage: :nick &lt;name&gt;</span>'); return; }
-    nick = arg.slice(0,16); store.set('nick', nick); updateWho();
-    rooms.forEach(r => r.id && rtdb && myId && dbUpdate(presRefFor(r), { name: nick }).catch(() => {}));
-    termLine(`<span class="d1">git config user.name "${esc(nick)}"</span>`);
-  }
+  else if (cmd === 'nick') termLine(`<span class="d1">your name is your account name: ${esc(nick)} — use :signout to switch account</span>`);
+  else if (cmd === 'signout' || cmd === 'logout') await doSignOut();
+  else if (cmd === 'whoami') termLine(`<span class="d1">${esc(nick)}</span>`);
+  else if (cmd === 'read') await readTogether();
+  else if (cmd === 'book') $('bookIn').click();
+  else if (cmd === 'p' || cmd === 'page') { if (view === 'book' && book) goPage((parseInt(arg, 10) || 1) - 1); else termLine('<span class="r1">no book open — :read first</span>'); }
   else if (cmd === 'style') {
     if (['comment','log','str'].includes(arg)) { style = arg; store.set('style', style); render(); termLine(`<span class="d1">✔ style → ${arg}</span>`); }
     else termLine('<span class="r1">usage: :style comment|log|str</span>');
@@ -1301,7 +1757,8 @@ function togglePanic(force){
   inp.value = '';
   closeMenu(); hideToast(); stopTyping();
   $('imgPop').hidden = true; $('lightbox').hidden = true;
-  if (panic) { setReply(null); if (view === 'recipe') { view = 'room'; renderTabs(); } }
+  $('cbtn').hidden = true;
+  if (panic) { setReply(null); if (view !== 'room') { view = 'room'; renderTabs(); } }
   render();
   if (panic) { editor.scrollTop = Math.max(0, editor.scrollHeight * 0.4); inp.blur(); }
   else { clearActiveUnread(); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
@@ -1325,6 +1782,7 @@ if (window.visualViewport) {
 }
 $('styleBtn').addEventListener('click', () => { const o = ['comment','log','str']; style = o[(o.indexOf(style)+1)%3]; store.set('style', style); render(); });
 $('liveBtn').addEventListener('click', () => command(':room'));
+$('acctBtn').addEventListener('click', e => { e.stopPropagation(); openMenu($('acctBtn'), ['Account']); const dd = $('dropdown'), r = $('acctBtn').getBoundingClientRect(); dd.style.top = Math.max(4, r.bottom - dd.offsetHeight) + 'px'; dd.style.left = (r.right + 4) + 'px'; });
 $('fsBtn').addEventListener('click', async () => {
   try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); }
   catch(e){ termLine('<span class="d1">fullscreen not allowed — use the browser\'s fullscreen (F11 / ⌃⌘F)</span>'); }
@@ -1358,6 +1816,8 @@ $('peersBtn').addEventListener('click', e => {
 const MENUS = {
   File: () => [
     ['New Workspace…', () => command(':room')],
+    ['Read Together…', readTogether],
+    ['Upload Book (.txt)…', () => $('bookIn').click()],
     ['Copy Invite Link', copyInvite],
     ['Attach Image…', () => $('fileIn').click()],
     ['Close Editor', () => view === 'recipe' ? closeRecipe() : command(':close')],
@@ -1365,7 +1825,7 @@ const MENUS = {
     ['Open recipe', openRecipe],
   ],
   Edit: () => [
-    ['Change Display Name…', async () => { const n = await ask('git config user.name', 'New display name', nick); if (n) command(':nick ' + n); }],
+    ...(view === 'book' && book && book.meta.uid === myId ? [['Delete This Book…', deleteBook]] : []),
     ...(replyTo ? [['Cancel Reply', () => setReply(null)]] : []),
     '-',
     ['Clear My Messages in This Workspace…', () => command(':clear')],
@@ -1389,6 +1849,11 @@ const MENUS = {
     '-',
     ['Clear Terminal', () => { term.innerHTML = ''; }],
   ],
+  Account: () => [
+    [`Signed in as ${nick || '—'}`, () => {}],
+    ['Switch Account…', doSignOut],
+    ['Sign Out', doSignOut],
+  ],
   Help: () => [
     ['recipe', openRecipe],
     ['Show All Commands', () => command(':help')],
@@ -1409,6 +1874,7 @@ function openMenu(anchor, names){
   menuActions = [];
   dd.innerHTML = names.length === 1 ? itemsHtml(MENUS[names[0]]())
     : names.map(n => `<div class="grp mh">${MENU_LABELS[skin][['File','Edit','','View','','','Terminal','Help'].indexOf(n)] || n}</div>` + itemsHtml(MENUS[n]())).join('<div class="sep"></div>');
+  if (names.length === 1 && names[0] === 'Account') dd.querySelector('.mi')?.classList.add('dim');
   dd.hidden = false;
   const r = anchor.getBoundingClientRect();
   dd.style.top = (r.bottom + 2) + 'px';
@@ -1427,7 +1893,7 @@ $('menu').addEventListener('mouseover', e => {
 });
 $('hamb').addEventListener('click', e => {
   e.stopPropagation();
-  if ($('dropdown').hidden) openMenu($('hamb'), skin === 'notion' ? ['File','Edit','View','Help'] : ['File','Edit','View','Terminal','Help']);
+  if ($('dropdown').hidden) openMenu($('hamb'), skin === 'notion' ? ['File','Edit','View','Account','Help'] : ['File','Edit','View','Terminal','Account','Help']);
   else closeMenu();
 });
 $('dropdown').addEventListener('click', e => {
@@ -1446,11 +1912,12 @@ function presenceWarn(e){
   termLine(`<span class="y1">warning: live share unavailable (${esc(e?.code || e?.message || 'unknown')}) — online list / typing disabled</span>`);
 }
 const presRefFor = r => dbRef(rtdb, `presence/${r.id}/${myId}`);
-const presData = () => ({ name: (nick || 'dev').slice(0,16), typing: false, away: document.hidden, t: rtdbNow() });
+const presData = r => Object.assign({ name: (nick || 'dev').slice(0,16), typing: false, away: document.hidden, t: rtdbNow() },
+  book && book.room === r ? { rb: book.id, rp: book.page + 1 } : {});
 async function joinPresence(r){
   if (!rtdb || !r.id || !myId) return;
   const pr = presRefFor(r);
-  try { await onDisconnect(pr).remove(); await dbSet(pr, presData()); }
+  try { await onDisconnect(pr).remove(); await dbSet(pr, presData(r)); }
   catch(e){ presenceWarn(e); return; }
   if (r.presOff) r.presOff();
   r.presOff = onValue(dbRef(rtdb, `presence/${r.id}`), snap => {
@@ -1525,12 +1992,14 @@ termLine(isMobile() ? '<span class="d1">Type :help for commands. Tap the current
   let app;
   try {
     app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    auth = getAuth(app);
     db = getFirestore(app);
-    await signInAnonymously(auth);
-    await new Promise(res => onAuthStateChanged(auth, u => { if (u) { myId = u.uid; res(); } }));
+    let u = await new Promise(res => { const off = onAuthStateChanged(auth, x => { off(); res(x); }); });
+    if (!u || u.isAnonymous || !u.displayName) u = await accountFlow(u);
+    myId = u.uid; nick = String(u.displayName || 'dev').slice(0, 16);
+    rememberAccount(nick); updateWho();
   } catch (e) {
-    termLine(`<span class="r1">fatal: auth failed (${esc(e?.code||e?.message||'unknown')}) — is Anonymous sign-in enabled?</span>`);
+    termLine(`<span class="r1">fatal: sign-in failed (${esc(e?.code||e?.message||'unknown')})</span>`);
     return;
   }
   try {
@@ -1539,12 +2008,11 @@ termLine(isMobile() ? '<span class="d1">Type :help for commands. Tap the current
     onValue(dbRef(rtdb, '.info/connected'), s => { if (s.val() === true) rooms.forEach(r => r.id && joinPresence(r)); });
   } catch (e) { rtdb = null; presenceWarn(e); }
 
-  if (!nick) { const n = await ask('git config user.name', 'Your display name (friends will see this)'); nick = (n || 'dev').slice(0,16); store.set('nick', nick); updateWho(); }
   for (const r of rooms) await subscribe(r);
   saveRooms(); renderTabs();
   if (inviteCode) {
     await addRoom(inviteCode);
-    showToast(`Joined workspace via invite<small>${esc(tabLabel(active))}</small>`, -1);
+    showToast(`Joined workspace via invite<small>${esc(tabLabel(active))}</small>`, null);
   }
   if (!rooms.length) {
     const c = await ask('Connect to Remote Workspace', 'Enter workspace token (same code as your friends)', '', true);
