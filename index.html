@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3c3c3c">
 <title>sync.service.ts — api-gateway — Visual Studio Code</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -15,7 +16,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:var(--bg);color:var(--fg);font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden}
-  .app{display:grid;grid-template-rows:30px 1fr 22px;height:100vh}
+  .app{display:grid;grid-template-rows:30px 1fr 22px;height:100vh;height:var(--vh,100dvh)}
   /* title bar */
   .titlebar{background:#3c3c3c;display:flex;align-items:center;padding:0 10px;gap:14px;font-size:12px;color:#cccccc;user-select:none}
   .dots{display:flex;gap:7px}.dots i{width:12px;height:12px;border-radius:50%;display:block}
@@ -84,7 +85,33 @@
   .status .sp{flex:1}
   .panic .msg{display:none}
   .help{color:#9cdcfe}
-  @media (max-width:760px){.main{grid-template-columns:48px 0 1fr}.sidebar{display:none}.menu{display:none}}
+  @media (max-width:760px){
+    .app{grid-template-rows:calc(30px + env(safe-area-inset-top)) 1fr calc(24px + env(safe-area-inset-bottom))}
+    .titlebar{padding:env(safe-area-inset-top) 10px 0;gap:8px}
+    .dots,.menu,#fsBtn{display:none}
+    .ttl{text-align:left;font-size:12px}
+    .main{grid-template-columns:1fr}
+    .activity,.sidebar{display:none}
+    .work{grid-template-rows:32px 0 1fr 0 var(--panel,32%)}
+    .crumbs,.sash{overflow:hidden;padding:0;border:0;min-height:0}
+    .tab:not(.on){display:none}
+    .tab{font-size:12px;padding:0 12px}
+    .editor{font-size:12px;line-height:18px;-webkit-overflow-scrolling:touch}
+    .ln{grid-template-columns:34px 1fr;min-height:18px}
+    .ln .g{padding-right:10px}
+    .ln .c{padding-right:10px}
+    .ptabs{gap:14px;padding:0 12px}
+    .ptabs span:nth-child(2),.ptabs span:nth-child(3),.ptabs span:nth-child(6){display:none}
+    .term{font-size:11px;line-height:16px;padding:0 12px}
+    .prompt{padding:4px 12px 6px;font-size:12px}
+    .prompt .p2,.prompt .d1{display:none}
+    .prompt input{font-size:16px;margin-left:6px}
+    .status{padding:0 4px env(safe-area-inset-bottom);font-size:11px}
+    #cursorPos,.status span:nth-child(2),.status span:nth-child(7),.status span:nth-child(8),.status span:nth-child(9),.status span:last-child{display:none}
+    #panicBtn{background:rgba(255,255,255,.12);border-radius:3px}
+    .qi{top:calc(40px + env(safe-area-inset-top))}
+    .qi input{font-size:16px}
+  }
   .qi{position:fixed;top:36px;left:50%;transform:translateX(-50%);width:min(560px,92vw);background:#252526;border:1px solid #454545;box-shadow:0 8px 24px rgba(0,0,0,.55);border-radius:6px;padding:6px;z-index:50;font-size:13px}
   .qi[hidden]{display:none}
   .qi .qt{color:#ccc;text-align:center;padding:4px 0 6px;font-size:12px}
@@ -401,6 +428,7 @@ const HELP = [
   '<span class="help">  :room                   switch to another room code</span>',
   '<span class="help">  :clear                  delete all of YOUR messages in this room</span>',
   '<span class="help">  Esc                     boss key: hide all chat lines / show again</span>',
+  '<span class="help">  (phone) tap file tab    same as Esc; leaving the browser also hides the chat</span>',
   '<span class="help">  Ctrl+`                  focus this input</span>',
 ];
 async function command(c){
@@ -458,7 +486,7 @@ function togglePanic(force){
   inp.value = '';
   render();
   if (panic) { editor.scrollTop = Math.max(0, editor.scrollHeight * 0.4); inp.blur(); }
-  else { setUnread(0); editor.scrollTop = editor.scrollHeight; inp.focus(); }
+  else { setUnread(0); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
 }
 document.addEventListener('keydown', e => {
   if (!$('qi').hidden) return;
@@ -466,6 +494,20 @@ document.addEventListener('keydown', e => {
   if (e.key === '`' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (panic) togglePanic(false); inp.focus(); }
 });
 $('panicBtn').addEventListener('click', () => togglePanic());
+$('mainTab').addEventListener('click', () => togglePanic());
+const isMobile = () => window.matchMedia('(max-width:760px)').matches;
+// keep layout above the on-screen keyboard (iOS / Android)
+if (window.visualViewport) {
+  const fit = () => {
+    document.documentElement.style.setProperty('--vh', window.visualViewport.height + 'px');
+    window.scrollTo(0, 0);
+    if (document.activeElement === inp) { editor.scrollTop = editor.scrollHeight; term.scrollTop = term.scrollHeight; }
+  };
+  window.visualViewport.addEventListener('resize', fit);
+  fit();
+}
+// switching away from the browser on a phone hides the chat automatically
+document.addEventListener('visibilitychange', () => { if (document.hidden && isMobile() && !panic) togglePanic(true); });
 $('styleBtn').addEventListener('click', () => { const o = ['comment','log','str']; style = o[(o.indexOf(style)+1)%3]; store.set('style', style); render(); });
 $('liveBtn').addEventListener('click', () => command(':room'));
 $('fsBtn').addEventListener('click', async () => {
@@ -518,7 +560,7 @@ async function joinRoom(){
 
 render();
 updateWho();
-termLine('<span class="d1">Type :help for commands. Press Esc anytime to hide the chat.</span>');
+termLine(window.matchMedia('(max-width:760px)').matches ? '<span class="d1">Type :help for commands. Tap the file tab or “✓ Prettier” to hide the chat.</span>' : '<span class="d1">Type :help for commands. Press Esc anytime to hide the chat.</span>');
 
 (async () => {
   if (String(firebaseConfig.apiKey).startsWith('PASTE')) {
@@ -542,7 +584,7 @@ termLine('<span class="d1">Type :help for commands. Press Esc anytime to hide th
     roomCode = c; store.set('room', c);
   }
   await joinRoom();
-  inp.focus();
+  if (!isMobile()) inp.focus();
 })();
 </script>
 </body>
