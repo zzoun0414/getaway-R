@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#3c3c3c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gateway">
 <title>sync.service.ts — api-gateway — Visual Studio Code</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1017,6 +1024,12 @@ const RECIPE = [
   '- 便签：随便写，停手一秒多就自动保存',
   '- **阅读统计**：读书时自动记录（离开或两分钟没动静就暂停计时）——今天读了多久、几页，最近 7 天的柱状图，每本书的累计；可以一键分享到留言板',
   '',
+  '## 装到手机桌面 / 系统通知',
+  '- iPhone：用 Safari 打开 → 分享按钮 ⬆︎ →「添加到主屏幕」；安卓 / 电脑 Chrome：View › Install as App…',
+  '- 装好后桌面上是一个叫 Gateway 的 </> 图标，打开是全屏的，没有浏览器地址栏',
+  '- View › System Notifications 打开系统通知（iPhone 要在装到桌面的 App 里打开）；通知只写「CI #4821 passed · 2 new changes」这类话，不会出现名字和内容',
+  '- 注意：目前 App 在后台运行时才会弹通知；彻底关掉或锁屏很久以后收不到（需要推送服务器，还在计划中）',
+  '',
   '## 换皮肤',
   '- View › Skin，或 `:skin vscode|excel|notion|terminal`',
   '- Excel：消息是表格里的行，房间是底部的工作表；输入框在公式栏',
@@ -1192,7 +1205,7 @@ function notify(r, newMsgs){
   showToast(text, idx);
   const st = document.querySelector('.status');
   st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
-  if (document.hidden || !document.hasFocus()) startBlink();
+  if (document.hidden || !document.hasFocus()) { startBlink(); osNotify(n, 'chat', idx); }
 }
 window.addEventListener('focus', () => { stopBlink(); if (!panic) clearActiveUnread(); });
 document.addEventListener('visibilitychange', () => {
@@ -1820,7 +1833,7 @@ function notifyNote(b, notes){
   });
   const st = document.querySelector('.status');
   st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
-  if (document.hidden || !document.hasFocus()) startBlink();
+  if (document.hidden || !document.hasFocus()) { startBlink(); osNotify(notes.length, 'note'); }
 }
 async function deleteBook(){
   if (!book || book.meta.uid !== myId) return;
@@ -1954,7 +1967,7 @@ function notifyBoard(r, posts){
   showToast(text, () => { switchRoom(rooms.indexOf(r)); openBoard(); });
   const st = document.querySelector('.status');
   st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
-  if (document.hidden || !document.hasFocus()) startBlink();
+  if (document.hidden || !document.hasFocus()) { startBlink(); osNotify(posts.length, 'board'); }
 }
 function openBoard(){
   const r = cur();
@@ -2626,6 +2639,9 @@ const MENUS = {
     ['Toggle Chat', () => togglePanic(), false, 'Esc'],
     ...(skin === 'vscode' ? [['Toggle Sidebar', () => $('mainEl').classList.toggle('nosb')]] : []),
     ['Full Screen', () => $('fsBtn').click()],
+    '-',
+    ['Install as App…', installApp],
+    [`System Notifications: ${osNotif ? 'On' : 'Off'}`, toggleOsNotif, osNotif],
   ],
   Terminal: () => [
     '#Log Speed',
@@ -2762,6 +2778,54 @@ async function addRoom(code){
   view = 'room'; scrollBottom = true; setReply(null); renderTabs(); render();
   await subscribe(r);
   renderTabs();
+}
+
+
+// ---------- installable app (PWA) + disguised system notifications ----------
+let swReg = null, installEvt = null;
+if ('serviceWorker' in navigator && window.isSecureContext && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('./sw.js').then(r => { swReg = r; }).catch(() => {});
+}
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+async function installApp(){
+  if (isStandalone()) { showToast('Already installed<small>you are using the app version</small>', null); return; }
+  if (installEvt) { installEvt.prompt(); try { await installEvt.userChoice; } catch(e){} installEvt = null; return; }
+  if (isIOS()) { showToast('Add to Home Screen<small>tap the Share button ⬆︎ in Safari, then “Add to Home Screen”</small>', null); return; }
+  showToast('Install from the browser menu<small>Chrome / Edge: ⋮ → “Install app” or “Add to Home screen”</small>', null);
+}
+let osNotif = store.get('osnotif', 'off') === 'on';
+async function toggleOsNotif(){
+  if (osNotif) { osNotif = false; store.set('osnotif', 'off'); showToast('System notifications off', null); return; }
+  if (!('Notification' in window)) {
+    showToast('Notifications not available here<small>' + (isIOS() && !isStandalone() ? 'on iPhone: add the app to your Home Screen first, then turn this on inside it' : 'this browser does not support them') + '</small>', null);
+    return;
+  }
+  let p = Notification.permission;
+  if (p === 'default') { try { p = await Notification.requestPermission(); } catch(e){ p = 'denied'; } }
+  if (p !== 'granted') { showToast('Notifications are blocked<small>allow them for this site in your browser / phone settings</small>', null); return; }
+  osNotif = true; store.set('osnotif', 'on');
+  osNotify(1, 'test');
+}
+// what the notification says — never names or message text, so it is safe on a lock screen
+function osText(n, kind){
+  const build = 4800 + Math.floor(Math.random() * 190);
+  if (kind === 'test') return { title: 'api-gateway', body: 'Notifications enabled for this workspace' };
+  if (skin === 'excel') return { title: 'Excel', body: `Q4_order_sync.xlsx was updated (${n} change${n > 1 ? 's' : ''})` };
+  if (skin === 'notion') return { title: 'Notion', body: kind === 'board' ? 'Team Updates — new entry' : `Q4 Sync Notes — ${n} new comment${n > 1 ? 's' : ''}` };
+  if (skin === 'terminal') return { title: 'Terminal', body: `zsh: job finished (${n})` };
+  return { title: 'api-gateway', body: kind === 'board' ? 'CHANGELOG.md updated' : kind === 'note' ? 'Review: 1 new comment on RFC' : `CI #${build} passed · ${n} new change${n > 1 ? 's' : ''}` };
+}
+let lastOs = 0;
+function osNotify(n, kind, roomIdx){
+  if (!osNotif || alertMode === 'quiet' || !('Notification' in window) || Notification.permission !== 'granted') return;
+  if (kind !== 'test' && Date.now() - lastOs < 20000) return;   // at most one every 20 s
+  lastOs = Date.now();
+  const t = osText(n, kind);
+  const opts = { body: t.body, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', tag: 'gw', renotify: true, silent: false };
+  if (swReg && swReg.showNotification) swReg.showNotification(t.title, opts).catch(() => {});
+  else { try { const x = new Notification(t.title, opts); x.onclick = () => { window.focus(); x.close(); }; } catch(e){} }
 }
 
 // ---------- start ----------
