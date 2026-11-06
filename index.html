@@ -407,13 +407,16 @@
   }
   .qi{position:fixed;top:36px;left:50%;transform:translateX(-50%);width:min(560px,92vw);background:#252526;border:1px solid #454545;box-shadow:0 8px 24px rgba(0,0,0,.55);border-radius:6px;padding:6px;z-index:50;font-size:13px}
   .qi[hidden]{display:none}
-  .qi .qt{color:#ccc;text-align:center;padding:4px 0 6px;font-size:12px}
+  .qi .qt{color:#ccc;text-align:center;padding:4px 24px 6px;font-size:12px}
+  .qi .qx{position:absolute;right:8px;top:5px;cursor:pointer;color:#8b8b8b;font-size:12px;padding:1px 5px;border-radius:3px;user-select:none}
+  .qi .qx:hover{background:rgba(128,128,128,.25);color:inherit}
   .qi input{width:100%;background:#3c3c3c;border:1px solid #007fd4;color:#ccc;padding:5px 8px;font-size:13px;outline:none;border-radius:2px;font-family:inherit}
   .qi .qh{color:#8b8b8b;font-size:12px;padding:6px 4px 2px}
 </style>
 </head>
 <body>
 <div class="qi" id="qi" hidden>
+  <span class="qx" id="qiX" title="Close (Esc)">✕</span>
   <div class="qt" id="qiTitle">Connect to Remote Workspace</div>
   <input id="qiInput" spellcheck="false" autocomplete="off">
   <div class="qlist" id="qiList" hidden></div>
@@ -1235,6 +1238,9 @@ let logSpeed = store.get('logs', 'slow');
 for (let i=0;i<8;i++) termLine(pick(GEN)());
 
 // ---------- quick input ----------
+let qiCancel = null;
+$('qiX').addEventListener('mousedown', e => { e.preventDefault(); qiCancel && qiCancel(); });
+document.addEventListener('mousedown', e => { if (!$('qi').hidden && qiCancel && !$('qi').contains(e.target)) qiCancel(); });
 function ask(title, placeholder, value='', password=false){
   return new Promise(resolve => {
     const qi = $('qi'), qin = $('qiInput');
@@ -1242,7 +1248,8 @@ function ask(title, placeholder, value='', password=false){
     qin.placeholder = placeholder; qin.value = value; qin.type = password ? 'password' : 'text';
     $('qiList').hidden = true; $('qiTitle').classList.remove('err');
     qi.hidden = false; setTimeout(() => { qin.focus(); if (value) qin.select(); }, 0);
-    const done = v => { qi.hidden = true; qin.removeEventListener('keydown', onKey); resolve(v); };
+    const done = v => { qi.hidden = true; qiCancel = null; qin.removeEventListener('keydown', onKey); resolve(v); };
+    qiCancel = () => done(null);
     const onKey = e => {
       e.stopPropagation();
       if (e.key === 'Enter' && qin.value.trim()) done(qin.value.trim());
@@ -1268,11 +1275,12 @@ function quickPick(title, items, placeholder = 'Type to filter', isError = false
       list.innerHTML = shown.map((it, i) => `<div class="qit${i === sel ? ' on' : ''}" data-i="${i}"><span>${esc(it.label)}</span>${it.detail ? `<small>${esc(it.detail)}</small>` : ''}</div>`).join('') || '<div class="qit dim">No matches</div>';
     };
     const done = v => {
-      qi.hidden = true; list.hidden = true; list.innerHTML = ''; $('qiTitle').classList.remove('err');
+      qi.hidden = true; qiCancel = null; list.hidden = true; list.innerHTML = ''; $('qiTitle').classList.remove('err');
       $('qiHint').textContent = "Press 'Enter' to confirm or 'Escape' to cancel";
       qin.removeEventListener('keydown', onKey); qin.removeEventListener('input', onInput); list.removeEventListener('mousedown', onClick);
       resolve(v);
     };
+    qiCancel = () => done(null);
     const onInput = () => { sel = 0; draw(); };
     const onKey = e => {
       e.stopPropagation();
@@ -2180,7 +2188,7 @@ function togglePanic(force){
   else { clearActiveUnread(); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
 }
 document.addEventListener('keydown', e => {
-  if (!$('qi').hidden) return;
+  if (!$('qi').hidden) { if (e.key === 'Escape' && qiCancel) { e.preventDefault(); qiCancel(); } return; }
   if (e.key === 'Escape' && !$('dropdown').hidden) { e.preventDefault(); closeMenu(); return; }
   if (e.key === 'Escape') { e.preventDefault(); togglePanic(); }
   if (e.key === '`' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (panic) togglePanic(false); inp.focus(); }
