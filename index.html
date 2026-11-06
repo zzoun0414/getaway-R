@@ -46,7 +46,7 @@
   .tabs{background:var(--tabbar);display:flex;overflow:hidden}
   .tab{padding:0 14px;display:flex;align-items:center;gap:6px;color:#969696;background:var(--tab);border-right:1px solid #252526;white-space:nowrap;font-size:13px;cursor:default}
   .tab.on{background:var(--tabact);color:#fff;border-top:1px solid var(--status)}
-  .tab .x{color:#888;font-size:11px;margin-left:4px}
+  .tab .x{color:#888;font-size:11px;margin-left:4px;cursor:pointer;padding:0 2px;border-radius:3px}.tab .x:hover{background:#444;color:#ddd}.tab{cursor:pointer}
   .tab .dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:none}
   .tab.unread .dot{display:inline-block}.tab.unread .x{display:none}
   .crumbs{background:var(--bg);color:#a9a9a9;font-size:12px;padding:0 16px;display:flex;align-items:center;gap:6px}
@@ -94,7 +94,8 @@
     .activity,.sidebar{display:none}
     .work{grid-template-rows:32px 0 1fr 0 var(--panel,32%)}
     .crumbs,.sash{overflow:hidden;padding:0;border:0;min-height:0}
-    .tab:not(.on){display:none}
+    .tabs{overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+    .tab .x{display:none}.tab.unread .dot{display:inline-block}
     .tab{font-size:12px;padding:0 12px}
     .editor{font-size:12px;line-height:18px;-webkit-overflow-scrolling:touch}
     .ln{grid-template-columns:34px 1fr;min-height:18px}
@@ -164,12 +165,8 @@
       </div>
     </div>
     <div class="work" id="work">
-      <div class="tabs">
-        <div class="tab">order.repository.ts <span class="x">✕</span></div>
-        <div class="tab on" id="mainTab">sync.service.ts <span class="dot"></span><span class="x">✕</span></div>
-        <div class="tab">types.ts <span class="x">✕</span></div>
-      </div>
-      <div class="crumbs">src › orders › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> sync.service.ts › <span style="color:#ee9d28">◇</span> SyncService</div>
+      <div class="tabs" id="tabs"></div>
+      <div class="crumbs" id="crumbs"></div>
       <div class="editor" id="editor"></div>
       <div class="sash" id="sash"></div>
       <div class="panel">
@@ -304,13 +301,32 @@ const BLOCKS = [
 const CLOSERS = [["return { processed: batch.length, failed };"], ["return result;"], ["return ids.length;"], []];
 
 // ---------- state ----------
-let msgs = [];
-let myId = null, db = null, unsub = null, roomId = null;
+const FILES = [
+  ['sync.service.ts', 'orders', 'SyncService'],
+  ['order.repository.ts', 'orders', 'OrderRepository'],
+  ['auth.guard.ts', 'auth', 'AuthGuard'],
+  ['redis.service.ts', 'infra', 'RedisService'],
+  ['tenant.middleware.ts', 'shared', 'TenantMiddleware'],
+  ['metrics.service.ts', 'shared', 'MetricsService'],
+];
+let myId = null, db = null;
 let style = store.get('style', 'comment');
 let nick = store.get('nick', '');
-let roomCode = store.get('room', '');
-let panic = false, unread = 0, firstLoad = true;
-const seen = new Set();
+let panic = false, scrollBottom = true;
+// rooms: [{code, id, msgs, seen, first, unread, unsub}]
+let rooms = [];
+let active = 0;
+(() => {
+  let codes = [];
+  try { codes = JSON.parse(store.get('rooms', '[]')) || []; } catch(e){}
+  const legacy = store.get('room', '');
+  if (!codes.length && legacy) codes = [legacy];
+  rooms = codes.slice(0, FILES.length).map(code => ({ code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null }));
+  active = Math.min(+store.get('active', '0') || 0, Math.max(0, rooms.length - 1));
+})();
+const cur = () => rooms[active];
+const saveRooms = () => { store.set('rooms', JSON.stringify(rooms.map(r => r.code))); store.set('active', String(active)); store.del('room'); };
+const fileOf = i => FILES[i % FILES.length];
 
 const displayName = m => String(m.name || 'dev').slice(0, 16);
 
@@ -327,6 +343,7 @@ function msgLine(m){
 }
 
 function render(){
+  const msgs = cur()?.msgs || [];
   const nearBottom = editor.scrollHeight - editor.scrollTop - editor.clientHeight < 80;
   const lines = [];
   const push = (code, ind=0, cls='') => lines.push({ html: hl(code), ind, cls });
@@ -349,25 +366,63 @@ function render(){
   closeMethod();
   push('}');
   push('');
-  const cur = lines.length - 3;
+  const curLine = lines.length - 3;
   editor.innerHTML = lines.map((l, i) =>
-    `<div class="ln ${l.cls}${i===cur?' cur':''}"><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}</span></div>`
+    `<div class="ln ${l.cls}${i===curLine?' cur':''}"><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}</span></div>`
   ).join('');
-  $('cursorPos').textContent = `Ln ${cur+1}, Col ${Math.floor(Math.random()*30)+5}`;
-  if (nearBottom || firstLoad) editor.scrollTop = editor.scrollHeight;
+  $('cursorPos').textContent = `Ln ${curLine+1}, Col ${Math.floor(Math.random()*30)+5}`;
+  if (nearBottom || scrollBottom) editor.scrollTop = editor.scrollHeight;
+  scrollBottom = false;
 }
 
 // ---------- unread (disguised as warnings) ----------
-function setUnread(n){
-  unread = n;
+function renderTabs(){
+  const tabs = $('tabs');
+  const list = rooms.length ? rooms : [null];
+  tabs.innerHTML = list.map((r, i) =>
+    `<div class="tab${i===active?' on':''}${r && r.unread && i!==active ? ' unread' : ''}${r && r.unread && i===active ? ' unread' : ''}" data-i="${i}">${fileOf(i)[0]} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
+  ).join('');
+  const [file, dir, cls] = fileOf(active);
+  $('crumbs').innerHTML = `src › ${dir} › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> ${file} › <span style="color:#ee9d28">◇</span> ${cls}`;
+  $('ttl').textContent = `${file} — api-gateway`;
+  $('roomLabel').textContent = cur()?.id ? 'ssh: ' + cur().id.slice(0, 6) : 'local';
+  updateUnread();
+}
+function updateUnread(){
+  const n = rooms.reduce((a, r) => a + r.unread, 0);
   $('probStatus').innerHTML = `⊗ 0 &nbsp;⚠ ${n}`;
   $('probBadge').textContent = n;
-  $('mainTab').classList.toggle('unread', n > 0);
-  document.title = (n ? '● ' : '') + 'sync.service.ts — api-gateway — Visual Studio Code';
+  document.querySelectorAll('.tab').forEach(t => { const r = rooms[+t.dataset.i]; t.classList.toggle('unread', !!(r && r.unread)); });
+  document.title = (n ? '● ' : '') + `${fileOf(active)[0]} — api-gateway — Visual Studio Code`;
 }
+function clearActiveUnread(){ if (cur() && cur().unread) { cur().unread = 0; updateUnread(); } }
+function setUnread(){ clearActiveUnread(); }
 const isAway = () => document.hidden || panic || !document.hasFocus();
-window.addEventListener('focus', () => { if (!panic) setUnread(0) });
-document.addEventListener('visibilitychange', () => { if (!document.hidden && !panic && document.hasFocus()) setUnread(0) });
+window.addEventListener('focus', () => { if (!panic) clearActiveUnread() });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !panic && document.hasFocus()) clearActiveUnread() });
+function switchRoom(i){
+  if (i === active || !rooms[i]) return;
+  active = i; saveRooms();
+  rooms[i].unread = 0;
+  scrollBottom = true;
+  renderTabs(); render();
+}
+async function closeRoom(i){
+  const r = rooms[i]; if (!r) return;
+  if (r.unsub) r.unsub();
+  rooms.splice(i, 1);
+  if (active >= rooms.length) active = Math.max(0, rooms.length - 1);
+  else if (i < active) active--;
+  saveRooms(); scrollBottom = true; renderTabs(); render();
+  termLine(`<span class="d1">closed workspace ${r.id ? r.id.slice(0,6) : ''}</span>`);
+}
+$('tabs').addEventListener('click', e => {
+  const x = e.target.closest('[data-x]');
+  if (x) { e.stopPropagation(); closeRoom(+x.dataset.x); return; }
+  const t = e.target.closest('.tab'); if (!t) return;
+  const i = +t.dataset.i;
+  if (i === active) togglePanic(); else switchRoom(i);
+});
 
 // ---------- fake terminal ----------
 const ROUTES = ['/api/v1/orders','/api/v1/orders/sync','/api/v1/auth/refresh','/api/v1/tenants','/healthz','/api/v1/inventory','/api/v1/webhooks/stripe'];
@@ -425,8 +480,10 @@ const HELP = [
   '<span class="help">  :nick &lt;name&gt;           change your display name</span>',
   '<span class="help">  :style comment|log|str  how messages look in the code</span>',
   '<span class="help">  :logs off|slow|normal|fast  terminal log speed</span>',
-  '<span class="help">  :room                   switch to another room code</span>',
+  '<span class="help">  :room                   open another room in a new tab (up to 6)</span>',
+  '<span class="help">  :close                  close the current tab (rejoin later with its code)</span>',
   '<span class="help">  :clear                  delete all of YOUR messages in this room</span>',
+  '<span class="help">  click a tab             switch room; click the current tab = boss key</span>',
   '<span class="help">  Esc                     boss key: hide all chat lines / show again</span>',
   '<span class="help">  (phone) tap file tab    same as Esc; leaving the browser also hides the chat</span>',
   '<span class="help">  Ctrl+`                  focus this input</span>',
@@ -447,12 +504,19 @@ async function command(c){
     if (arg in SPEEDS) { logSpeed = arg; store.set('logs', arg); termLine(`<span class="d1">✔ logs → ${arg}</span>`); }
     else termLine('<span class="r1">usage: :logs off|slow|normal|fast</span>');
   }
-  else if (cmd === 'room') {
+  else if (cmd === 'room' || cmd === 'open') {
+    if (!db) { termLine('<span class="r1">fatal: not connected to remote</span>'); return; }
+    if (rooms.length >= FILES.length) { termLine(`<span class="r1">error: too many open editors (max ${FILES.length}) — :close one first</span>`); return; }
     const code = await ask('Connect to Remote Workspace', 'Enter workspace token', '', true);
-    if (code) { roomCode = code; store.set('room', code); await joinRoom(); }
-    inp.focus();
+    if (code) await addRoom(code);
+    if (!isMobile()) inp.focus();
+  }
+  else if (cmd === 'close') {
+    if (!rooms.length) return;
+    await closeRoom(active);
   }
   else if (cmd === 'clear') {
+    const roomId = cur()?.id;
     if (!db || !roomId || !myId) return;
     const snap = await getDocs(query(collection(db, 'rooms', roomId, 'msgs'), where('uid', '==', myId)));
     let n = 0;
@@ -463,7 +527,8 @@ async function command(c){
 }
 
 async function send(text){
-  if (!db || !roomId || !myId) { termLine('<span class="r1">fatal: not connected to remote — check firebaseConfig / network</span>'); return; }
+  const roomId = cur()?.id;
+  if (!db || !roomId || !myId) { termLine('<span class="r1">fatal: not connected to remote — type :room to open a workspace</span>'); return; }
   try {
     await addDoc(collection(db, 'rooms', roomId, 'msgs'), { uid: myId, name: (nick || 'dev').slice(0,16), text: text.slice(0,600), ts: serverTimestamp() });
     termLine(`<span class="d1">[main ${hex7()}] chore: update sync config</span>`);
@@ -486,7 +551,7 @@ function togglePanic(force){
   inp.value = '';
   render();
   if (panic) { editor.scrollTop = Math.max(0, editor.scrollHeight * 0.4); inp.blur(); }
-  else { setUnread(0); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
+  else { clearActiveUnread(); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
 }
 document.addEventListener('keydown', e => {
   if (!$('qi').hidden) return;
@@ -494,7 +559,6 @@ document.addEventListener('keydown', e => {
   if (e.key === '`' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (panic) togglePanic(false); inp.focus(); }
 });
 $('panicBtn').addEventListener('click', () => togglePanic());
-$('mainTab').addEventListener('click', () => togglePanic());
 const isMobile = () => window.matchMedia('(max-width:760px)').matches;
 // keep layout above the on-screen keyboard (iOS / Android)
 if (window.visualViewport) {
@@ -529,15 +593,13 @@ $('fsBtn').addEventListener('click', async () => {
 function updateWho(){ $('who').textContent = (nick || 'dev') + '@mbp'; }
 
 // ---------- data ----------
-async function joinRoom(){
-  if (unsub) { unsub(); unsub = null; }
-  msgs = []; seen.clear(); firstLoad = true; setUnread(0); render();
-  roomId = await roomKey(roomCode);
-  $('roomLabel').textContent = 'ssh: ' + roomId.slice(0, 6);
-  termLine(`<span class="d1">Connecting to remote workspace ${roomId.slice(0,6)}…</span>`);
-  const timer = setTimeout(() => termLine('<span class="y1">warning: remote is slow to respond — check your network</span>'), 10000);
-  const q = query(collection(db, 'rooms', roomId, 'msgs'), orderBy('ts', 'desc'), limit(150));
-  unsub = onSnapshot(q, snap => {
+async function subscribe(r){
+  r.id = await roomKey(r.code);
+  const label = r.id.slice(0, 6);
+  termLine(`<span class="d1">Connecting to remote workspace ${label}…</span>`);
+  const timer = setTimeout(() => termLine(`<span class="y1">warning: ${label} is slow to respond — check your network</span>`), 10000);
+  const q = query(collection(db, 'rooms', r.id, 'msgs'), orderBy('ts', 'desc'), limit(150));
+  r.unsub = onSnapshot(q, snap => {
     clearTimeout(timer);
     const list = snap.docs.map(d => {
       const data = d.data({ serverTimestamps: 'estimate' });
@@ -545,19 +607,33 @@ async function joinRoom(){
     }).filter(m => typeof m.text === 'string').reverse();
     let incoming = 0;
     for (const m of list) {
-      if (!seen.has(m.id)) { seen.add(m.id); if (!firstLoad) { m._new = true; if (m.uid !== myId) incoming++; } }
+      if (!r.seen.has(m.id)) { r.seen.add(m.id); if (!r.first) { m._new = true; if (m.uid !== myId) incoming++; } }
     }
-    msgs = list;
-    if (incoming && isAway()) setUnread(unread + incoming);
-    render();
-    if (firstLoad) termLine(`<span class="g1">✔ connected</span> <span class="d1">(${list.length} entries)</span>`);
-    firstLoad = false;
+    r.msgs = list;
+    const isActive = rooms[active] === r;
+    if (r.first && isActive) scrollBottom = true;
+    if (incoming && (!isActive || isAway())) { r.unread += incoming; updateUnread(); }
+    if (r.first) termLine(`<span class="g1">✔ connected</span> <span class="d1">${label} (${list.length} entries)</span>`);
+    r.first = false;
+    if (isActive) { render(); $('roomLabel').textContent = 'ssh: ' + label; }
   }, err => {
     clearTimeout(timer);
-    termLine(`<span class="r1">error: remote disconnected (${esc(err?.code||'unknown')}) — reload to reconnect</span>`);
+    termLine(`<span class="r1">error: ${label} disconnected (${esc(err?.code||'unknown')}) — reload to reconnect</span>`);
   });
 }
+async function addRoom(code){
+  const id = await roomKey(code);
+  const existing = rooms.findIndex(r => r.id === id || r.code === code);
+  if (existing >= 0) { switchRoom(existing); termLine('<span class="d1">workspace already open — switched tab</span>'); return; }
+  const r = { code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null };
+  rooms.push(r);
+  active = rooms.length - 1; saveRooms();
+  scrollBottom = true; renderTabs(); render();
+  await subscribe(r);
+  renderTabs();
+}
 
+renderTabs();
 render();
 updateWho();
 termLine(window.matchMedia('(max-width:760px)').matches ? '<span class="d1">Type :help for commands. Tap the file tab or “✓ Prettier” to hide the chat.</span>' : '<span class="d1">Type :help for commands. Press Esc anytime to hide the chat.</span>');
@@ -578,12 +654,14 @@ termLine(window.matchMedia('(max-width:760px)').matches ? '<span class="d1">Type
     return;
   }
   if (!nick) { const n = await ask('git config user.name', 'Your display name (friends will see this)'); nick = (n || 'dev').slice(0,16); store.set('nick', nick); updateWho(); }
-  if (!roomCode) {
+  if (!rooms.length) {
     const c = await ask('Connect to Remote Workspace', 'Enter workspace token (same code as your friends)', '', true);
     if (!c) { termLine('<span class="y1">no workspace token — type :room to connect</span>'); return; }
-    roomCode = c; store.set('room', c);
+    await addRoom(c);
+  } else {
+    for (const r of rooms) await subscribe(r);
+    saveRooms(); renderTabs();
   }
-  await joinRoom();
   if (!isMobile()) inp.focus();
 })();
 </script>
