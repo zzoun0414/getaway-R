@@ -481,7 +481,7 @@
           <span class="chip" id="replyChip" hidden><span id="replyText"></span><b id="replyX" title="Cancel reply">✕</b></span>
           <input id="inp" spellcheck="false" maxlength="600" autocomplete="off">
           <input type="file" id="fileIn" accept="image/*" hidden>
-          <input type="file" id="bookIn" accept=".txt,.md,text/plain" hidden>
+          <input type="file" id="bookIn" accept=".txt,.md,.epub,.mobi,.azw,.azw3,.prc,.pdb,.fb2,.html,.htm,.xhtml,text/plain,application/epub+zip" hidden>
         </form>
       </div>
     </div>
@@ -938,7 +938,9 @@ const RECIPE = [
   '- File › Copy Invite Link（或 `:invite`）复制当前房间的邀请链接，发给朋友',
   '',
   '## 一起读书',
-  '- File › Read Together…（或 `:read`）：看这个房间里的书，或上传一本 .txt',
+  '- File › Read Together…（或 `:read`）：看这个房间里的书，或上传一本新书',
+  '- 支持 EPUB、MOBI、AZW3 / AZW / PRC、TXT（UTF-8 / GBK / Big5 / Shift_JIS 自动识别）、FB2、HTML',
+  '- 亚马逊买的带 DRM 的书读不了；PDF、Word 请先另存为 TXT 或 EPUB',
   '- 书会显示成一份文档（VS Code 里叫 RFC-xxxx.md），按 Esc 一样会隐藏',
   '- 翻页：顶部 / 底部的 ‹ Prev / Next ›，或 `:p 页码`；每本书会记住你读到哪',
   '- 顶部会显示朋友在读第几页，点一下跳过去',
@@ -1364,6 +1366,144 @@ function decodeText(buf){
   for (const enc of ['utf-8', 'gb18030', 'big5', 'shift_jis']) { try { return new TextDecoder(enc, { fatal: true }).decode(bytes); } catch(e){} }
   return new TextDecoder('utf-8').decode(bytes);
 }
+
+// ---------- e-book import: txt / epub / mobi / azw3 / fb2 / html (all parsed in the browser) ----------
+async function unzip(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error('not a valid EPUB (zip) file');
+  const n = dv.getUint16(eocd + 10, true); let p = dv.getUint32(eocd + 16, true);
+  const files = new Map(), td = new TextDecoder();
+  for (let i = 0; i < n; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    files.set(td.decode(u8.subarray(p + 46, p + 46 + nlen)), { method, csize, off });
+    p += 46 + nlen + xlen + clen;
+  }
+  const lower = new Map([...files.keys()].map(k => [k.toLowerCase(), k]));
+  const z = {
+    has: name => files.has(name) || lower.has(name.toLowerCase()),
+    async bytes(name){
+      const f = files.get(name) || files.get(lower.get(name.toLowerCase())); if (!f) return null;
+      const lnl = dv.getUint16(f.off + 26, true), lxl = dv.getUint16(f.off + 28, true);
+      const start = f.off + 30 + lnl + lxl, data = u8.subarray(start, start + f.csize);
+      if (f.method === 0) return data;
+      if (f.method !== 8) throw new Error('unsupported compression inside EPUB');
+      const ds = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Uint8Array(await new Response(ds).arrayBuffer());
+    },
+    async text(name){ const b = await z.bytes(name); return b ? new TextDecoder('utf-8').decode(b) : null; },
+  };
+  return z;
+}
+function htmlToText(html){
+  const h = String(html)
+    .replace(/<(script|style|head)\b[\s\S]*?<\/\1\s*>/gi, '')
+    .replace(/<\s*(br|hr)\b[^>]*>/gi, '\n')
+    .replace(/<mbp:pagebreak[^>]*>/gi, '\n')
+    .replace(/<\/\s*(p|div|h[1-6]|li|tr|blockquote|section|article|dd|dt|pre|table)\s*>/gi, '\n')
+    .replace(/<\s*(p|div|h[1-6]|li|blockquote|section)\b[^>]*>/gi, '\n');
+  const d = new DOMParser().parseFromString('<body>' + h + '</body>', 'text/html');
+  return (d.body.textContent || '').replace(/ /g, ' ');
+}
+const normPath = p => { const out = []; p.split('/').forEach(x => { if (x === '..') out.pop(); else if (x && x !== '.') out.push(x); }); return out.join('/'); };
+async function epubToText(buf){
+  const z = await unzip(buf);
+  if (z.has('META-INF/encryption.xml')) {
+    const enc = await z.text('META-INF/encryption.xml');
+    const algs = [...enc.matchAll(/Algorithm="([^"]+)"/g)].map(m => m[1]);
+    if (algs.some(a => !/obfuscation|font|embedding/i.test(a))) throw new Error('this EPUB is DRM-protected and cannot be read');
+  }
+  const cont = await z.text('META-INF/container.xml');
+  if (!cont) throw new Error('not a valid EPUB');
+  const opfPath = new DOMParser().parseFromString(cont, 'application/xml').querySelector('rootfile')?.getAttribute('full-path');
+  const opfTxt = opfPath && await z.text(opfPath);
+  if (!opfTxt) throw new Error('EPUB is missing its package file');
+  const opf = new DOMParser().parseFromString(opfTxt, 'application/xml');
+  const base = opfPath.includes('/') ? opfPath.slice(0, opfPath.lastIndexOf('/') + 1) : '';
+  const items = {};
+  opf.querySelectorAll('manifest > item').forEach(it => { items[it.getAttribute('id')] = it.getAttribute('href'); });
+  const title = (opf.getElementsByTagNameNS('*', 'title')[0]?.textContent || '').trim();
+  const parts = [];
+  for (const ref of opf.querySelectorAll('spine > itemref')) {
+    const href = items[ref.getAttribute('idref')]; if (!href) continue;
+    let path; try { path = normPath(base + decodeURIComponent(href.split('#')[0])); } catch (e) { path = normPath(base + href.split('#')[0]); }
+    const t = await z.text(path); if (t) parts.push(htmlToText(t));
+  }
+  if (!parts.length) throw new Error('no readable chapters found in this EPUB');
+  return { title, text: parts.join('\n\n') };
+}
+function palmdocDecompress(src){
+  const out = [];
+  let i = 0;
+  while (i < src.length) {
+    const c = src[i++];
+    if (c === 0 || (c >= 0x09 && c <= 0x7f)) out.push(c);
+    else if (c <= 0x08) { for (let k = 0; k < c && i < src.length; k++) out.push(src[i++]); }
+    else if (c >= 0xc0) { out.push(0x20, c ^ 0x80); }
+    else { const v = (c << 8) | src[i++]; const dist = (v >> 3) & 0x7ff, len = (v & 7) + 3; for (let k = 0; k < len; k++) out.push(out[out.length - dist]); }
+  }
+  return out;
+}
+function trailingSize(rec, extraFlags){
+  const entry = end => { let num = 0; for (let k = Math.max(0, end - 4); k < end; k++) { const b = rec[k]; if (b & 0x80) num = 0; num = (num << 7) | (b & 0x7f); } return num; };
+  let num = 0, flags = extraFlags >> 1;
+  while (flags) { if (flags & 1) num += entry(rec.length - num); flags >>= 1; }
+  if (extraFlags & 1) num += (rec[rec.length - num - 1] & 3) + 1;
+  return num;
+}
+function mobiToText(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  const type = String.fromCharCode(...u8.subarray(60, 68));
+  if (type !== 'BOOKMOBI' && type !== 'TEXtREAd') throw new Error('not a MOBI / AZW file');
+  const nrec = dv.getUint16(76), off = i => dv.getUint32(78 + i * 8), end = i => (i + 1 < nrec ? off(i + 1) : u8.length);
+  const r0 = off(0);
+  const compression = dv.getUint16(r0), textRecs = dv.getUint16(r0 + 8), encryption = dv.getUint16(r0 + 12);
+  if (encryption) throw new Error('this book is DRM-protected (e.g. bought from Amazon) and cannot be read');
+  if (compression === 17480) throw new Error('this MOBI uses Huffman compression — convert it to EPUB first (e.g. with Calibre)');
+  let encoding = 1252, flags = 0, title = '', isHtml = false;
+  if (type === 'BOOKMOBI' && String.fromCharCode(...u8.subarray(r0 + 16, r0 + 20)) === 'MOBI') {
+    isHtml = true;
+    const hl = dv.getUint32(r0 + 20);
+    encoding = dv.getUint32(r0 + 28);
+    if (hl >= 0xE4) flags = dv.getUint16(r0 + 0xF2);
+    const tOff = dv.getUint32(r0 + 84), tLen = dv.getUint32(r0 + 88);
+    if (tLen && tLen < 1000) title = new TextDecoder(encoding === 65001 ? 'utf-8' : 'windows-1252').decode(u8.subarray(r0 + tOff, r0 + tOff + tLen));
+  }
+  const parts = []; let total = 0;
+  for (let i = 1; i <= textRecs && i < nrec; i++) {
+    let rec = u8.subarray(off(i), end(i));
+    if (flags) rec = rec.subarray(0, Math.max(0, rec.length - trailingSize(rec, flags)));
+    const outRec = compression === 2 ? Uint8Array.from(palmdocDecompress(rec)) : rec;
+    parts.push(outRec); total += outRec.length;
+  }
+  const all = new Uint8Array(total); let p = 0; parts.forEach(x => { all.set(x, p); p += x.length; });
+  const raw = new TextDecoder(encoding === 65001 ? 'utf-8' : 'windows-1252').decode(all);
+  return { title: title.trim(), text: isHtml ? htmlToText(raw) : raw };
+}
+function fb2ToText(buf){
+  const xml = new DOMParser().parseFromString(decodeText(buf), 'application/xml');
+  const title = (xml.getElementsByTagNameNS('*', 'book-title')[0]?.textContent || '').trim();
+  const body = xml.getElementsByTagNameNS('*', 'body')[0];
+  if (!body) throw new Error('not a valid FB2 file');
+  const lines = [...body.getElementsByTagNameNS('*', '*')].filter(e => ['p', 'v', 'subtitle', 'text-author'].includes(e.localName)).map(e => e.textContent);
+  return { title, text: lines.join('\n') };
+}
+const BOOK_EXT = ['txt', 'md', 'epub', 'mobi', 'azw', 'azw3', 'prc', 'pdb', 'fb2', 'html', 'htm', 'xhtml'];
+async function extractBook(file){
+  const ext = (file.name.match(/\.([a-z0-9]+)$/i)?.[1] || '').toLowerCase();
+  const base = file.name.replace(/\.[^.]+$/, '') || 'untitled';
+  if (['pdf', 'doc', 'docx'].includes(ext)) throw new Error(`.${ext} is not supported — save it as .txt or .epub first`);
+  const buf = await file.arrayBuffer();
+  if (ext === 'epub') { const r = await epubToText(buf); return { title: r.title || base, text: r.text }; }
+  if (['mobi', 'azw', 'azw3', 'prc', 'pdb'].includes(ext)) { const r = mobiToText(buf); return { title: r.title || base, text: r.text }; }
+  if (ext === 'fb2') { const r = fb2ToText(buf); return { title: r.title || base, text: r.text }; }
+  if (['html', 'htm', 'xhtml'].includes(ext)) return { title: base, text: htmlToText(decodeText(buf)) };
+  return { title: base, text: decodeText(buf) };
+}
+
 const PAGE_CHARS = 1500, CHUNK_CHARS = 150000;
 function paginate(text){
   const paras = [];
@@ -1387,14 +1527,16 @@ async function uploadBook(file){
   const r = cur();
   if (!file) return;
   if (!db || !r?.id || !myId) { termLine('<span class="r1">fatal: not connected — open a workspace first</span>'); return; }
-  if (file.size > 8 * 1024 * 1024) { termLine('<span class="r1">error: file too large (max 8 MB)</span>'); return; }
+  const isPlain = /\.(txt|md)$/i.test(file.name);
+  if (file.size > (isPlain ? 8 : 40) * 1024 * 1024) { termLine(`<span class="r1">error: file too large (max ${isPlain ? 8 : 40} MB)</span>`); return; }
   termLine(`<span class="d1">reading ${esc(file.name)}…</span>`);
   try {
-    const text = decodeText(await file.arrayBuffer());
+    const book0 = await extractBook(file);
+    const text = book0.text;
     const chunks = paginate(text);
-    if (!chunks.length) { termLine('<span class="r1">error: the file is empty</span>'); return; }
+    if (!chunks.length) { termLine('<span class="r1">error: no text found in this file</span>'); return; }
     if (chunks.length > 60) { termLine('<span class="r1">error: book too long</span>'); return; }
-    const title = (file.name.replace(/\.[^.]+$/, '') || 'untitled').slice(0, 80);
+    const title = String(book0.title || 'untitled').replace(/\s+/g, ' ').trim().slice(0, 80) || 'untitled';
     const meta = { uid: myId, name: nick, title, ts: serverTimestamp(), chunks: chunks.length,
       pages: chunks.map(c => c.pageStarts.length), paras: chunks.map(c => c.paras.length), chars: text.length };
     const ref = await addDoc(collection(db, 'rooms', r.id, 'books'), meta);
@@ -1404,7 +1546,7 @@ async function uploadBook(file){
     }
     termLine(`<span class="g1">✔ uploaded</span> <span class="d1">${meta.pages.reduce((a, b) => a + b, 0)} pages</span>`);
     await openBook(r, ref.id);
-  } catch (e) { termLine(`<span class="r1">error: upload failed (${esc(e?.code || e?.message || 'unknown')})</span>`); }
+  } catch (e) { termLine(`<span class="r1">error: ${esc(e?.code || e?.message || 'upload failed')}</span>`); }
 }
 $('bookIn').addEventListener('change', () => { const f = $('bookIn').files[0]; $('bookIn').value = ''; uploadBook(f); });
 
@@ -1416,7 +1558,7 @@ async function readTogether(){
     const s = await getDocs(query(collection(db, 'rooms', r.id, 'books'), orderBy('ts', 'desc'), limit(30)));
     items = s.docs.map(d => { const x = d.data(); return { label: String(x.title || 'untitled'), detail: `${x.name || ''} · ${(x.pages || []).reduce((a, b) => a + b, 0)} pages`, value: { id: d.id } }; });
   } catch (e) { termLine(`<span class="r1">error: could not list books (${esc(e?.code || 'unknown')})</span>`); }
-  items.push({ label: '＋ Upload a .txt book…', detail: 'UTF-8 / GBK / Big5 / Shift_JIS', value: { upload: true }, always: true });
+  items.push({ label: '＋ Upload a book…', detail: 'EPUB · MOBI · AZW3 · TXT · FB2 · HTML', value: { upload: true }, always: true });
   const v = await quickPick(`Read together — ${tabLabel(active)}`, items, items.length > 1 ? 'Pick a book' : 'No books yet — upload one');
   if (!v) { if (!isMobile()) inp.focus(); return; }
   if (v.upload) $('bookIn').click(); else await openBook(r, v.id);
@@ -2093,7 +2235,7 @@ const MENUS = {
     ['Read Together…', readTogether],
     [`Message Board${boardUnreadCount(cur()) ? ` (${boardUnreadCount(cur())} new)` : ''}`, () => openBoard()],
     ['My Notes & To-dos', () => openNotes()],
-    ['Upload Book (.txt)…', () => $('bookIn').click()],
+    ['Upload Book…', () => $('bookIn').click()],
     ['Copy Invite Link', copyInvite],
     ['Attach Image…', () => $('fileIn').click()],
     ['Close Editor', () => view === 'recipe' ? closeRecipe() : command(':close')],
