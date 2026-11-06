@@ -62,7 +62,36 @@
   .ln.msg .c{text-indent:0}
   .k{color:var(--kw)}.k2{color:var(--kw2)}.s{color:var(--str)}.cm{color:var(--cm)}.n{color:var(--num)}.t{color:var(--type)}.fn{color:var(--fn)}.v{color:var(--var)}
   .tag{color:#d7ba7d}
-  .mine .cm.txt{color:#7fb36a}
+  .mc{color:var(--mc)}
+  .mc.nm{opacity:.75}
+  .ln.msg .g{position:relative}
+  .ln.msg .g::after{content:'';position:absolute;right:9px;top:3px;bottom:3px;width:3px;border-radius:1px;background:var(--mc)}
+  .ln.msg.mine .g::after{background:repeating-linear-gradient(var(--mc) 0 3px,transparent 3px 5px)}
+  /* menus */
+  .menu span{padding:2px 6px;border-radius:4px;cursor:default}
+  .menu span:hover,.menu span.open{background:#505050;color:#fff}
+  .dropdown{position:fixed;z-index:70;background:#252526;border:1px solid #454545;box-shadow:0 6px 18px rgba(0,0,0,.55);border-radius:6px;padding:4px 0;min-width:250px;max-height:80vh;overflow:auto;font-size:13px;color:#ccc}
+  .dropdown[hidden]{display:none}
+  .dropdown .mi{display:flex;justify-content:space-between;gap:28px;padding:4px 22px 4px 26px;cursor:pointer;white-space:nowrap;position:relative;border-radius:3px;margin:0 4px}
+  .dropdown .mi:hover{background:#04395e;color:#fff}
+  .dropdown .mi .kb{color:#8b8b8b}
+  .dropdown .mi.chk::before{content:'✓';position:absolute;left:9px}
+  .dropdown .sep{height:1px;background:#454545;margin:4px 0}
+  .dropdown .grp{color:#8b8b8b;font-size:11px;padding:6px 26px 2px;letter-spacing:.3px}
+  .main.nosb{grid-template-columns:48px 0 1fr}.main.nosb .sidebar{display:none}
+  #hamb{display:none}
+  .tree .clk{cursor:pointer}
+  /* alerts */
+  .toast{position:fixed;right:12px;bottom:34px;z-index:65;width:380px;max-width:calc(100vw - 24px);background:#252526;border:1px solid #454545;box-shadow:0 6px 18px rgba(0,0,0,.55);border-radius:6px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;color:#ccc;font-size:13px;cursor:pointer;transform:translateY(12px);opacity:0;transition:.18s}
+  .toast.show{transform:none;opacity:1}
+  .toast .ti{color:#3794ff;font-size:15px;line-height:18px}
+  .toast .tt{flex:1;line-height:18px}
+  .toast .tt small{display:block;color:#8b8b8b;font-size:12px;margin-top:3px}
+  .toast .tx{color:#8b8b8b;padding:0 2px}
+  .status.alert{animation:salert .5s steps(1) 4}
+  @keyframes salert{0%{background:#c5602e}50%{background:var(--status)}}
+  #bell.has::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-left:2px;vertical-align:top}
+  .md-h{color:#569cd6;font-weight:600}.md-q{color:#6a9955}.md-c{color:#ce9178}.md-b{color:#dcdcaa;font-weight:600}.md-l{color:#6796e6}
   .new{animation:flash 1.4s ease-out}
   @keyframes flash{from{background:#264f78}to{background:transparent}}
   /* panel */
@@ -112,6 +141,9 @@
     #panicBtn{background:rgba(255,255,255,.12);border-radius:3px}
     .qi{top:calc(40px + env(safe-area-inset-top))}
     .qi input{font-size:16px}
+    #hamb{display:block;font-size:16px;padding:0 4px}
+    .ln.msg .g::after{right:3px}
+    .toast{bottom:calc(30px + env(safe-area-inset-bottom));right:8px}
   }
   .qi{position:fixed;top:36px;left:50%;transform:translateX(-50%);width:min(560px,92vw);background:#252526;border:1px solid #454545;box-shadow:0 8px 24px rgba(0,0,0,.55);border-radius:6px;padding:6px;z-index:50;font-size:13px}
   .qi[hidden]{display:none}
@@ -126,14 +158,17 @@
   <input id="qiInput" spellcheck="false" autocomplete="off">
   <div class="qh" id="qiHint">Press 'Enter' to confirm or 'Escape' to cancel</div>
 </div>
+<div class="dropdown" id="dropdown" hidden></div>
+<div class="toast" id="toast" hidden><span class="ti">ⓘ</span><div class="tt" id="toastText"></div><span class="tx" id="toastX">✕</span></div>
 <div class="app" id="app">
   <div class="titlebar">
     <div class="dots"><i></i><i></i><i></i></div>
-    <div class="menu"><span>File</span><span>Edit</span><span>Selection</span><span>View</span><span>Go</span><span>Run</span><span>Terminal</span><span>Help</span></div>
+    <button class="tbtn" id="hamb" title="Application Menu">☰</button>
+    <div class="menu" id="menu"><span data-m="File">File</span><span data-m="Edit">Edit</span><span>Selection</span><span data-m="View">View</span><span>Go</span><span>Run</span><span data-m="Terminal">Terminal</span><span data-m="Help">Help</span></div>
     <div class="ttl" id="ttl">sync.service.ts — api-gateway</div>
     <button class="tbtn" id="fsBtn" title="Toggle Full Screen">⛶</button>
   </div>
-  <div class="main">
+  <div class="main" id="mainEl">
     <div class="activity">
       <div class="on"><svg viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></svg></div>
       <div><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></div>
@@ -162,6 +197,7 @@
         <div class="fy" style="--d:1">package.json</div>
         <div class="fy" style="--d:1">tsconfig.json</div>
         <div class="fm" style="--d:1">README.md</div>
+        <div class="fm clk" style="--d:1" id="recipeFile">recipe.md</div>
       </div>
     </div>
     <div class="work" id="work">
@@ -186,7 +222,7 @@
     <span class="sp"></span>
     <span id="cursorPos">Ln 1, Col 1</span><span>Spaces: 2</span><span>UTF-8</span><span>LF</span><span class="btn" id="styleBtn" title="Change language mode">{ } TypeScript</span>
     <span class="btn" id="panicBtn" title="Format Document (Esc)">✓ Prettier</span>
-    <span>🔔</span>
+    <span class="btn" id="bell" title="Notifications">🔔</span>
   </div>
 </div>
 
@@ -313,6 +349,8 @@ let myId = null, db = null;
 let style = store.get('style', 'comment');
 let nick = store.get('nick', '');
 let panic = false, scrollBottom = true;
+let view = 'room', recipeOpen = false;
+let alertMode = store.get('alert', 'on');
 // rooms: [{code, id, msgs, seen, first, unread, unsub}]
 let rooms = [];
 let active = 0;
@@ -330,19 +368,84 @@ const fileOf = i => FILES[i % FILES.length];
 
 const displayName = m => String(m.name || 'dev').slice(0, 16);
 
+// own messages: blue; each friend gets a stable colour from the palette
+const MY_COLOR = '#6cb6ff';
+const PALETTE = ['#89c26d', '#e5a35f', '#e08cc4', '#d4c160', '#6fd1bd', '#b79cf2', '#f08a7e'];
+const colorOf = m => m.uid === myId ? MY_COLOR : PALETTE[hash(String(m.uid || m.name)) % PALETTE.length];
 function msgLine(m){
   const name = esc(displayName(m)), text = esc(m.text), t = hhmm(m.ms);
   const mine = m.uid === myId;
   if (style === 'log')
-    return `<span class="k">this</span>.<span class="v">logger</span>.<span class="fn">${mine?'debug':'info'}</span>(<span class="s">'[${name} ${t}] ${text}'</span>);`;
+    return `<span class="k">this</span>.<span class="v">logger</span>.<span class="fn">${mine?'debug':'info'}</span>(<span class="s">'[</span><span class="mc nm">${name}</span><span class="s"> ${t}] </span><span class="mc">${text}</span><span class="s">'</span>);`;
   if (style === 'str') {
     const v = 'msg_' + t.replace(':','') + '_' + String(m.id).slice(-3).replace(/[^a-z0-9]/gi,'x');
-    return `<span class="k">const</span> <span class="v">${v}</span> = <span class="s">'${text}'</span>; <span class="cm">// ${name}</span>`;
+    return `<span class="k">const</span> <span class="v">${v}</span> = <span class="s">'</span><span class="mc">${text}</span><span class="s">'</span>; <span class="cm">// </span><span class="mc nm">${name}</span>`;
   }
-  return `<span class="cm">// </span><span class="tag">${mine?'TODO':'NOTE'}</span><span class="cm">(${name}, ${t}): </span><span class="cm txt">${text}</span>`;
+  return `<span class="cm">// </span><span class="tag">${mine?'TODO':'NOTE'}</span><span class="cm">(</span><span class="mc nm">${name}</span><span class="cm">, ${t}): </span><span class="mc">${text}</span>`;
 }
 
+const RECIPE = [
+  '# recipe',
+  '',
+  '> 给朋友的使用说明。看完点标签上的 ✕ 关掉，或按 Esc 直接隐藏。',
+  '',
+  '## 开始',
+  '- 打开网址 → 输入名字 → 输入房间码（暗号）',
+  '- 房间码相同的人在同一个聊天室',
+  '- 名字和房间会记在这个浏览器里，下次直接进入',
+  '',
+  '## 聊天',
+  '- 在下面终端的 `$` 后打字，回车发送',
+  '- 自己的消息是 **蓝色**，每个朋友有自己固定的颜色',
+  '- 行号旁边的色条也能看出是谁：虚线 = 自己，实线 = 朋友',
+  '',
+  '## 隐藏',
+  '- 电脑：按 `Esc`，或点当前标签页',
+  '- 手机：点当前标签页；切到别的 App 会自动隐藏',
+  '- 再操作一次恢复',
+  '',
+  '## 新消息提醒',
+  '- 状态栏闪橙色，右下角弹出 Source Control 通知，点通知可直接跳到那个房间',
+  '- 状态栏 `⚠` 数字 = 所有房间的未读总数；标签上的白点 = 那个房间有未读',
+  '- 浏览器在后台时，标签页标题会闪',
+  '- 不想被打扰：`:alert quiet`（只计数，不闪不弹）；恢复：`:alert on`',
+  '',
+  '## 多个房间',
+  '- `:room` 或菜单 File › New Workspace… 开新房间（新标签页，最多 6 个）',
+  '- 点标签切换，点 ✕ 关闭（记录还在，用房间码能再打开）',
+  '',
+  '## 菜单',
+  '- 顶部 File / Edit / View / Terminal / Help 都能点；手机上是左上角 ☰',
+  '',
+  '## 指令',
+  '- `:help`                        列出所有指令',
+  '- `:nick 名字`                   改显示名',
+  '- `:style comment|log|str`       消息在代码里的样子',
+  '- `:room` / `:close`             开 / 关房间',
+  '- `:clear`                       删除自己在当前房间的全部消息（会再确认一次）',
+  '- `:logs off|slow|normal|fast`   终端假日志的速度',
+  '- `:alert on|quiet`              新消息提醒方式',
+  '- `:recipe`                      打开这份说明',
+  '',
+  '## 注意',
+  '- 不是加密聊天：知道房间码的人都能看到记录，别发密码和证件号',
+  '- 公司电脑上别登录 GitHub，直接打开网址就行',
+];
+function mdHl(line){
+  let h = esc(line);
+  if (/^#{1,6} /.test(line)) return `<span class="md-h">${h}</span>`;
+  if (/^&gt; /.test(h)) return `<span class="md-q">${h}</span>`;
+  h = h.replace(/`([^`]+)`/g, '<span class="md-c">`$1`</span>').replace(/\*\*([^*]+)\*\*/g, '<span class="md-b">**$1**</span>');
+  return h.replace(/^- /, '<span class="md-l">-</span> ');
+}
+function renderRecipe(){
+  editor.innerHTML = RECIPE.map((l, i) =>
+    `<div class="ln"><span class="g">${i+1}</span><span class="c">${mdHl(l) || ' '}</span></div>`).join('');
+  editor.scrollTop = 0;
+  $('cursorPos').textContent = 'Ln 1, Col 1';
+}
 function render(){
+  if (view === 'recipe') { renderRecipe(); return; }
   const msgs = cur()?.msgs || [];
   const nearBottom = editor.scrollHeight - editor.scrollTop - editor.clientHeight < 80;
   const lines = [];
@@ -355,7 +458,7 @@ function render(){
   push('    const started = Date.now();');
   msgs.forEach((m, i) => {
     const r = rng(hash(String(m.id)));
-    if (!panic) lines.push({ html: msgLine(m), ind: 4, cls: 'msg' + (m.uid===myId?' mine':'') + (m._new?' new':'') });
+    if (!panic) lines.push({ html: msgLine(m), ind: 4, cls: 'msg' + (m.uid===myId?' mine':'') + (m._new?' new':''), mc: colorOf(m) });
     const nBlocks = panic ? 1 + Math.floor(r()*2) : Math.floor(r()*1.7);
     for (let b=0; b<nBlocks; b++) BLOCKS[Math.floor(r()*BLOCKS.length)].forEach(l => push(l ? '    '+l : ''));
     sinceOpen++;
@@ -368,7 +471,7 @@ function render(){
   push('');
   const curLine = lines.length - 3;
   editor.innerHTML = lines.map((l, i) =>
-    `<div class="ln ${l.cls}${i===curLine?' cur':''}"><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}</span></div>`
+    `<div class="ln ${l.cls}${i===curLine?' cur':''}"${l.mc ? ` style="--mc:${l.mc}"` : ''}><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}</span></div>`
   ).join('');
   $('cursorPos').textContent = `Ln ${curLine+1}, Col ${Math.floor(Math.random()*30)+5}`;
   if (nearBottom || scrollBottom) editor.scrollTop = editor.scrollHeight;
@@ -380,11 +483,16 @@ function renderTabs(){
   const tabs = $('tabs');
   const list = rooms.length ? rooms : [null];
   tabs.innerHTML = list.map((r, i) =>
-    `<div class="tab${i===active?' on':''}${r && r.unread && i!==active ? ' unread' : ''}${r && r.unread && i===active ? ' unread' : ''}" data-i="${i}">${fileOf(i)[0]} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
-  ).join('');
+    `<div class="tab${i===active && view==='room'?' on':''}${r && r.unread ? ' unread' : ''}" data-i="${i}">${fileOf(i)[0]} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
+  ).join('') + (recipeOpen ? `<div class="tab${view==='recipe'?' on':''}" data-doc="recipe"><span style="color:#519aba;font-size:10px">M↓</span> recipe.md <span class="x" data-xdoc="recipe">✕</span></div>` : '');
   const [file, dir, cls] = fileOf(active);
-  $('crumbs').innerHTML = `src › ${dir} › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> ${file} › <span style="color:#ee9d28">◇</span> ${cls}`;
-  $('ttl').textContent = `${file} — api-gateway`;
+  const shown = view === 'recipe' ? 'recipe.md' : file;
+  $('crumbs').innerHTML = view === 'recipe'
+    ? `<span style="color:#519aba;font-size:10px">M↓</span> recipe.md › # recipe`
+    : `src › ${dir} › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> ${file} › <span style="color:#ee9d28">◇</span> ${cls}`;
+  $('ttl').textContent = `${shown} — api-gateway`;
+  document.querySelectorAll('.tree > div').forEach(d => d.classList.toggle('sel', d.textContent.trim() === shown));
+  const on = tabs.querySelector('.tab.on'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   $('roomLabel').textContent = cur()?.id ? 'ssh: ' + cur().id.slice(0, 6) : 'local';
   updateUnread();
 }
@@ -393,15 +501,61 @@ function updateUnread(){
   $('probStatus').innerHTML = `⊗ 0 &nbsp;⚠ ${n}`;
   $('probBadge').textContent = n;
   document.querySelectorAll('.tab').forEach(t => { const r = rooms[+t.dataset.i]; t.classList.toggle('unread', !!(r && r.unread)); });
-  document.title = (n ? '● ' : '') + `${fileOf(active)[0]} — api-gateway — Visual Studio Code`;
+  $('bell').classList.toggle('has', n > 0);
+  baseTitle = `${view === 'recipe' ? 'recipe.md' : fileOf(active)[0]} — api-gateway — Visual Studio Code`;
+  if (!blinkTimer) document.title = (n ? '● ' : '') + baseTitle;
+  if (n === 0) stopBlink();
 }
+// ---------- alerts ----------
+let baseTitle = document.title, blinkTimer = null, toastTimer = null, toastRoom = -1;
+const totalUnread = () => rooms.reduce((a, r) => a + r.unread, 0);
+function startBlink(){
+  if (blinkTimer) return;
+  let on = false;
+  blinkTimer = setInterval(() => { on = !on; document.title = on ? `(${totalUnread()}) ● ${baseTitle}` : baseTitle; }, 1000);
+}
+function stopBlink(){ if (blinkTimer) { clearInterval(blinkTimer); blinkTimer = null; } document.title = (totalUnread() ? '● ' : '') + baseTitle; }
+function showToast(html, roomIdx){
+  const t = $('toast');
+  $('toastText').innerHTML = html;
+  toastRoom = roomIdx;
+  t.hidden = false; requestAnimationFrame(() => t.classList.add('show'));
+  clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 5000);
+}
+function hideToast(){ const t = $('toast'); t.classList.remove('show'); setTimeout(() => { if (!t.classList.contains('show')) t.hidden = true; }, 200); }
+$('toast').addEventListener('click', e => {
+  hideToast();
+  if (e.target.id === 'toastX') return;
+  if (panic) togglePanic(false);
+  if (toastRoom >= 0) { if (view === 'recipe') { view = 'room'; } switchRoom(toastRoom); renderTabs(); render(); clearActiveUnread(); }
+});
+function notify(r, newMsgs){
+  if (alertMode === 'quiet' || panic) return;   // boss mode: count silently
+  const idx = rooms.indexOf(r);
+  const from = [...new Set(newMsgs.map(m => displayName(m)))].slice(0, 3).map(esc).join(', ');
+  const n = newMsgs.length;
+  showToast(`Source Control: ${n} incoming change${n>1?'s':''} from ${from}<small>${fileOf(idx)[0]} · click to open</small>`, idx);
+  const st = document.querySelector('.status');
+  st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
+  if (document.hidden || !document.hasFocus()) startBlink();
+}
+window.addEventListener('focus', stopBlink);
+$('bell').addEventListener('click', () => {
+  const i = rooms.findIndex(r => r.unread);
+  if (i < 0) { showToast('No new notifications', -1); return; }
+  if (panic) togglePanic(false);
+  if (view === 'recipe') view = 'room';
+  switchRoom(i); renderTabs(); render(); clearActiveUnread();
+});
 function clearActiveUnread(){ if (cur() && cur().unread) { cur().unread = 0; updateUnread(); } }
 function setUnread(){ clearActiveUnread(); }
 const isAway = () => document.hidden || panic || !document.hasFocus();
 window.addEventListener('focus', () => { if (!panic) clearActiveUnread() });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !panic && document.hasFocus()) clearActiveUnread() });
 function switchRoom(i){
-  if (i === active || !rooms[i]) return;
+  if (!rooms[i]) return;
+  if (view === 'recipe') { view = 'room'; }
+  else if (i === active) return;
   active = i; saveRooms();
   rooms[i].unread = 0;
   scrollBottom = true;
@@ -416,13 +570,25 @@ async function closeRoom(i){
   saveRooms(); scrollBottom = true; renderTabs(); render();
   termLine(`<span class="d1">closed workspace ${r.id ? r.id.slice(0,6) : ''}</span>`);
 }
+function openRecipe(){
+  if (panic) togglePanic(false);
+  recipeOpen = true; view = 'recipe';
+  renderTabs(); render();
+}
+function closeRecipe(){
+  recipeOpen = false; view = 'room'; scrollBottom = true;
+  renderTabs(); render();
+}
 $('tabs').addEventListener('click', e => {
+  if (e.target.closest('[data-xdoc]')) { e.stopPropagation(); closeRecipe(); return; }
   const x = e.target.closest('[data-x]');
   if (x) { e.stopPropagation(); closeRoom(+x.dataset.x); return; }
   const t = e.target.closest('.tab'); if (!t) return;
+  if (t.dataset.doc === 'recipe') { if (view !== 'recipe') { view = 'recipe'; renderTabs(); render(); } return; }
   const i = +t.dataset.i;
-  if (i === active) togglePanic(); else switchRoom(i);
+  if (i === active && view === 'room') togglePanic(); else switchRoom(i);
 });
+$('recipeFile').addEventListener('click', openRecipe);
 
 // ---------- fake terminal ----------
 const ROUTES = ['/api/v1/orders','/api/v1/orders/sync','/api/v1/auth/refresh','/api/v1/tenants','/healthz','/api/v1/inventory','/api/v1/webhooks/stripe'];
@@ -482,7 +648,9 @@ const HELP = [
   '<span class="help">  :logs off|slow|normal|fast  terminal log speed</span>',
   '<span class="help">  :room                   open another room in a new tab (up to 6)</span>',
   '<span class="help">  :close                  close the current tab (rejoin later with its code)</span>',
-  '<span class="help">  :clear                  delete all of YOUR messages in this room</span>',
+  '<span class="help">  :clear                  delete all of YOUR messages in this room (asks first)</span>',
+  '<span class="help">  :alert on|quiet         new-message alerts: flash + popup, or count only</span>',
+  '<span class="help">  :recipe                 open the guide (recipe.md)</span>',
   '<span class="help">  click a tab             switch room; click the current tab = boss key</span>',
   '<span class="help">  Esc                     boss key: hide all chat lines / show again</span>',
   '<span class="help">  (phone) tap file tab    same as Esc; leaving the browser also hides the chat</span>',
@@ -515,9 +683,16 @@ async function command(c){
     if (!rooms.length) return;
     await closeRoom(active);
   }
+  else if (cmd === 'recipe') openRecipe();
+  else if (cmd === 'alert') {
+    if (['on','quiet'].includes(arg)) { alertMode = arg; store.set('alert', arg); termLine(`<span class="d1">✔ alert → ${arg}</span>`); }
+    else termLine('<span class="r1">usage: :alert on|quiet</span>');
+  }
   else if (cmd === 'clear') {
     const roomId = cur()?.id;
     if (!db || !roomId || !myId) return;
+    const ok = await ask(`Delete ALL your messages in ${fileOf(active)[0]}?`, "Type 'yes' to confirm — this cannot be undone");
+    if (!ok || ok.toLowerCase() !== 'yes') { termLine('<span class="d1">cancelled</span>'); return; }
     const snap = await getDocs(query(collection(db, 'rooms', roomId, 'msgs'), where('uid', '==', myId)));
     let n = 0;
     for (const d of snap.docs) { try { await deleteDoc(d.ref); n++; } catch(e){} }
@@ -542,19 +717,23 @@ $('form').addEventListener('submit', e => {
   e.preventDefault();
   const v = inp.value.trim(); inp.value = '';
   if (!v) return;
-  if (v.startsWith(':')) command(v); else send(v);
+  if (v.startsWith(':')) command(v);
+  else { if (view === 'recipe') { view = 'room'; scrollBottom = true; renderTabs(); render(); } send(v); }
 });
 
 // ---------- boss key ----------
 function togglePanic(force){
   panic = force ?? !panic;
   inp.value = '';
+  closeMenu(); hideToast();
+  if (panic && view === 'recipe') { view = 'room'; renderTabs(); }
   render();
   if (panic) { editor.scrollTop = Math.max(0, editor.scrollHeight * 0.4); inp.blur(); }
   else { clearActiveUnread(); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
 }
 document.addEventListener('keydown', e => {
   if (!$('qi').hidden) return;
+  if (e.key === 'Escape' && !$('dropdown').hidden) { e.preventDefault(); closeMenu(); return; }
   if (e.key === 'Escape') { e.preventDefault(); togglePanic(); }
   if (e.key === '`' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (panic) togglePanic(false); inp.focus(); }
 });
@@ -590,6 +769,81 @@ $('fsBtn').addEventListener('click', async () => {
   });
 })();
 
+// ---------- menus ----------
+const MENUS = {
+  File: () => [
+    ['New Workspace…', () => command(':room')],
+    ['Close Editor', () => view === 'recipe' ? closeRecipe() : command(':close')],
+    '-',
+    ['Open recipe.md', openRecipe],
+  ],
+  Edit: () => [
+    ['Change Display Name…', async () => { const n = await ask('git config user.name', 'New display name', nick); if (n) command(':nick ' + n); }],
+    '-',
+    ['Clear My Messages in This Workspace…', () => command(':clear')],
+  ],
+  View: () => [
+    '#Message Style',
+    ...['comment','log','str'].map(k => [k[0].toUpperCase() + k.slice(1), () => command(':style ' + k), style === k]),
+    '-',
+    ['Toggle Chat', () => togglePanic(), false, 'Esc'],
+    ['Toggle Sidebar', () => $('mainEl').classList.toggle('nosb')],
+    ['Full Screen', () => $('fsBtn').click()],
+  ],
+  Terminal: () => [
+    '#Log Speed',
+    ...['off','slow','normal','fast'].map(k => [k[0].toUpperCase() + k.slice(1), () => command(':logs ' + k), logSpeed === k]),
+    '-',
+    '#New Message Alerts',
+    ['Flash + Popup', () => command(':alert on'), alertMode === 'on'],
+    ['Count Only (Quiet)', () => command(':alert quiet'), alertMode === 'quiet'],
+    '-',
+    ['Clear Terminal', () => { term.innerHTML = ''; }],
+  ],
+  Help: () => [
+    ['recipe.md', openRecipe],
+    ['Show All Commands', () => command(':help')],
+  ],
+};
+let menuActions = [];
+function itemsHtml(items){
+  return items.map(it => {
+    if (it === '-') return '<div class="sep"></div>';
+    if (typeof it === 'string' && it[0] === '#') return `<div class="grp">${esc(it.slice(1))}</div>`;
+    const [label, fn, checked, kb] = it;
+    menuActions.push(fn);
+    return `<div class="mi${checked ? ' chk' : ''}" data-a="${menuActions.length - 1}"><span>${esc(label)}</span>${kb ? `<span class="kb">${kb}</span>` : ''}</div>`;
+  }).join('');
+}
+function openMenu(anchor, names){
+  const dd = $('dropdown');
+  menuActions = [];
+  dd.innerHTML = names.length === 1 ? itemsHtml(MENUS[names[0]]())
+    : names.map(n => `<div class="grp" style="color:#ccc;font-weight:600">${n}</div>` + itemsHtml(MENUS[n]())).join('<div class="sep"></div>');
+  dd.hidden = false;
+  const r = anchor.getBoundingClientRect();
+  dd.style.top = (r.bottom + 2) + 'px';
+  dd.style.left = Math.max(4, Math.min(r.left, window.innerWidth - dd.offsetWidth - 4)) + 'px';
+  document.querySelectorAll('.menu span').forEach(s => s.classList.toggle('open', s === anchor));
+}
+function closeMenu(){ $('dropdown').hidden = true; document.querySelectorAll('.menu span.open').forEach(s => s.classList.remove('open')); }
+$('menu').addEventListener('click', e => {
+  const sp = e.target.closest('[data-m]'); if (!sp) return;
+  e.stopPropagation();
+  if (sp.classList.contains('open')) closeMenu(); else openMenu(sp, [sp.dataset.m]);
+});
+$('menu').addEventListener('mouseover', e => {
+  const sp = e.target.closest('[data-m]');
+  if (sp && !$('dropdown').hidden && !sp.classList.contains('open')) openMenu(sp, [sp.dataset.m]);
+});
+$('hamb').addEventListener('click', e => { e.stopPropagation(); if ($('dropdown').hidden) openMenu($('hamb'), ['File','Edit','View','Terminal','Help']); else closeMenu(); });
+$('dropdown').addEventListener('click', e => {
+  e.stopPropagation();
+  const mi = e.target.closest('[data-a]'); if (!mi) return;
+  const fn = menuActions[+mi.dataset.a]; closeMenu(); fn && fn();
+});
+document.addEventListener('click', () => { if (!$('dropdown').hidden) closeMenu(); });
+
 function updateWho(){ $('who').textContent = (nick || 'dev') + '@mbp'; }
 
 // ---------- data ----------
@@ -605,17 +859,17 @@ async function subscribe(r){
       const data = d.data({ serverTimestamps: 'estimate' });
       return { id: d.id, uid: data.uid, name: data.name, text: data.text, ms: data.ts?.toMillis ? data.ts.toMillis() : Date.now() };
     }).filter(m => typeof m.text === 'string').reverse();
-    let incoming = 0;
+    let incoming = 0; const fresh = [];
     for (const m of list) {
-      if (!r.seen.has(m.id)) { r.seen.add(m.id); if (!r.first) { m._new = true; if (m.uid !== myId) incoming++; } }
+      if (!r.seen.has(m.id)) { r.seen.add(m.id); if (!r.first) { m._new = true; if (m.uid !== myId) { incoming++; fresh.push(m); } } }
     }
     r.msgs = list;
     const isActive = rooms[active] === r;
     if (r.first && isActive) scrollBottom = true;
-    if (incoming && (!isActive || isAway())) { r.unread += incoming; updateUnread(); }
+    if (incoming && (!isActive || view === 'recipe' || isAway())) { r.unread += incoming; updateUnread(); notify(r, fresh); }
     if (r.first) termLine(`<span class="g1">✔ connected</span> <span class="d1">${label} (${list.length} entries)</span>`);
     r.first = false;
-    if (isActive) { render(); $('roomLabel').textContent = 'ssh: ' + label; }
+    if (isActive && view === 'room') { render(); $('roomLabel').textContent = 'ssh: ' + label; }
   }, err => {
     clearTimeout(timer);
     termLine(`<span class="r1">error: ${label} disconnected (${esc(err?.code||'unknown')}) — reload to reconnect</span>`);
@@ -658,6 +912,11 @@ termLine(window.matchMedia('(max-width:760px)').matches ? '<span class="d1">Type
     const c = await ask('Connect to Remote Workspace', 'Enter workspace token (same code as your friends)', '', true);
     if (!c) { termLine('<span class="y1">no workspace token — type :room to connect</span>'); return; }
     await addRoom(c);
+    if (!store.get('recipeAsked', '')) {
+      store.set('recipeAsked', '1');
+      const yn = await ask('Open recipe.md? (Y/N)', 'Y = show the guide · N = skip (Help › recipe.md anytime)');
+      if (yn && /^y/i.test(yn)) openRecipe();
+    }
   } else {
     for (const r of rooms) await subscribe(r);
     saveRooms(); renderTabs();
