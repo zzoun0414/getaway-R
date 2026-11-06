@@ -1,7 +1,7 @@
 // Service worker: makes the console installable, keeps a copy of the app shell for flaky networks,
 // and shows (disguised) notifications.
-const CACHE = 'gw-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
+const CACHE = 'gw-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './css/app.css', './js/accounts.js', './js/chat.js', './js/config.js', './js/core.js', './js/data.js', './js/firebase.js', './js/main.js', './js/menus.js', './js/notes-board.js', './js/pwa.js', './js/reader-extras.js', './js/reader.js', './js/render.js', './js/shell.js', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

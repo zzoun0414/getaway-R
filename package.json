@@ -1,0 +1,14 @@
+{
+  "name": "api-gateway",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Order sync service — web console prototype",
+  "scripts": {
+    "start": "node tests/serve.js 4173",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
