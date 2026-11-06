@@ -299,6 +299,47 @@
   .skin-terminal .bp{grid-template-columns:52px 1fr}
   .skin-terminal .bpn{color:#666}
   .skin-terminal .bth{background:#111;border-color:#333;border-left-color:#00aa00;font-family:var(--mono);font-size:12px}
+
+  .tree .tbadge{float:right;margin-right:12px;color:#e2c08d;font-size:11px}
+  .tree .tbadge:empty{display:none}
+  /* notes / todo */
+  .nvsec{padding:6px 16px 4px 26px}
+  .nvh{color:#569cd6;font-weight:600;margin:10px 0 6px}
+  .td{display:flex;gap:10px;align-items:flex-start;padding:2px 0}
+  .tdc{cursor:pointer;user-select:none;color:#9d9d9d;width:16px;flex:none}
+  .tdt{flex:1;white-space:pre-wrap;overflow-wrap:anywhere}
+  .td.done .tdt{color:#6e7681;text-decoration:line-through}
+  .td .bnx{visibility:hidden}.td:hover .bnx{visibility:visible}
+  .tdadd input,.bvnew textarea,.nvpad{width:100%;background:transparent;border:1px solid #3c3c3c;border-radius:3px;color:inherit;font:inherit;padding:5px 8px;outline:none}
+  .tdadd input:focus,.bvnew textarea:focus,.nvpad:focus{border-color:#007fd4}
+  .tdadd{margin:6px 16px 2px 26px}
+  .nvpad{min-height:220px;resize:vertical;line-height:inherit}
+  .pads{color:#6e7681;font-size:11px;margin-top:3px;font-family:-apple-system,'Segoe UI',sans-serif}
+  /* board */
+  .bvnew{padding:10px 16px;border-bottom:1px solid #2b2b2b}
+  .bvnew textarea{min-height:58px;resize:vertical}
+  .bvbar{display:flex;gap:12px;align-items:center;margin-top:6px;font:12px -apple-system,'Segoe UI',sans-serif;color:#9d9d9d}
+  .bvbar select{background:#3c3c3c;color:#ccc;border:1px solid #3c3c3c;border-radius:3px;font:inherit;padding:2px 4px}
+  .bvbar .sp{flex:1}
+  .bvp{margin:10px 16px;padding:10px 12px;border:1px solid #333;border-left:3px solid var(--mc);border-radius:4px;background:#232323;font:13px/20px -apple-system,'Segoe UI','PingFang SC',sans-serif}
+  .bvp.unseen{box-shadow:0 0 0 1px #e2c08d}
+  .bvp.forme{background:#2a2622}
+  .bvto{color:#9d9d9d;font-size:12px}.bvto b{color:inherit;font-weight:600}
+  .bvhash{display:none}
+  .bvnewtag{color:#e2c08d;font-size:11px;border:1px solid #e2c08d;border-radius:8px;padding:0 5px}
+  .skin-excel .tdadd input,.skin-excel .bvnew textarea,.skin-excel .nvpad,.skin-notion .tdadd input,.skin-notion .bvnew textarea,.skin-notion .nvpad{border-color:#dcdcdc;background:#fff}
+  .skin-excel .bvbar select,.skin-notion .bvbar select{background:#fff;color:#333;border-color:#dcdcdc}
+  .skin-excel .nvh,.skin-notion .nvh{color:#222}
+  .skin-excel .bvp,.skin-notion .bvp{background:#fff;border-color:#e3e3e3;border-left-color:var(--mc);color:#333}
+  .skin-excel .bvp.forme,.skin-notion .bvp.forme{background:#fffbe6}
+  .skin-excel .bvnew,.skin-notion .bvnew{border-color:#ededec}
+  .skin-notion .nvh{font-size:19px}
+  .skin-notion .td{padding:4px 0}.skin-notion .tdc{color:#787774}
+  .skin-terminal .bvp{background:transparent;border:none;border-left:none;margin:6px 12px;padding:0;font-family:var(--mono);font-size:12.5px}
+  .skin-terminal .bvp .bvhash{display:block;color:#e5e510}
+  .skin-terminal .bvp .bav{display:none}
+  .skin-terminal .bvp .bnb{padding-left:4ch}
+  .skin-terminal .nvh{color:#e5e510}
   .md-h{color:#569cd6;font-weight:600}.md-q{color:#6a9955}.md-c{color:#ce9178}.md-b{color:#dcdcaa;font-weight:600}.md-l{color:#6796e6}
   .new{animation:flash 1.4s ease-out}
   @keyframes flash{from{background:#264f78}to{background:transparent}}
@@ -421,7 +462,9 @@
         <div class="fy" style="--d:1">package.json</div>
         <div class="fy" style="--d:1">tsconfig.json</div>
         <div class="fm" style="--d:1">README.md</div>
+        <div class="fm clk" style="--d:1" id="boardFile">CHANGELOG.md <span class="tbadge" id="boardBadge"></span></div>
         <div class="fm clk" style="--d:1" id="recipeFile">recipe.md</div>
+        <div class="fm clk" style="--d:1" id="notesFile">TODO.md</div>
       </div>
     </div>
     <div class="work" id="work">
@@ -605,11 +648,20 @@ function tabLabel(i){
   if (skin === 'terminal') return `${i}:${TMUX[i % TMUX.length]}`;
   return fileOf(i)[0];
 }
+function docName(v){   // what a document tab is called in the current skin
+  const n = { board: { vscode: 'CHANGELOG.md', excel: 'Changelog', notion: 'Team Updates', terminal: 'git-log' },
+              notes: { vscode: 'TODO.md', excel: 'Tasks', notion: 'My Tasks', terminal: 'todo' },
+              recipe: { vscode: 'recipe.md', excel: 'recipe', notion: 'recipe', terminal: 'recipe' } }[v];
+  if (n) return n[skin];
+  if (v === 'book' && book) return skin === 'vscode' ? bookFile(book.id) : bookTabLabel();
+  return '';
+}
+function shownName(){ return view === 'room' ? (skin === 'notion' ? PAGES[active % PAGES.length] : fileOf(active)[0]) : docName(view); }
 function windowTitle(){
   if (skin === 'excel') return 'Q4_order_sync.xlsx - Excel';
-  if (skin === 'notion') return view === 'recipe' ? 'recipe' : view === 'book' && book ? bookTabLabel() : PAGES[active % PAGES.length];
+  if (skin === 'notion') return shownName();
   if (skin === 'terminal') return 'zsh — api-gateway';
-  return `${view === 'recipe' ? 'recipe.md' : view === 'book' && book ? bookFile(book.id) : fileOf(active)[0]} — api-gateway — Visual Studio Code`;
+  return `${shownName()} — api-gateway — Visual Studio Code`;
 }
 
 // ---------- state ----------
@@ -618,6 +670,8 @@ let style = store.get('style', 'comment');
 let skin = SKINS.includes(store.get('skin', '')) ? store.get('skin', '') : 'vscode';
 let nick = '';            // = account display name (fixed at registration)
 let auth = null;
+let boardOpen = false, notesOpen = false;
+let myTodos = [], myPad = { text: '', ms: 0 }, padUnsub = null, todoUnsub = null;
 let book = null;          // open book: {room, id, meta, chunks, page, total, notes, seen, first, unsub}
 let panic = false, scrollBottom = true;
 let view = 'room', recipeOpen = false;
@@ -634,7 +688,7 @@ let active = 0;
   rooms = codes.slice(0, MAX_ROOMS).map(newRoom);
   active = Math.min(+store.get('active', '0') || 0, Math.max(0, rooms.length - 1));
 })();
-function newRoom(code){ return { code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null, peers: {}, presOff: null }; }
+function newRoom(code){ return { code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null, peers: {}, presOff: null, board: [], boardSeen: new Set(), boardFirst: true, boardUnsub: null }; }
 function cur(){ return rooms[active]; }
 const saveRooms = () => { store.set('rooms', JSON.stringify(rooms.map(r => r.code))); store.set('active', String(active)); store.del('room'); };
 
@@ -893,6 +947,19 @@ const RECIPE = [
   '- 朋友写了新批注会弹提醒，点提醒直接跳到那一页',
   '- 只能删自己的批注；上传书的人可以在 Edit › Delete This Book… 删掉整本书',
   '',
+  '## 留言板',
+  '- File › Message Board（或 `:board`；VS Code 里是左边的 CHANGELOG.md）',
+  '- 每个房间一块，适合留不想被聊天刷掉的话；可以选「to: 某人」写给特定的朋友',
+  '- 每条留言下面都能 Reply；自己的可以删',
+  '- 上线时会提示「上次之后有 N 条新留言」，新的会标 new',
+  '- 房间里的人都看得到，写给某人的也一样',
+  '',
+  '## 私人便签 / 待办',
+  '- File › My Notes & To-dos（或 `:todo`；VS Code 里是左边的 TODO.md）',
+  '- **只有你自己看得到**，换设备登录也会同步',
+  '- 待办：输入后回车添加，点 ☐ 勾选，悬停出现 ✕ 删除',
+  '- 便签：随便写，停手一秒多就自动保存',
+  '',
   '## 换皮肤',
   '- View › Skin，或 `:skin vscode|excel|notion|terminal`',
   '- Excel：消息是表格里的行，房间是底部的工作表；输入框在公式栏',
@@ -905,6 +972,8 @@ const RECIPE = [
   '## 指令',
   '- `:help`                         列出所有指令',
   '- `:read`                         一起读书（打开 / 上传）',
+  '- `:board`                        这个房间的留言板',
+  '- `:todo`                         私人便签和待办',
   '- `:p 页码`                        跳到书的某一页',
   '- `:signout`                      登出 / 切换账号',
   '- `:skin vscode|excel|notion|terminal`  换伪装',
@@ -947,6 +1016,8 @@ function renderRecipe(){
 function render(){
   if (view === 'recipe') { renderRecipe(); return; }
   if (view === 'book') { renderBook(); return; }
+  if (view === 'board') { renderBoard(); return; }
+  if (view === 'notes') { renderNotes(); return; }
   const msgs = cur()?.msgs || [];
   const nearBottom = editor.scrollHeight - editor.scrollTop - editor.clientHeight < 80;
   editor.innerHTML = skin === 'excel' ? renderExcel(msgs) : skin === 'notion' ? renderNotion(msgs) : skin === 'terminal' ? renderTmux(msgs) : renderCode(msgs);
@@ -973,6 +1044,7 @@ function applySkin(){
   inp.placeholder = PLACEHOLDER[skin];
   const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = THEME[skin];
   scrollBottom = true;
+  editor.innerHTML = '';
   renderTabs(); render();
 }
 
@@ -989,17 +1061,21 @@ function renderTabs(){
   tabs.innerHTML = list.map((r, i) =>
     `<div class="tab${i===active && view==='room'?' on':''}${r && r.unread ? ' unread' : ''}" data-i="${i}">${esc(tabLabel(i))} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
   ).join('') + (recipeOpen ? `<div class="tab${view==='recipe'?' on':''}" data-doc="recipe">${recipeLabel} <span class="x" data-xdoc="recipe">✕</span></div>` : '')
-    + (book ? `<div class="tab${view==='book'?' on':''}" data-doc="book">${skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> ' : ''}${esc(bookTabLabel())} <span class="x" data-xdoc="book">✕</span></div>` : '');
+    + (book ? `<div class="tab${view==='book'?' on':''}" data-doc="book">${skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> ' : ''}${esc(bookTabLabel())} <span class="x" data-xdoc="book">✕</span></div>` : '')
+    + (boardOpen ? `<div class="tab${view==='board'?' on':''}${boardUnreadCount(cur()) ? ' unread' : ''}" data-doc="board">${skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> ' : ''}${docName('board')} <span class="dot"></span><span class="x" data-xdoc="board">✕</span></div>` : '')
+    + (notesOpen ? `<div class="tab${view==='notes'?' on':''}" data-doc="notes">${skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> ' : ''}${docName('notes')} <span class="x" data-xdoc="notes">✕</span></div>` : '');
   const [file, dir, cls] = fileOf(active);
-  const shown = view === 'recipe' ? 'recipe.md' : view === 'book' && book ? bookFile(book.id) : file;
-  if (skin === 'notion') $('crumbs').innerHTML = `Engineering &nbsp;/&nbsp; ${esc(view === 'recipe' ? 'recipe' : view === 'book' && book ? bookTabLabel() : PAGES[active % PAGES.length])}`;
-  else $('crumbs').innerHTML = view === 'book' && book
+  const shown = view === 'room' ? file : docName(view);
+  if (skin === 'notion') $('crumbs').innerHTML = `${view === 'notes' ? 'Private' : 'Engineering'} &nbsp;/&nbsp; ${esc(shownName())}`;
+  else $('crumbs').innerHTML = view === 'board' || view === 'notes'
+    ? `<span style="color:#519aba;font-size:10px">M↓</span> ${esc(shown)}`
+    : view === 'book' && book
     ? `docs › <span style="color:#519aba;font-size:10px">M↓</span> ${esc(bookFile(book.id))}`
     : view === 'recipe'
     ? `<span style="color:#519aba;font-size:10px">M↓</span> recipe.md › # recipe`
     : `src › ${dir} › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> ${file} › <span style="color:#ee9d28">◇</span> ${cls}`;
   $('ttl').textContent = skin === 'vscode' ? `${shown} — api-gateway` : skin === 'excel' ? 'Q4_order_sync.xlsx  ·  Saved' : skin === 'notion' ? windowTitle() : 'zsh — api-gateway — 132×43';
-  document.querySelectorAll('.tree > div').forEach(d => d.classList.toggle('sel', d.textContent.trim() === shown));
+  document.querySelectorAll('.tree > div').forEach(d => d.classList.toggle('sel', d.textContent.trim().split(/\s+/)[0] === shown));
   $('roomLabel').textContent = roomLabelText();
   const on = tabs.querySelector('.tab.on'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   updateUnread();
@@ -1084,11 +1160,12 @@ function switchRoom(i){
   rooms[i].unread = 0;
   scrollBottom = true;
   setReply(null);
-  renderTabs(); render();
+  renderTabs(); render(); updateBoardBadge();
 }
 async function closeRoom(i){
   const r = rooms[i]; if (!r) return;
   if (r.unsub) r.unsub();
+  if (r.boardUnsub) r.boardUnsub();
   leavePresence(r);
   rooms.splice(i, 1);
   if (active >= rooms.length) active = Math.max(0, rooms.length - 1);
@@ -1107,16 +1184,20 @@ function closeRecipe(){
 }
 $('tabs').addEventListener('click', e => {
   const xd = e.target.closest('[data-xdoc]');
-  if (xd) { e.stopPropagation(); xd.dataset.xdoc === 'book' ? closeBook() : closeRecipe(); return; }
+  if (xd) { e.stopPropagation(); ({ book: closeBook, board: closeBoard, notes: closeNotes, recipe: closeRecipe })[xd.dataset.xdoc](); return; }
   const x = e.target.closest('[data-x]');
   if (x) { e.stopPropagation(); closeRoom(+x.dataset.x); return; }
   const t = e.target.closest('.tab'); if (!t) return;
   if (t.dataset.doc === 'recipe') { if (view !== 'recipe') { view = 'recipe'; renderTabs(); render(); } return; }
   if (t.dataset.doc === 'book') { if (view !== 'book') { view = 'book'; renderTabs(); render(); editor.scrollTop = 0; } else togglePanic(); return; }
+  if (t.dataset.doc === 'board') { if (view !== 'board') openBoard(); else togglePanic(); return; }
+  if (t.dataset.doc === 'notes') { if (view !== 'notes') openNotes(); else togglePanic(); return; }
   const i = +t.dataset.i;
   if (i === active && view === 'room') togglePanic(); else switchRoom(i);
 });
 $('recipeFile').addEventListener('click', openRecipe);
+$('boardFile').addEventListener('click', () => openBoard());
+$('notesFile').addEventListener('click', () => openNotes());
 
 // ---------- fake terminal ----------
 const ROUTES = ['/api/v1/orders','/api/v1/orders/sync','/api/v1/auth/refresh','/api/v1/tenants','/healthz','/api/v1/inventory','/api/v1/webhooks/stripe'];
@@ -1528,6 +1609,193 @@ async function deleteBook(){
   } catch (e) { termLine(`<span class="r1">error: delete failed (${esc(e?.code || 'unknown')})</span>`); }
 }
 
+
+// ---------- private notes & to-dos (only you can read them) ----------
+const todoCol = () => collection(db, 'users', myId, 'todos');
+const padDoc = () => doc(db, 'users', myId, 'pad', 'main');
+function subscribeMine(){
+  if (!db || !myId) return;
+  todoUnsub = onSnapshot(query(todoCol(), orderBy('ts', 'asc'), limit(300)), s => {
+    myTodos = s.docs.map(d => { const x = d.data({ serverTimestamps: 'estimate' }); return { id: d.id, text: String(x.text || ''), done: !!x.done, ms: x.ts?.toMillis ? x.ts.toMillis() : Date.now() }; });
+    if (view === 'notes') renderNotes();
+  }, e => termLine(`<span class="y1">warning: notes unavailable (${esc(e?.code || 'unknown')})</span>`));
+  padUnsub = onSnapshot(padDoc(), s => {
+    const x = s.exists() ? s.data({ serverTimestamps: 'estimate' }) : {};
+    myPad = { text: String(x.text || ''), ms: x.ts?.toMillis ? x.ts.toMillis() : 0 };
+    if (view === 'notes') renderNotes();
+  }, () => {});
+}
+function openNotes(){
+  if (!db || !myId) { termLine('<span class="r1">not signed in</span>'); return; }
+  if (panic) togglePanic(false);
+  notesOpen = true; view = 'notes';
+  renderTabs(); render(); editor.scrollTop = 0;
+}
+function closeNotes(){ notesOpen = false; if (view === 'notes') { view = 'room'; scrollBottom = true; } renderTabs(); render(); }
+function todoListHtml(){
+  const open = myTodos.filter(t => !t.done), done = myTodos.filter(t => t.done);
+  return [...open, ...done].map(t => `<div class="td${t.done ? ' done' : ''}"><span class="tdc" data-toggle="${esc(t.id)}">${t.done ? '☑' : '☐'}</span><span class="tdt">${esc(t.text)}</span><span class="bnx" data-deltodo="${esc(t.id)}" title="Delete">✕</span></div>`).join('')
+    || '<div class="pads" style="padding:2px 0 4px">nothing yet</div>';
+}
+function renderNotes(){
+  const existing = editor.querySelector('.nv');
+  const stats = `${myTodos.filter(t => t.done).length}/${myTodos.length} done`;
+  if (existing) {   // live update without destroying what you're typing
+    $('todoList').innerHTML = todoListHtml();
+    $('todoStats').textContent = stats;
+    const pad = $('padIn');
+    if (document.activeElement !== pad && pad.value !== myPad.text) pad.value = myPad.text;
+    return;
+  }
+  editor.innerHTML = `<div class="bk nv"><div class="bkhead"><span class="bkt">${esc(docName('notes'))}</span><span>private · only you can see this</span><span class="sp"></span><span id="todoStats">${stats}</span></div>
+    <div class="nvsec"><div class="nvh">${skin === 'vscode' || skin === 'terminal' ? '## ' : ''}To-do</div><div id="todoList">${todoListHtml()}</div></div>
+    <div class="tdadd"><input id="todoIn" maxlength="300" placeholder="+ Add a task — Enter to save" autocomplete="off"></div>
+    <div class="nvsec"><div class="nvh">${skin === 'vscode' || skin === 'terminal' ? '## ' : ''}Notes</div><textarea class="nvpad" id="padIn" maxlength="20000" placeholder="Anything — saved automatically, synced to your account"></textarea><div class="pads" id="padStatus">${myPad.ms ? 'saved ' + hhmm(myPad.ms) : ''}</div></div></div>`;
+  $('padIn').value = myPad.text;
+  $('todoIn').addEventListener('keydown', async e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const v = e.target.value.trim(); if (!v) return;
+    e.target.value = '';
+    try { await addDoc(todoCol(), { text: v.slice(0, 300), done: false, ts: serverTimestamp() }); }
+    catch (err) { termLine(`<span class="r1">error: ${esc(err?.code || 'unknown')}</span>`); }
+  });
+  let padTimer = null;
+  $('padIn').addEventListener('input', e => {
+    $('padStatus').textContent = 'editing…';
+    clearTimeout(padTimer);
+    padTimer = setTimeout(async () => {
+      try { await setDoc(padDoc(), { text: e.target.value.slice(0, 20000), ts: serverTimestamp() }); $('padStatus') && ($('padStatus').textContent = 'saved ' + hhmm(Date.now())); }
+      catch (err) { $('padStatus') && ($('padStatus').textContent = 'not saved — ' + (err?.code || 'error')); }
+    }, 1200);
+  });
+}
+async function notesClick(e){
+  const tg = e.target.closest('[data-toggle]');
+  if (tg) { const t = myTodos.find(x => x.id === tg.dataset.toggle); if (t) { try { await setDoc(doc(db, 'users', myId, 'todos', t.id), { text: t.text, done: !t.done, ts: serverTimestamp() }); } catch (err) {} } return; }
+  const dl = e.target.closest('[data-deltodo]');
+  if (dl) { try { await deleteDoc(doc(db, 'users', myId, 'todos', dl.dataset.deltodo)); } catch (err) {} }
+}
+
+// ---------- message board (per room) ----------
+const boardKey = r => `bs_${myId}_${r?.id}`;
+const boardLastSeen = r => +store.get(boardKey(r), '0') || 0;
+function boardUnreadCount(r){
+  if (!r || !r.board) return 0;
+  const seen = boardLastSeen(r);
+  return r.board.filter(p => !p.parent && p.uid !== myId && p.ms > seen).length;
+}
+function markBoardSeen(r){ if (r?.id) { store.set(boardKey(r), String(Date.now())); updateBoardBadge(); } }
+function updateBoardBadge(){
+  const n = boardUnreadCount(cur());
+  $('boardBadge').textContent = n ? String(n) : '';
+  document.querySelectorAll('.tab[data-doc="board"]').forEach(t => t.classList.toggle('unread', n > 0));
+}
+function subscribeBoard(r){
+  if (!db || !r.id) return;
+  if (r.boardUnsub) r.boardUnsub();
+  r.boardUnsub = onSnapshot(query(collection(db, 'rooms', r.id, 'board'), orderBy('ts', 'desc'), limit(150)), s => {
+    const list = s.docs.map(d => { const x = d.data({ serverTimestamps: 'estimate' });
+      return { id: d.id, uid: x.uid, name: x.name, text: String(x.text || ''), to: x.to || null, toName: x.toName || null, parent: x.parent || null, ms: x.ts?.toMillis ? x.ts.toMillis() : Date.now() }; });
+    const fresh = list.filter(p => !r.boardSeen.has(p.id)); fresh.forEach(p => r.boardSeen.add(p.id));
+    r.board = list;
+    if (r.boardFirst) {
+      r.boardFirst = false;
+      const n = boardUnreadCount(r);
+      if (n && alertMode !== 'quiet') showToast(`${esc(docName('board'))}: ${n} new entr${n > 1 ? 'ies' : 'y'} since your last visit<small>${esc(tabLabel(rooms.indexOf(r)))} · click to open</small>`, () => { switchRoom(rooms.indexOf(r)); openBoard(); });
+    } else {
+      const others = fresh.filter(p => p.uid !== myId);
+      const isHere = view === 'board' && cur() === r && !isAway();
+      if (others.length && !isHere) notifyBoard(r, others);
+      if (isHere) markBoardSeen(r);
+    }
+    updateBoardBadge();
+    if (view === 'board' && cur() === r) renderBoard();
+  }, e => termLine(`<span class="y1">warning: board unavailable (${esc(e?.code || 'unknown')})</span>`));
+}
+function notifyBoard(r, posts){
+  if (alertMode === 'quiet' || panic) return;
+  const forMe = posts.some(p => p.to === myId);
+  const from = [...new Set(posts.map(p => displayName(p)))].slice(0, 3).map(esc).join(', ');
+  const name = esc(docName('board'));
+  const text = skin === 'terminal' ? `${from} pushed to ${name}${forMe ? ' (mentions you)' : ''}<small>click to view</small>`
+    : `${from} updated ${name}${forMe ? ' — <b>for you</b>' : ''}<small>${esc(tabLabel(rooms.indexOf(r)))} · click to open</small>`;
+  showToast(text, () => { switchRoom(rooms.indexOf(r)); openBoard(); });
+  const st = document.querySelector('.status');
+  st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
+  if (document.hidden || !document.hasFocus()) startBlink();
+}
+function openBoard(){
+  const r = cur();
+  if (!db || !r?.id) { termLine('<span class="r1">open a workspace first (:room)</span>'); return; }
+  if (panic) togglePanic(false);
+  boardOpen = true; view = 'board';
+  r._boardSeenAtOpen = boardLastSeen(r);   // keep "new" marks visible while you're reading
+  renderTabs(); render(); editor.scrollTop = 0;
+  markBoardSeen(r);
+}
+function closeBoard(){ boardOpen = false; if (view === 'board') { view = 'room'; scrollBottom = true; } renderTabs(); render(); }
+function boardMembers(r){
+  const m = new Map();
+  (r.msgs || []).forEach(x => x.uid && x.uid !== myId && m.set(x.uid, displayName(x)));
+  (r.board || []).forEach(x => x.uid && x.uid !== myId && m.set(x.uid, displayName(x)));
+  peersOf(r).forEach(p => p.uid !== myId && m.set(p.uid, p.name));
+  return [...m.entries()];
+}
+function fmtDay(ms){ const d = new Date(ms); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + hhmm(ms); }
+function boardListHtml(r){
+  const seen = r._boardSeenAtOpen ?? boardLastSeen(r);
+  const tops = r.board.filter(p => !p.parent), reps = r.board.filter(p => p.parent).slice().reverse();
+  if (!tops.length) return '<div class="bkempty">No entries yet — leave the first note for your friends.</div>';
+  return tops.map(p => {
+    const isNew = p.uid !== myId && p.ms > seen;
+    return `<div class="bvp${isNew ? ' unseen' : ''}${p.to === myId ? ' forme' : ''}" style="--mc:${colorOf(p)}">
+      <div class="bvhash">commit ${hash(p.id).toString(16).padStart(8, '0')}${hash(p.id + 'x').toString(16).slice(0, 4)}</div>
+      <div class="bnh"><span class="bav">${esc(displayName(p).slice(0, 1).toUpperCase())}</span><b>${esc(displayName(p))}</b>${p.toName ? `<span class="bvto">→ <b>${esc(p.toName)}</b></span>` : ''}<span class="bnt">${fmtDay(p.ms)}</span>${isNew ? '<span class="bvnewtag">new</span>' : ''}${p.uid === myId ? `<span class="bnx" data-delpost="${esc(p.id)}" title="Delete">✕</span>` : ''}</div>
+      <div class="bnb">${esc(p.text)}</div>
+      ${reps.filter(x => x.parent === p.id).map(x => `<div class="bnr2" style="--mc:${colorOf(x)}"><b>${esc(displayName(x))}</b><span class="tx">${esc(x.text)}</span>${x.uid === myId ? `<span class="bnx" data-delpost="${esc(x.id)}" title="Delete">✕</span>` : ''}</div>`).join('')}
+      <span class="bnrep" data-breply="${esc(p.id)}">Reply</span></div>`;
+  }).join('');
+}
+function renderBoard(){
+  const r = cur();
+  if (!r) { view = 'room'; render(); return; }
+  const existing = editor.querySelector('.bv');
+  if (existing && existing.dataset.room === r.id) {
+    $('bvList').innerHTML = boardListHtml(r);
+    $('bvCount').textContent = `${r.board.filter(p => !p.parent).length} entries`;
+    return;
+  }
+  const opts = boardMembers(r).map(([uid, n]) => `<option value="${esc(uid)}">to: ${esc(n)}</option>`).join('');
+  editor.innerHTML = `<div class="bk bv" data-room="${esc(r.id)}"><div class="bkhead"><span class="bkt">${esc(docName('board'))}</span><span>${esc(tabLabel(active))}</span><span class="sp"></span><span id="bvCount">${r.board.filter(p => !p.parent).length} entries</span></div>
+    <div class="bvnew"><textarea id="boardIn" maxlength="2000" placeholder="Leave a note for the group… (${navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}+Enter to post)"></textarea>
+      <div class="bvbar"><select id="boardTo"><option value="">to: everyone</option>${opts}</select><span class="sp"></span><span class="bkb" id="boardPost">Post</span></div></div>
+    <div id="bvList">${boardListHtml(r)}</div></div>`;
+  const post = async () => {
+    const ta = $('boardIn'), v = ta.value.trim(); if (!v) return;
+    const sel = $('boardTo'), to = sel.value;
+    const d = { uid: myId, name: nick, text: v.slice(0, 2000), ts: serverTimestamp() };
+    if (to) { d.to = to; d.toName = sel.options[sel.selectedIndex].text.replace(/^to: /, '').slice(0, 16); }
+    ta.value = '';
+    try { await addDoc(collection(db, 'rooms', r.id, 'board'), d); }
+    catch (err) { ta.value = v; termLine(`<span class="r1">error: post failed (${esc(err?.code || 'unknown')})</span>`); }
+  };
+  $('boardPost').addEventListener('click', post);
+  $('boardIn').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); post(); } });
+}
+async function boardClick(e){
+  const r = cur(); if (!r) return;
+  const rp = e.target.closest('[data-breply]');
+  if (rp) {
+    const p = r.board.find(x => x.id === rp.dataset.breply);
+    const t = await ask(`Reply to ${p ? displayName(p) : ''}`, 'Your reply');
+    if (t && p) { try { await addDoc(collection(db, 'rooms', r.id, 'board'), { uid: myId, name: nick, text: t.slice(0, 2000), parent: p.id, ts: serverTimestamp() }); } catch (err) { termLine(`<span class="r1">error: ${esc(err?.code || 'unknown')}</span>`); } }
+    return;
+  }
+  const dl = e.target.closest('[data-delpost]');
+  if (dl) { try { await deleteDoc(doc(db, 'rooms', r.id, 'board', dl.dataset.delpost)); } catch (err) { termLine(`<span class="r1">error: ${esc(err?.code || 'unknown')}</span>`); } }
+}
+
 // ---------- reply ----------
 function setReply(m){
   if (!m) { replyTo = null; $('replyChip').hidden = true; return; }
@@ -1622,6 +1890,8 @@ $('lightbox').addEventListener('click', () => { $('lightbox').hidden = true; });
 editor.addEventListener('click', e => {
   if (panic || view === 'recipe') return;
   if (view === 'book') { bookClick(e); return; }
+  if (view === 'board') { boardClick(e); return; }
+  if (view === 'notes') { notesClick(e); return; }
   const img = e.target.closest('[data-img]');
   if (img) { $('imgPop').hidden = true; openLightbox(img.dataset.img); return; }
   const sel = window.getSelection && String(window.getSelection());
@@ -1646,6 +1916,8 @@ const HELP = [
   '<span class="help">commands:</span>',
   '<span class="help">  :read                   read together: open / upload a book in this room</span>',
   '<span class="help">  :p &lt;n&gt;                  jump to page n of the open book</span>',
+  '<span class="help">  :board                  message board for this room</span>',
+  '<span class="help">  :todo                   your private notes &amp; to-dos</span>',
   '<span class="help">  :signout                sign out / switch account</span>',
   '<span class="help">  :skin vscode|excel|notion|terminal   change the disguise</span>',
   '<span class="help">  :style comment|log|str  how messages look in VS Code</span>',
@@ -1669,6 +1941,8 @@ async function command(c){
   else if (cmd === 'signout' || cmd === 'logout') await doSignOut();
   else if (cmd === 'whoami') termLine(`<span class="d1">${esc(nick)}</span>`);
   else if (cmd === 'read') await readTogether();
+  else if (cmd === 'board') openBoard();
+  else if (cmd === 'todo' || cmd === 'notes') openNotes();
   else if (cmd === 'book') $('bookIn').click();
   else if (cmd === 'p' || cmd === 'page') { if (view === 'book' && book) goPage((parseInt(arg, 10) || 1) - 1); else termLine('<span class="r1">no book open — :read first</span>'); }
   else if (cmd === 'style') {
@@ -1733,7 +2007,7 @@ $('form').addEventListener('submit', e => {
   const v = inp.value.trim(); inp.value = '';
   if (!v) return;
   if (v.startsWith(':')) command(v);
-  else { if (view === 'recipe') { view = 'room'; scrollBottom = true; renderTabs(); render(); } send(v); }
+  else { if (view !== 'room') { view = 'room'; scrollBottom = true; renderTabs(); render(); } send(v); }
 });
 
 // ---------- typing indicator ----------
@@ -1817,6 +2091,8 @@ const MENUS = {
   File: () => [
     ['New Workspace…', () => command(':room')],
     ['Read Together…', readTogether],
+    [`Message Board${boardUnreadCount(cur()) ? ` (${boardUnreadCount(cur())} new)` : ''}`, () => openBoard()],
+    ['My Notes & To-dos', () => openNotes()],
     ['Upload Book (.txt)…', () => $('bookIn').click()],
     ['Copy Invite Link', copyInvite],
     ['Attach Image…', () => $('fileIn').click()],
@@ -1964,6 +2240,7 @@ async function subscribe(r){
     termLine(`<span class="r1">error: ${label} disconnected (${esc(err?.code||'unknown')}) — reload to reconnect</span>`);
   });
   joinPresence(r);
+  subscribeBoard(r);
 }
 async function addRoom(code){
   const id = await roomKey(code);
@@ -2008,6 +2285,7 @@ termLine(isMobile() ? '<span class="d1">Type :help for commands. Tap the current
     onValue(dbRef(rtdb, '.info/connected'), s => { if (s.val() === true) rooms.forEach(r => r.id && joinPresence(r)); });
   } catch (e) { rtdb = null; presenceWarn(e); }
 
+  subscribeMine();
   for (const r of rooms) await subscribe(r);
   saveRooms(); renderTabs();
   if (inviteCode) {
