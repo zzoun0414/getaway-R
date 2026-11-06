@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sync.service.ts — api-gateway — Visual Studio Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1e1e1e; --side:#252526; --act:#333333; --tabbar:#2d2d2d; --tab:#2d2d2d; --tabact:#1e1e1e;
+    --border:#3c3c3c; --fg:#d4d4d4; --dim:#858585; --gutter:#6e7681; --status:#007acc;
+    --kw:#569cd6; --kw2:#c586c0; --str:#ce9178; --cm:#6a9955; --num:#b5cea8; --type:#4ec9b0; --fn:#dcdcaa; --var:#9cdcfe;
+    --mono:'JetBrains Mono',Consolas,'Courier New','PingFang SC','Microsoft YaHei','Hiragino Sans',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--fg);font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden}
+  .app{display:grid;grid-template-rows:30px 1fr 22px;height:100vh}
+  /* title bar */
+  .titlebar{background:#3c3c3c;display:flex;align-items:center;padding:0 10px;gap:14px;font-size:12px;color:#cccccc;user-select:none}
+  .dots{display:flex;gap:7px}.dots i{width:12px;height:12px;border-radius:50%;display:block}
+  .dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+  .menu{display:flex;gap:12px;color:#bbb}
+  .ttl{flex:1;text-align:center;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tbtn{background:none;border:none;color:#bbb;cursor:pointer;font-size:12px;padding:2px 6px;border-radius:3px}
+  .tbtn:hover{background:#505050}
+  /* main */
+  .main{display:grid;grid-template-columns:48px 220px 1fr;min-height:0}
+  .activity{background:var(--act);display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:18px}
+  .activity svg{width:24px;height:24px;stroke:#858585;fill:none;stroke-width:1.5}
+  .activity .on svg{stroke:#fff}
+  .activity div{position:relative;width:48px;display:flex;justify-content:center;padding:4px 0}
+  .activity .on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:#fff}
+  .sidebar{background:var(--side);overflow:hidden;font-size:13px;user-select:none}
+  .sidebar h4{font-weight:400;font-size:11px;letter-spacing:.5px;color:#bbb;padding:10px 20px 6px}
+  .tree div{padding:2px 0 2px calc(var(--d,0)*12px + 18px);color:#cccccc;white-space:nowrap;cursor:default}
+  .tree div:hover{background:#2a2d2e}
+  .tree .sel{background:#37373d}
+  .tree .f::before{content:'TS';font-size:9px;font-weight:700;color:#3178c6;margin-right:6px}
+  .tree .fy::before{content:'{}';font-size:10px;color:#cbcb41;margin-right:6px}
+  .tree .fm::before{content:'M↓';font-size:9px;color:#519aba;margin-right:6px}
+  .tree .d::before{content:'›';display:inline-block;width:12px;color:#ccc}
+  .tree .d.o::before{content:'⌄'}
+  .work{display:grid;grid-template-rows:35px 22px 1fr 6px var(--panel,38%);min-width:0;min-height:0}
+  .tabs{background:var(--tabbar);display:flex;overflow:hidden}
+  .tab{padding:0 14px;display:flex;align-items:center;gap:6px;color:#969696;background:var(--tab);border-right:1px solid #252526;white-space:nowrap;font-size:13px;cursor:default}
+  .tab.on{background:var(--tabact);color:#fff;border-top:1px solid var(--status)}
+  .tab .x{color:#888;font-size:11px;margin-left:4px}
+  .tab .dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:none}
+  .tab.unread .dot{display:inline-block}.tab.unread .x{display:none}
+  .crumbs{background:var(--bg);color:#a9a9a9;font-size:12px;padding:0 16px;display:flex;align-items:center;gap:6px}
+  /* editor */
+  .editor{overflow-y:auto;overflow-x:hidden;font-family:var(--mono);font-size:13px;line-height:20px;padding-bottom:20px}
+  .editor::-webkit-scrollbar,.term::-webkit-scrollbar{width:12px}
+  .editor::-webkit-scrollbar-thumb,.term::-webkit-scrollbar-thumb{background:#424242}
+  .ln{display:grid;grid-template-columns:62px 1fr;min-height:20px}
+  .ln .g{color:var(--gutter);text-align:right;padding-right:22px;user-select:none}
+  .ln .c{white-space:pre-wrap;word-break:break-word;padding-right:24px;padding-left:var(--ind,0)}
+  .ln.cur{background:#2a2d2e}
+  .ln.cur .g{color:#c6c6c6}
+  .ln.msg .c{text-indent:0}
+  .k{color:var(--kw)}.k2{color:var(--kw2)}.s{color:var(--str)}.cm{color:var(--cm)}.n{color:var(--num)}.t{color:var(--type)}.fn{color:var(--fn)}.v{color:var(--var)}
+  .tag{color:#d7ba7d}
+  .mine .cm.txt{color:#7fb36a}
+  .new{animation:flash 1.4s ease-out}
+  @keyframes flash{from{background:#264f78}to{background:transparent}}
+  /* panel */
+  .sash{background:var(--bg);border-top:1px solid var(--border);cursor:row-resize}
+  .panel{background:var(--bg);display:grid;grid-template-rows:30px 1fr auto;min-height:0}
+  .ptabs{display:flex;gap:22px;padding:0 20px;align-items:center;font-size:11px;letter-spacing:.4px;color:#969696;user-select:none}
+  .ptabs span{padding:6px 0;cursor:default}
+  .ptabs .on{color:#e7e7e7;border-bottom:1px solid #e7e7e7}
+  .ptabs .badge{background:#4d4d4d;color:#fff;border-radius:9px;padding:0 6px;margin-left:4px;font-size:10px}
+  .term{overflow-y:auto;font-family:var(--mono);font-size:12.5px;line-height:18px;padding:0 20px;color:#cccccc}
+  .term div{white-space:pre-wrap;word-break:break-all}
+  .g1{color:#23d18b}.y1{color:#e5e510}.r1{color:#f14c4c}.b1{color:#3b8eea}.m1{color:#d670d6}.d1{color:#7a7a7a}
+  .prompt{display:flex;align-items:center;font-family:var(--mono);font-size:12.5px;padding:4px 20px 8px;gap:0}
+  .prompt .p1{color:#23d18b}.prompt .p2{color:#3b8eea}
+  .prompt input{flex:1;background:transparent;border:none;outline:none;color:#e5e5e5;font-family:var(--mono);font-size:12.5px;caret-color:#e5e5e5;margin-left:8px}
+  /* status */
+  .status{background:var(--status);color:#fff;display:flex;align-items:center;font-size:12px;padding:0 6px;gap:2px;user-select:none}
+  .status span{padding:0 7px;cursor:default;white-space:nowrap}
+  .status .btn{cursor:pointer}.status .btn:hover{background:#1f8ad2}
+  .status .sp{flex:1}
+  .panic .msg{display:none}
+  .help{color:#9cdcfe}
+  @media (max-width:760px){.main{grid-template-columns:48px 0 1fr}.sidebar{display:none}.menu{display:none}}
+  .qi{position:fixed;top:36px;left:50%;transform:translateX(-50%);width:min(560px,92vw);background:#252526;border:1px solid #454545;box-shadow:0 8px 24px rgba(0,0,0,.55);border-radius:6px;padding:6px;z-index:50;font-size:13px}
+  .qi[hidden]{display:none}
+  .qi .qt{color:#ccc;text-align:center;padding:4px 0 6px;font-size:12px}
+  .qi input{width:100%;background:#3c3c3c;border:1px solid #007fd4;color:#ccc;padding:5px 8px;font-size:13px;outline:none;border-radius:2px;font-family:inherit}
+  .qi .qh{color:#8b8b8b;font-size:12px;padding:6px 4px 2px}
+</style>
+</head>
+<body>
+<div class="qi" id="qi" hidden>
+  <div class="qt" id="qiTitle">Connect to Remote Workspace</div>
+  <input id="qiInput" spellcheck="false" autocomplete="off">
+  <div class="qh" id="qiHint">Press 'Enter' to confirm or 'Escape' to cancel</div>
+</div>
+<div class="app" id="app">
+  <div class="titlebar">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="menu"><span>File</span><span>Edit</span><span>Selection</span><span>View</span><span>Go</span><span>Run</span><span>Terminal</span><span>Help</span></div>
+    <div class="ttl" id="ttl">sync.service.ts — api-gateway</div>
+    <button class="tbtn" id="fsBtn" title="Toggle Full Screen">⛶</button>
+  </div>
+  <div class="main">
+    <div class="activity">
+      <div class="on"><svg viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></svg></div>
+      <div><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></div>
+      <div><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 5-12 3-12 7"/></svg></div>
+      <div><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg></div>
+      <div><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg></div>
+    </div>
+    <div class="sidebar">
+      <h4>EXPLORER</h4>
+      <div class="tree">
+        <div class="d o" style="--d:0"><b style="font-weight:600;font-size:11px">API-GATEWAY</b></div>
+        <div class="d" style="--d:1">.github</div>
+        <div class="d" style="--d:1">node_modules</div>
+        <div class="d o" style="--d:1">src</div>
+        <div class="d" style="--d:2">auth</div>
+        <div class="d" style="--d:2">infra</div>
+        <div class="d o" style="--d:2">orders</div>
+        <div class="f" style="--d:3">order.controller.ts</div>
+        <div class="f" style="--d:3">order.repository.ts</div>
+        <div class="f" style="--d:3">order.module.ts</div>
+        <div class="f sel" style="--d:3">sync.service.ts</div>
+        <div class="f" style="--d:3">types.ts</div>
+        <div class="d" style="--d:2">shared</div>
+        <div class="f" style="--d:2">main.ts</div>
+        <div class="d" style="--d:1">test</div>
+        <div class="fy" style="--d:1">package.json</div>
+        <div class="fy" style="--d:1">tsconfig.json</div>
+        <div class="fm" style="--d:1">README.md</div>
+      </div>
+    </div>
+    <div class="work" id="work">
+      <div class="tabs">
+        <div class="tab">order.repository.ts <span class="x">✕</span></div>
+        <div class="tab on" id="mainTab">sync.service.ts <span class="dot"></span><span class="x">✕</span></div>
+        <div class="tab">types.ts <span class="x">✕</span></div>
+      </div>
+      <div class="crumbs">src › orders › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> sync.service.ts › <span style="color:#ee9d28">◇</span> SyncService</div>
+      <div class="editor" id="editor"></div>
+      <div class="sash" id="sash"></div>
+      <div class="panel">
+        <div class="ptabs"><span>PROBLEMS <b class="badge" id="probBadge">0</b></span><span>OUTPUT</span><span>DEBUG CONSOLE</span><span class="on">TERMINAL</span><span style="flex:1"></span><span>zsh</span></div>
+        <div class="term" id="term"></div>
+        <form class="prompt" id="form" autocomplete="off">
+          <span class="p1" id="who">dev@mbp</span>:<span class="p2">~/api-gateway</span><span class="d1">&nbsp;(main)</span>&nbsp;$
+          <input id="inp" spellcheck="false" maxlength="600" autocomplete="off">
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="status">
+    <span>⎇ main*</span><span>⟳</span>
+    <span id="probStatus">⊗ 0 &nbsp;⚠ 0</span>
+    <span class="btn" id="liveBtn" title="Remote: connected workspace">⧉ <b id="roomLabel" style="font-weight:400">local</b></span>
+    <span class="sp"></span>
+    <span id="cursorPos">Ln 1, Col 1</span><span>Spaces: 2</span><span>UTF-8</span><span>LF</span><span class="btn" id="styleBtn" title="Change language mode">{ } TypeScript</span>
+    <span class="btn" id="panicBtn" title="Format Document (Esc)">✓ Prettier</span>
+    <span>🔔</span>
+  </div>
+</div>
+
+<script type="module">
+// ============================================================
+//  1) 把 Firebase 控制台给你的 firebaseConfig 粘贴到这里
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCl-p-EXhfxwZ1IeKMpfoMwbrt8uLBDSUo",
+  authDomain: "chat-r-f42c4.firebaseapp.com",
+  projectId: "chat-r-f42c4",
+  storageBucket: "chat-r-f42c4.firebasestorage.app",
+  messagingSenderId: "200928609457",
+  appId: "1:200928609457:web:850e04ca2ecafd5c930e90"
+};
+// ============================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const editor = $('editor'), term = $('term'), inp = $('inp');
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('sc_'+k); return v==null?d:v }catch(e){ return d } },
+  set(k, v){ try{ localStorage.setItem('sc_'+k, v) }catch(e){} },
+  del(k){ try{ localStorage.removeItem('sc_'+k) }catch(e){} }
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hash = s => { let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619) } return h>>>0 };
+const rng = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296 };
+const hex7 = () => Math.random().toString(16).slice(2,9);
+const hhmm = ms => { const d = new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0') };
+async function roomKey(code){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('stealth-chat:' + code.trim()));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('').slice(0, 32);
+}
+
+// ---------- syntax highlight ----------
+const KW = 'import|from|export|const|let|var|function|return|if|else|await|async|new|class|extends|implements|interface|type|for|of|in|try|catch|finally|throw|this|private|public|protected|readonly|static|while|break|continue|switch|case|default|null|undefined|true|false|void|as';
+const CTRL = /^(import|from|export|return|if|else|await|for|of|in|try|catch|finally|throw|while|break|continue|switch|case|default)$/;
+const RE = new RegExp(`(\\/\\/.*$)|('(?:[^'\\\\]|\\\\.)*'|"(?:[^"\\\\]|\\\\.)*"|\`[^\`]*\`)|\\b(${KW})\\b|\\b(\\d+)\\b|(@[A-Za-z]+)|\\b([A-Z][A-Za-z0-9_]*)\\b|\\b([a-zA-Z_$][\\w$]*)(?=\\s*[(<])`, 'g');
+function hl(line){
+  let out = '', last = 0, m;
+  RE.lastIndex = 0;
+  while ((m = RE.exec(line))){
+    out += esc(line.slice(last, m.index));
+    const t = m[0];
+    if (m[1]) out += `<span class="cm">${esc(t)}</span>`;
+    else if (m[2]) out += `<span class="s">${esc(t)}</span>`;
+    else if (m[3]) out += `<span class="${CTRL.test(t)?'k2':'k'}">${t}</span>`;
+    else if (m[4]) out += `<span class="n">${t}</span>`;
+    else if (m[5]) out += `<span class="fn">${esc(t)}</span>`;
+    else if (m[6]) out += `<span class="t">${esc(t)}</span>`;
+    else if (m[7]) out += `<span class="fn">${esc(t)}</span>`;
+    last = m.index + t.length;
+    if (t.length === 0) RE.lastIndex++;
+  }
+  return out + esc(line.slice(last));
+}
+
+// ---------- fake code ----------
+const HEADER = [
+  "import { Injectable, Logger } from '@nestjs/common';",
+  "import { RedisService } from '../infra/redis.service';",
+  "import { OrderRepository } from './order.repository';",
+  "import { MetricsService } from '../shared/metrics';",
+  "import type { SyncPayload, RetryPolicy, SyncResult } from './types';",
+  "",
+  "const DEFAULT_RETRY: RetryPolicy = { attempts: 3, backoffMs: 250 };",
+  "const BATCH_SIZE = 50;",
+  "",
+  "@Injectable()",
+  "export class SyncService {",
+  "  private readonly logger = new Logger(SyncService.name);",
+  "",
+  "  constructor(",
+  "    private readonly redis: RedisService,",
+  "    private readonly orders: OrderRepository,",
+  "    private readonly metrics: MetricsService,",
+  "  ) {}",
+  "",
+];
+const METHODS = [
+  "  async processQueue(batch: SyncPayload[]): Promise<SyncResult> {",
+  "  private async reconcile(orderId: string, policy = DEFAULT_RETRY) {",
+  "  async flushPending(limit = BATCH_SIZE): Promise<number> {",
+  "  private buildCacheKey(tenant: string, id: string): string {",
+  "  async handleWebhook(event: SyncPayload): Promise<void> {",
+  "  private async withRetry<T>(fn: () => Promise<T>, policy: RetryPolicy): Promise<T> {",
+  "  async rebuildIndex(tenantId: string): Promise<void> {",
+];
+const BLOCKS = [
+  ["const started = Date.now();"],
+  ["const key = this.buildCacheKey(payload.tenant, payload.id);"],
+  ["const cached = await this.redis.get(key);", "if (cached) return JSON.parse(cached);"],
+  ["if (!batch?.length) {", "  return { processed: 0, failed: 0 };", "}"],
+  ["this.metrics.increment('sync.batch', { size: batch.length });"],
+  ["const pending = await this.orders.findPending({ limit });"],
+  ["for (const item of batch) {", "  await this.reconcile(item.orderId);", "}"],
+  ["const result = await this.withRetry(() => this.orders.upsert(payload), DEFAULT_RETRY);"],
+  ["await this.redis.set(key, JSON.stringify(result), 'EX', 300);"],
+  ["this.logger.debug(`reconciled ${orderId} in ${Date.now() - started}ms`);"],
+  ["try {", "  await this.orders.markSynced(ids);", "} catch (err) {", "  this.logger.warn(`markSynced failed: ${err.message}`);", "}"],
+  ["const chunks = chunk(pending, BATCH_SIZE);"],
+  ["if (attempt >= policy.attempts) throw err;"],
+  ["await sleep(policy.backoffMs * 2 ** attempt);"],
+  ["const failed = results.filter((r) => r.status === 'rejected').length;"],
+  ["const tenant = event.headers['x-tenant-id'] ?? 'default';"],
+  ["this.metrics.timing('sync.latency', Date.now() - started);"],
+  ["const ids = pending.map((o) => o.id);"],
+  [""],
+  [""],
+];
+const CLOSERS = [["return { processed: batch.length, failed };"], ["return result;"], ["return ids.length;"], []];
+
+// ---------- state ----------
+let msgs = [];
+let myId = null, db = null, unsub = null, roomId = null;
+let style = store.get('style', 'comment');
+let nick = store.get('nick', '');
+let roomCode = store.get('room', '');
+let panic = false, unread = 0, firstLoad = true;
+const seen = new Set();
+
+const displayName = m => String(m.name || 'dev').slice(0, 16);
+
+function msgLine(m){
+  const name = esc(displayName(m)), text = esc(m.text), t = hhmm(m.ms);
+  const mine = m.uid === myId;
+  if (style === 'log')
+    return `<span class="k">this</span>.<span class="v">logger</span>.<span class="fn">${mine?'debug':'info'}</span>(<span class="s">'[${name} ${t}] ${text}'</span>);`;
+  if (style === 'str') {
+    const v = 'msg_' + t.replace(':','') + '_' + String(m.id).slice(-3).replace(/[^a-z0-9]/gi,'x');
+    return `<span class="k">const</span> <span class="v">${v}</span> = <span class="s">'${text}'</span>; <span class="cm">// ${name}</span>`;
+  }
+  return `<span class="cm">// </span><span class="tag">${mine?'TODO':'NOTE'}</span><span class="cm">(${name}, ${t}): </span><span class="cm txt">${text}</span>`;
+}
+
+function render(){
+  const nearBottom = editor.scrollHeight - editor.scrollTop - editor.clientHeight < 80;
+  const lines = [];
+  const push = (code, ind=0, cls='') => lines.push({ html: hl(code), ind, cls });
+  HEADER.forEach(l => push(l));
+  let methodIdx = 0, sinceOpen = 0;
+  const openMethod = () => { push(METHODS[methodIdx % METHODS.length]); methodIdx++; sinceOpen = 0; };
+  const closeMethod = () => { CLOSERS[methodIdx % CLOSERS.length].forEach(l => push('    '+l)); push('  }'); push(''); };
+  openMethod();
+  push('    const started = Date.now();');
+  msgs.forEach((m, i) => {
+    const r = rng(hash(String(m.id)));
+    if (!panic) lines.push({ html: msgLine(m), ind: 4, cls: 'msg' + (m.uid===myId?' mine':'') + (m._new?' new':'') });
+    const nBlocks = panic ? 1 + Math.floor(r()*2) : Math.floor(r()*1.7);
+    for (let b=0; b<nBlocks; b++) BLOCKS[Math.floor(r()*BLOCKS.length)].forEach(l => push(l ? '    '+l : ''));
+    sinceOpen++;
+    if (sinceOpen >= 6 + Math.floor(r()*4) && i < msgs.length-1) { closeMethod(); openMethod(); }
+    m._new = false;
+  });
+  if (!msgs.length || panic) BLOCKS.slice(2,8).forEach(b => b.forEach(l => push('    '+l)));
+  closeMethod();
+  push('}');
+  push('');
+  const cur = lines.length - 3;
+  editor.innerHTML = lines.map((l, i) =>
+    `<div class="ln ${l.cls}${i===cur?' cur':''}"><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}</span></div>`
+  ).join('');
+  $('cursorPos').textContent = `Ln ${cur+1}, Col ${Math.floor(Math.random()*30)+5}`;
+  if (nearBottom || firstLoad) editor.scrollTop = editor.scrollHeight;
+}
+
+// ---------- unread (disguised as warnings) ----------
+function setUnread(n){
+  unread = n;
+  $('probStatus').innerHTML = `⊗ 0 &nbsp;⚠ ${n}`;
+  $('probBadge').textContent = n;
+  $('mainTab').classList.toggle('unread', n > 0);
+  document.title = (n ? '● ' : '') + 'sync.service.ts — api-gateway — Visual Studio Code';
+}
+const isAway = () => document.hidden || panic || !document.hasFocus();
+window.addEventListener('focus', () => { if (!panic) setUnread(0) });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !panic && document.hasFocus()) setUnread(0) });
+
+// ---------- fake terminal ----------
+const ROUTES = ['/api/v1/orders','/api/v1/orders/sync','/api/v1/auth/refresh','/api/v1/tenants','/healthz','/api/v1/inventory','/api/v1/webhooks/stripe'];
+const TESTS = ['sync.service.spec.ts','order.repository.spec.ts','auth.guard.spec.ts','retry.util.spec.ts','tenant.middleware.spec.ts','cache.key.spec.ts'];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const now8 = () => new Date().toTimeString().slice(0,8);
+const GEN = [
+  () => `<span class="d1">[${now8()}]</span> <span class="g1">GET</span>  ${pick(ROUTES)} <span class="g1">200</span> <span class="d1">${(Math.random()*40+3|0)}ms</span>`,
+  () => `<span class="d1">[${now8()}]</span> <span class="y1">POST</span> ${pick(ROUTES)} <span class="g1">201</span> <span class="d1">${(Math.random()*90+10|0)}ms</span>`,
+  () => `<span class="g1">[Nest]</span> ${40000+(Math.random()*999|0)}  - <span class="d1">${new Date().toLocaleString('en-US')}</span>     <span class="g1">LOG</span> <span class="y1">[SyncService]</span> <span class="g1">batch processed: ${Math.random()*50|0} items</span>`,
+  () => `<span class="b1">webpack</span> compiled <span class="g1">successfully</span> in ${(Math.random()*1800+300|0)} ms`,
+  () => `<span class="g1"> PASS </span> test/${pick(TESTS)} <span class="d1">(${(Math.random()*4+.4).toFixed(2)} s)</span>`,
+  () => `<span class="d1">[redis]</span> cache ${Math.random()>.3?'<span class="g1">HIT</span>':'<span class="y1">MISS</span>'} orders:${(Math.random()*1e6|0).toString(36)}`,
+  () => `<span class="m1">prisma:query</span> SELECT "public"."Order"."id", "public"."Order"."status" FROM "public"."Order" WHERE "status" = $1 LIMIT $2`,
+  () => `<span class="d1">[${now8()}]</span> <span class="y1">WARN</span>  retry ${1+(Math.random()*2|0)}/3 reconcile(${(Math.random()*1e8|0).toString(16)}) — upstream timeout`,
+  () => `<span class="d1">  ✓ ${pick(['should retry on 503','should skip empty batch','handles duplicate webhook','builds tenant-scoped key','marks synced after upsert'])} (${Math.random()*30|0} ms)</span>`,
+  () => `<span class="b1">[tsc]</span> File change detected. Starting incremental compilation...`,
+  () => `<span class="b1">[tsc]</span> Found 0 errors. Watching for file changes.`,
+];
+function termLine(html){
+  const near = term.scrollHeight - term.scrollTop - term.clientHeight < 40;
+  const d = document.createElement('div'); d.innerHTML = html; term.appendChild(d);
+  while (term.childElementCount > 300) term.firstChild.remove();
+  if (near) term.scrollTop = term.scrollHeight;
+}
+(function tick(){ termLine(pick(GEN)()); setTimeout(tick, 250 + Math.random()*1300); })();
+for (let i=0;i<14;i++) termLine(pick(GEN)());
+
+// ---------- quick input (room code / name) ----------
+function ask(title, placeholder, value='', password=false){
+  return new Promise(resolve => {
+    const qi = $('qi'), qin = $('qiInput');
+    $('qiTitle').textContent = title;
+    qin.placeholder = placeholder; qin.value = value; qin.type = password ? 'password' : 'text';
+    qi.hidden = false; setTimeout(() => qin.focus(), 0);
+    const done = v => { qi.hidden = true; qin.removeEventListener('keydown', onKey); resolve(v); };
+    const onKey = e => {
+      e.stopPropagation();
+      if (e.key === 'Enter' && qin.value.trim()) done(qin.value.trim());
+      if (e.key === 'Escape') done(null);
+    };
+    qin.addEventListener('keydown', onKey);
+  });
+}
+
+// ---------- commands ----------
+const HELP = [
+  '<span class="help">commands:</span>',
+  '<span class="help">  :nick &lt;name&gt;           change your display name</span>',
+  '<span class="help">  :style comment|log|str  how messages look in the code</span>',
+  '<span class="help">  :room                   switch to another room code</span>',
+  '<span class="help">  :clear                  delete all of YOUR messages in this room</span>',
+  '<span class="help">  Esc                     boss key: hide all chat lines / show again</span>',
+  '<span class="help">  Ctrl+`                  focus this input</span>',
+];
+async function command(c){
+  const [cmd, ...rest] = c.slice(1).trim().split(/\s+/); const arg = rest.join(' ');
+  if (cmd === 'help' || cmd === 'h') HELP.forEach(termLine);
+  else if (cmd === 'nick') {
+    if (!arg) { termLine('<span class="r1">usage: :nick &lt;name&gt;</span>'); return; }
+    nick = arg.slice(0,16); store.set('nick', nick); updateWho();
+    termLine(`<span class="d1">git config user.name "${esc(nick)}"</span>`);
+  }
+  else if (cmd === 'style') {
+    if (['comment','log','str'].includes(arg)) { style = arg; store.set('style', style); render(); termLine(`<span class="d1">✔ style → ${arg}</span>`); }
+    else termLine('<span class="r1">usage: :style comment|log|str</span>');
+  }
+  else if (cmd === 'room') {
+    const code = await ask('Connect to Remote Workspace', 'Enter workspace token', '', true);
+    if (code) { roomCode = code; store.set('room', code); await joinRoom(); }
+    inp.focus();
+  }
+  else if (cmd === 'clear') {
+    if (!db || !roomId || !myId) return;
+    const snap = await getDocs(query(collection(db, 'rooms', roomId, 'msgs'), where('uid', '==', myId)));
+    let n = 0;
+    for (const d of snap.docs) { try { await deleteDoc(d.ref); n++; } catch(e){} }
+    termLine(`<span class="g1">✔ removed ${n} entries</span>`);
+  }
+  else termLine(`<span class="r1">zsh: command not found: ${esc(cmd)}</span>`);
+}
+
+async function send(text){
+  if (!db || !roomId || !myId) { termLine('<span class="r1">fatal: not connected to remote — check firebaseConfig / network</span>'); return; }
+  try {
+    await addDoc(collection(db, 'rooms', roomId, 'msgs'), { uid: myId, name: (nick || 'dev').slice(0,16), text: text.slice(0,600), ts: serverTimestamp() });
+    termLine(`<span class="d1">[main ${hex7()}] chore: update sync config</span>`);
+    termLine(`<span class="d1"> 1 file changed, ${1+(Math.random()*3|0)} insertions(+)</span>`);
+  } catch (e) {
+    termLine(`<span class="r1">error: push failed (${esc(e?.code||'unknown')})</span>`);
+  }
+}
+
+$('form').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = inp.value.trim(); inp.value = '';
+  if (!v) return;
+  if (v.startsWith(':')) command(v); else send(v);
+});
+
+// ---------- boss key ----------
+function togglePanic(force){
+  panic = force ?? !panic;
+  inp.value = '';
+  render();
+  if (panic) { editor.scrollTop = Math.max(0, editor.scrollHeight * 0.4); inp.blur(); }
+  else { setUnread(0); editor.scrollTop = editor.scrollHeight; inp.focus(); }
+}
+document.addEventListener('keydown', e => {
+  if (!$('qi').hidden) return;
+  if (e.key === 'Escape') { e.preventDefault(); togglePanic(); }
+  if (e.key === '`' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (panic) togglePanic(false); inp.focus(); }
+});
+$('panicBtn').addEventListener('click', () => togglePanic());
+$('styleBtn').addEventListener('click', () => { const o = ['comment','log','str']; style = o[(o.indexOf(style)+1)%3]; store.set('style', style); render(); });
+$('liveBtn').addEventListener('click', () => command(':room'));
+$('fsBtn').addEventListener('click', async () => {
+  try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); }
+  catch(e){ termLine('<span class="d1">fullscreen not allowed — use the browser\'s fullscreen (F11 / ⌃⌘F)</span>'); }
+});
+
+// resizable panel
+(() => {
+  const sash = $('sash'), work = $('work'); let drag = false;
+  sash.addEventListener('mousedown', () => { drag = true; document.body.style.userSelect = 'none'; });
+  window.addEventListener('mouseup', () => { drag = false; document.body.style.userSelect = ''; });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return; const r = work.getBoundingClientRect();
+    work.style.setProperty('--panel', Math.min(r.height - 140, Math.max(90, r.bottom - e.clientY)) + 'px');
+  });
+})();
+
+function updateWho(){ $('who').textContent = (nick || 'dev') + '@mbp'; }
+
+// ---------- data ----------
+async function joinRoom(){
+  if (unsub) { unsub(); unsub = null; }
+  msgs = []; seen.clear(); firstLoad = true; setUnread(0); render();
+  roomId = await roomKey(roomCode);
+  $('roomLabel').textContent = 'ssh: ' + roomId.slice(0, 6);
+  termLine(`<span class="d1">Connecting to remote workspace ${roomId.slice(0,6)}…</span>`);
+  const timer = setTimeout(() => termLine('<span class="y1">warning: remote is slow to respond — check your network</span>'), 10000);
+  const q = query(collection(db, 'rooms', roomId, 'msgs'), orderBy('ts', 'desc'), limit(150));
+  unsub = onSnapshot(q, snap => {
+    clearTimeout(timer);
+    const list = snap.docs.map(d => {
+      const data = d.data({ serverTimestamps: 'estimate' });
+      return { id: d.id, uid: data.uid, name: data.name, text: data.text, ms: data.ts?.toMillis ? data.ts.toMillis() : Date.now() };
+    }).filter(m => typeof m.text === 'string').reverse();
+    let incoming = 0;
+    for (const m of list) {
+      if (!seen.has(m.id)) { seen.add(m.id); if (!firstLoad) { m._new = true; if (m.uid !== myId) incoming++; } }
+    }
+    msgs = list;
+    if (incoming && isAway()) setUnread(unread + incoming);
+    render();
+    if (firstLoad) termLine(`<span class="g1">✔ connected</span> <span class="d1">(${list.length} entries)</span>`);
+    firstLoad = false;
+  }, err => {
+    clearTimeout(timer);
+    termLine(`<span class="r1">error: remote disconnected (${esc(err?.code||'unknown')}) — reload to reconnect</span>`);
+  });
+}
+
+render();
+updateWho();
+termLine('<span class="d1">Type :help for commands. Press Esc anytime to hide the chat.</span>');
+
+(async () => {
+  if (String(firebaseConfig.apiKey).startsWith('PASTE')) {
+    termLine('<span class="r1">fatal: firebaseConfig is empty — paste your Firebase config at the top of index.html</span>');
+    return;
+  }
+  try {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    db = getFirestore(app);
+    await signInAnonymously(auth);
+    await new Promise(res => onAuthStateChanged(auth, u => { if (u) { myId = u.uid; res(); } }));
+  } catch (e) {
+    termLine(`<span class="r1">fatal: auth failed (${esc(e?.code||e?.message||'unknown')}) — is Anonymous sign-in enabled?</span>`);
+    return;
+  }
+  if (!nick) { const n = await ask('git config user.name', 'Your display name (friends will see this)'); nick = (n || 'dev').slice(0,16); store.set('nick', nick); updateWho(); }
+  if (!roomCode) {
+    const c = await ask('Connect to Remote Workspace', 'Enter workspace token (same code as your friends)', '', true);
+    if (!c) { termLine('<span class="y1">no workspace token — type :room to connect</span>'); return; }
+    roomCode = c; store.set('room', c);
+  }
+  await joinRoom();
+  inp.focus();
+})();
+</script>
+</body>
+</html>
