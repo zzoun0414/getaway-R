@@ -91,6 +91,153 @@
   .status.alert{animation:salert .5s steps(1) 4}
   @keyframes salert{0%{background:#c5602e}50%{background:var(--status)}}
   #bell.has::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-left:2px;vertical-align:top}
+
+  .status span:empty{display:none}
+  .xaddr,.xfx{display:none}
+  .chip{display:inline-flex;gap:6px;align-items:center;max-width:45%;background:#264f78;color:#d6e6f5;border-radius:3px;padding:0 6px;margin-left:8px;font-size:12px;line-height:18px;white-space:nowrap;overflow:hidden}
+  .chip[hidden]{display:none}
+  .chip span{overflow:hidden;text-overflow:ellipsis}
+  .chip b{cursor:pointer;font-weight:400;opacity:.75}.chip b:hover{opacity:1}
+  .ln.msg[data-mid],.xl tr[data-mid],.ncm[data-mid],.tl[data-mid]{cursor:pointer}
+  .ln.msg[data-mid]:hover{background:#2a2d2e}
+  .ln.req .c{opacity:.75}
+  .imgref{cursor:zoom-in;text-decoration:underline dotted}
+  .pflag{position:relative;display:inline-block;margin-left:4px;vertical-align:top}
+  .pflag i{display:inline-block;width:2px;height:16px;background:var(--mc);vertical-align:middle;animation:pblink 1s steps(1) infinite}
+  .pflag b{position:absolute;left:0;top:-13px;background:var(--mc);color:#111;font:500 10px/13px -apple-system,'Segoe UI',sans-serif;padding:0 4px;border-radius:2px 2px 2px 0;white-space:nowrap}
+  @keyframes pblink{50%{opacity:0}}
+  .imgpop{position:fixed;z-index:75;background:#252526;border:1px solid #454545;box-shadow:0 6px 18px rgba(0,0,0,.55);border-radius:4px;padding:4px;max-width:330px}
+  .imgpop[hidden],.lightbox[hidden]{display:none}
+  .imgpop img{display:block;max-width:320px;max-height:250px}
+  .lightbox{position:fixed;inset:0;z-index:90;background:rgba(20,20,20,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:zoom-out;padding:20px}
+  .lightbox img{max-width:100%;max-height:85%;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+  .lbcap{color:#aaa;font-size:12px;font-family:var(--mono)}
+
+  /* ===== shared for non-VS Code skins ===== */
+  body:not(.skin-vscode) .activity, body:not(.skin-vscode) .sidebar{display:none}
+  body:not(.skin-vscode) .main{grid-template-columns:1fr !important}
+  body:not(.skin-vscode) .work{display:flex;flex-direction:column;min-height:0}
+  body:not(.skin-vscode) .sash{display:none}
+  body:not(.skin-vscode) .editor{flex:1;min-height:0}
+  body:not(.skin-vscode) .tabs,body:not(.skin-vscode) .crumbs{flex:none}
+  .skin-excel .dropdown,.skin-notion .dropdown,.skin-excel .toast,.skin-notion .toast,.skin-excel .qi,.skin-notion .qi,.skin-excel .imgpop,.skin-notion .imgpop{background:#fff;color:#37352f;border-color:#dcdcdc}
+  .skin-excel .dropdown .mi:hover,.skin-notion .dropdown .mi:hover{background:#e8f0fa;color:#111}
+  .skin-excel .dropdown .sep,.skin-notion .dropdown .sep{background:#e5e5e5}
+  .skin-excel .qi input,.skin-notion .qi input{background:#fff;color:#222;border-color:#888}
+  .skin-excel .qi .qt,.skin-notion .qi .qt{color:#444}
+
+  /* ===== Excel ===== */
+  .skin-excel{background:#fff}
+  .skin-excel .titlebar{background:#217346;color:#fff}
+  .skin-excel .ttl,.skin-excel .menu{color:#fff}
+  .skin-excel .menu span:hover,.skin-excel .menu span.open{background:#185c37}
+  .skin-excel .tbtn{color:#fff}.skin-excel .tbtn:hover{background:#185c37}
+  .skin-excel .work{background:#fff}
+  .skin-excel .crumbs{display:none}
+  .skin-excel .panel{order:-1;display:block;flex:none;height:auto !important;background:#fff;border-bottom:1px solid #d4d4d4}
+  .skin-excel .ptabs,.skin-excel .term,.skin-excel .pp{display:none}
+  .skin-excel .prompt{padding:3px 6px;gap:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;font-size:13px;color:#222}
+  .skin-excel .xaddr{display:inline-block;width:70px;border-right:1px solid #d4d4d4;padding:0 6px;color:#222;font-size:12px}
+  .skin-excel .xfx{display:inline-block;padding:0 10px;color:#666;font-style:italic;font-family:Georgia,serif}
+  .skin-excel .prompt input{color:#222;caret-color:#222;font-family:Calibri,'Segoe UI',Arial,'PingFang SC',sans-serif;font-size:14px;border-left:1px solid #d4d4d4;padding-left:8px;margin-left:0}
+  .skin-excel .chip{background:#e2efda;color:#185c37}
+  .skin-excel .editor{background:#fff;color:#222;font-family:Calibri,'Segoe UI',Arial,'PingFang SC','Hiragino Sans',sans-serif;font-size:13px;line-height:normal;padding:0}
+  .xl{border-collapse:collapse;table-layout:fixed;width:max-content;min-width:100%}
+  .xl td,.xl th{border:1px solid #e3e3e3;height:21px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+  .xl th{background:#f3f3f3;color:#555;font-weight:400;position:sticky;top:0;z-index:2;border-color:#d4d4d4;text-align:center;font-size:12px}
+  .xl td.rn,.xl th.rn{background:#f3f3f3;color:#555;text-align:center;position:sticky;left:0;z-index:1;border-color:#d4d4d4;font-size:12px}
+  .xl th.rn{z-index:3}
+  .xl .num{text-align:right}
+  .xl td.xm{white-space:normal;overflow-wrap:anywhere;line-height:18px;padding:1px 4px}
+  .xl td.xq{color:#888;font-style:italic;white-space:nowrap;text-overflow:ellipsis}
+  .xl tr.msg .mc{color:var(--mc)}
+  .skin-excel .mc{filter:brightness(.72) saturate(1.3)}
+  .xl tr.mine td:not(.rn){background:#ddebf7}
+  .xl tr.new td:not(.rn){animation:xnew 1.6s ease-out}
+  @keyframes xnew{from{background:#fff2cc}}
+  .xl tr[data-mid]:hover td:not(.rn){background:#f2f8ee}
+  .xl .xsel{outline:2px solid #217346;outline-offset:-2px}
+  .xl .xpeer{outline:2px solid var(--mc);outline-offset:-2px;position:relative;overflow:visible}
+  .xl .xpeer::after{content:attr(data-n);position:absolute;left:-2px;bottom:100%;background:var(--mc);color:#fff;font-size:10px;line-height:13px;padding:0 4px;white-space:nowrap;z-index:4}
+  .xlink{color:#0563c1;text-decoration:underline}
+  .skin-excel .tabs{order:10;background:#f3f3f3;border-top:1px solid #d4d4d4;height:30px}
+  .skin-excel .tab{background:transparent;color:#444;border-right:1px solid #d4d4d4;font-size:12px;font-family:'Segoe UI',sans-serif}
+  .skin-excel .tab.on{background:#fff;color:#217346;border-top:none;box-shadow:inset 0 -3px 0 #217346;font-weight:600}
+  .skin-excel .tab .dot{background:#217346}
+  .skin-excel .tab .x,.skin-notion .tab .x{visibility:hidden}.skin-excel .tab:hover .x,.skin-notion .tab:hover .x{visibility:visible}
+  .skin-excel .status{background:#f3f3f3;color:#444;border-top:1px solid #d4d4d4}
+  .skin-excel .status .btn:hover{background:#e1e1e1}
+  .skin-excel .status.alert{animation:salertx .5s steps(1) 4}
+  @keyframes salertx{0%{background:#ffd966}50%{background:#f3f3f3}}
+
+  /* ===== Notion ===== */
+  .skin-notion{background:#fff}
+  .skin-notion .titlebar{background:#fbfbfa;color:#37352f;border-bottom:1px solid #ededec}
+  .skin-notion .ttl{color:#37352f}
+  .skin-notion .menu{color:#787774}
+  .skin-notion .menu span:hover,.skin-notion .menu span.open{background:#efefed;color:#37352f}
+  .skin-notion .tbtn{color:#787774}.skin-notion .tbtn:hover{background:#efefed}
+  .skin-notion .work{background:#fff}
+  .skin-notion .tabs{background:#f7f7f5;border-bottom:1px solid #ededec;height:34px}
+  .skin-notion .tab{background:transparent;color:#787774;border-right:1px solid #ededec;font-size:13px}
+  .skin-notion .tab.on{background:#fff;color:#37352f;border-top:none}
+  .skin-notion .tab .x{color:#9b9a97}
+  .skin-notion .tab .dot{background:#eb5757}
+  .skin-notion .crumbs{background:#fff;color:#787774;height:32px;font-size:13px;padding:0 20px}
+  .skin-notion .editor{background:#fff;color:#37352f;font-family:ui-sans-serif,-apple-system,'Segoe UI','PingFang SC','Hiragino Sans',sans-serif;font-size:15px;line-height:1.55;padding:0}
+  .nt{max-width:720px;margin:0 auto;padding:18px 48px 60px}
+  .nt .nicon{font-size:48px;line-height:1.1}
+  .nt h1{font-size:32px;font-weight:700;margin:6px 0 4px;line-height:1.2}
+  .nt .props{color:#9b9a97;font-size:13px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #ededec}
+  .nt h2{font-size:19px;font-weight:600;margin:20px 0 4px}
+  .nt .b{padding:2px 0;min-height:1em}
+  .nt .b.li::before{content:'•';margin:0 10px 0 6px}
+  .nt .b.todo::before{content:'☐';margin:0 8px 0 4px;color:#787774}
+  .nt .b.done{text-decoration:line-through;color:#9b9a97}.nt .b.done::before{content:'☑';margin:0 8px 0 4px;text-decoration:none;display:inline-block}
+  .nt .ncm{display:flex;gap:10px;padding:6px 6px;margin:0 -6px;border-radius:4px}
+  .nt .ncm:hover{background:#f7f7f5}
+  .nt .ncm.new{animation:nnew 1.6s ease-out}
+  @keyframes nnew{from{background:#fbf3db}}
+  .nt .av{width:22px;height:22px;border-radius:50%;background:var(--mc);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+  .nt .who{font-weight:600;font-size:14px}.nt .when{color:#9b9a97;font-size:12px;margin-left:6px}
+  .nt .ntext{overflow-wrap:anywhere}
+  .nt .nre{color:#787774;font-size:13px;border-left:2px solid #e3e2e0;padding-left:8px;margin:2px 0}
+  .nt .nfile{background:#f1f1ef;border-radius:4px;padding:1px 6px;text-decoration:none}
+  .nt .ntyping{color:#9b9a97;font-size:13px;padding:6px 0 0 32px}
+  .skin-notion .panel{display:block;flex:none;height:auto !important;background:#fff;border-top:1px solid #ededec}
+  .skin-notion .ptabs,.skin-notion .term,.skin-notion .pp{display:none}
+  .skin-notion .prompt{max-width:720px;margin:0 auto;width:100%;padding:10px 48px 12px;gap:6px}
+  .skin-notion .prompt input{color:#37352f;caret-color:#37352f;font-family:inherit;font-size:15px;background:#f7f7f5;border-radius:6px;padding:7px 10px;margin:0}
+  .skin-notion .prompt input::placeholder{color:#9b9a97}
+  .skin-notion .chip{background:#f1f1ef;color:#787774;margin:0}
+  .skin-notion .status{background:#fbfbfa;color:#9b9a97;border-top:1px solid #ededec}
+  .skin-notion .status .btn:hover{background:#efefed}
+  .skin-notion .status.alert{animation:salertn .5s steps(1) 4}
+  @keyframes salertn{0%{background:#fbe4e4}50%{background:#fbfbfa}}
+
+  /* ===== Terminal (tmux) ===== */
+  .skin-terminal .titlebar{background:#2b2b2b}
+  .skin-terminal .work{background:#0c0c0c}
+  .skin-terminal .crumbs,.skin-terminal .ptabs{display:none}
+  .skin-terminal .editor{background:#0c0c0c;color:#cccccc;font-size:12.5px;line-height:18px;padding:4px 12px}
+  .tl{white-space:pre-wrap;word-break:break-word}
+  .tl.msg .mc{color:var(--mc)}
+  .tl.new{animation:flash 1.4s ease-out}
+  .tl[data-mid]:hover{background:#1a1a1a}
+  .tlink{color:#3b8eea}
+  .tcur{animation:pblink 1s steps(1) infinite;color:#ccc}
+  .skin-terminal .panel{display:flex;flex-direction:column;flex:none;height:30% !important;min-height:120px;background:#0c0c0c;border-top:1px solid #00aa00}
+  .skin-terminal .term{flex:1;min-height:0;padding-top:4px}
+  .skin-terminal .tabs{order:10;background:#00aa00;height:20px}
+  .skin-terminal .tab{background:transparent;color:#000;border:none;padding:0 6px;font-family:var(--mono);font-size:12px}
+  .skin-terminal .tab.on{background:transparent;color:#000;border-top:none;font-weight:700}
+  .skin-terminal .tab.on::after{content:'*'}
+  .skin-terminal .tab .x,.skin-terminal .tab .dot{display:none !important}
+  .skin-terminal .tab.unread::after{content:'#'}
+  .skin-terminal .status{background:#00aa00;color:#000;font-family:var(--mono)}
+  .skin-terminal .status .btn:hover{background:#00c400}
+  .skin-terminal .status.alert{animation:salertt .5s steps(1) 4}
+  @keyframes salertt{0%{background:#c5602e}50%{background:#00aa00}}
   .md-h{color:#569cd6;font-weight:600}.md-q{color:#6a9955}.md-c{color:#ce9178}.md-b{color:#dcdcaa;font-weight:600}.md-l{color:#6796e6}
   .new{animation:flash 1.4s ease-out}
   @keyframes flash{from{background:#264f78}to{background:transparent}}
@@ -137,11 +284,18 @@
     .prompt .p2,.prompt .d1{display:none}
     .prompt input{font-size:16px;margin-left:6px}
     .status{padding:0 4px env(safe-area-inset-bottom);font-size:11px}
-    #cursorPos,.status span:nth-child(2),.status span:nth-child(7),.status span:nth-child(8),.status span:nth-child(9),.status span:last-child{display:none}
+    .status .mh,.dropdown .grp.mh2{display:none}
+    .status span{padding:0 5px}
     #panicBtn{background:rgba(255,255,255,.12);border-radius:3px}
     .qi{top:calc(40px + env(safe-area-inset-top))}
     .qi input{font-size:16px}
     #hamb{display:block;font-size:16px;padding:0 4px}
+    .nt{padding:14px 16px 40px}.nt h1{font-size:26px}
+    .skin-notion .prompt{padding:8px 12px}
+    .skin-excel .xaddr{width:48px}
+    .skin-terminal .editor{font-size:11px;line-height:16px;padding:4px 8px}
+    .skin-terminal .panel{height:26% !important}
+    .chip{max-width:40%}
     .ln.msg .g::after{right:3px}
     .toast{bottom:calc(30px + env(safe-area-inset-bottom));right:8px}
   }
@@ -159,6 +313,8 @@
   <div class="qh" id="qiHint">Press 'Enter' to confirm or 'Escape' to cancel</div>
 </div>
 <div class="dropdown" id="dropdown" hidden></div>
+<div class="imgpop" id="imgPop" hidden></div>
+<div class="lightbox" id="lightbox" hidden></div>
 <div class="toast" id="toast" hidden><span class="ti">ⓘ</span><div class="tt" id="toastText"></div><span class="tx" id="toastX">✕</span></div>
 <div class="app" id="app">
   <div class="titlebar">
@@ -209,20 +365,24 @@
         <div class="ptabs"><span>PROBLEMS <b class="badge" id="probBadge">0</b></span><span>OUTPUT</span><span>DEBUG CONSOLE</span><span class="on">TERMINAL</span><span style="flex:1"></span><span>zsh</span></div>
         <div class="term" id="term"></div>
         <form class="prompt" id="form" autocomplete="off">
-          <span class="p1" id="who">dev@mbp</span>:<span class="p2">~/api-gateway</span><span class="d1">&nbsp;(main)</span>&nbsp;$
+          <span class="pp"><span class="p1" id="who">dev@mbp</span>:<span class="p2">~/api-gateway</span><span class="d1">&nbsp;(main)</span>&nbsp;$</span>
+          <span class="xaddr" id="xaddr">A1</span><span class="xfx">fx</span>
+          <span class="chip" id="replyChip" hidden><span id="replyText"></span><b id="replyX" title="Cancel reply">✕</b></span>
           <input id="inp" spellcheck="false" maxlength="600" autocomplete="off">
+          <input type="file" id="fileIn" accept="image/*" hidden>
         </form>
       </div>
     </div>
   </div>
   <div class="status">
-    <span>⎇ main*</span><span>⟳</span>
+    <span id="sBranch">⎇ main*</span><span id="sSync" class="mh">⟳</span>
     <span id="probStatus">⊗ 0 &nbsp;⚠ 0</span>
-    <span class="btn" id="liveBtn" title="Remote: connected workspace">⧉ <b id="roomLabel" style="font-weight:400">local</b></span>
+    <span class="btn" id="liveBtn" title="Open another workspace"><b id="roomLabel" style="font-weight:400">⧉ local</b></span>
+    <span class="btn" id="peersBtn" title="Who is here">👥 <b id="peerN" style="font-weight:400">1</b></span>
     <span class="sp"></span>
-    <span id="cursorPos">Ln 1, Col 1</span><span>Spaces: 2</span><span>UTF-8</span><span>LF</span><span class="btn" id="styleBtn" title="Change language mode">{ } TypeScript</span>
-    <span class="btn" id="panicBtn" title="Format Document (Esc)">✓ Prettier</span>
-    <span class="btn" id="bell" title="Notifications">🔔</span>
+    <span id="cursorPos" class="mh">Ln 1, Col 1</span><span id="sSpaces" class="mh">Spaces: 2</span><span id="sEnc" class="mh">UTF-8</span><span id="sEol" class="mh">LF</span><span class="btn mh" id="styleBtn" title="Change language mode">{ } TypeScript</span>
+    <span class="btn" id="panicBtn" title="Hide (Esc)">✓ Prettier</span>
+    <span class="btn mh" id="bell" title="Notifications">🔔</span>
   </div>
 </div>
 
@@ -230,6 +390,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyCl-p-EXhfxwZ1IeKMpfoMwbrt8uLBDSUo",
   authDomain: "chat-r-f42c4.firebaseapp.com",
+  databaseURL: "https://chat-r-f42c4-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "chat-r-f42c4",
   storageBucket: "chat-r-f42c4.firebasestorage.app",
   messagingSenderId: "200928609457",
@@ -238,7 +399,8 @@ const firebaseConfig = {
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, getDoc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getDatabase, ref as dbRef, set as dbSet, update as dbUpdate, remove as dbRemove, onValue, onDisconnect, serverTimestamp as rtdbNow } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // ---------- helpers ----------
 const $ = id => document.getElementById(id);
@@ -253,10 +415,21 @@ const hash = s => { let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.cha
 const rng = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296 };
 const hex7 = () => Math.random().toString(16).slice(2,9);
 const hhmm = ms => { const d = new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0') };
+const hhmmss = ms => new Date(ms).toTimeString().slice(0,8);
+const isMobile = () => window.matchMedia('(max-width:760px)').matches;
 async function roomKey(code){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('stealth-chat:' + code.trim()));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('').slice(0, 32);
 }
+const b64u = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const unb64u = s => decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
+
+// ---------- invite link in the URL: read it, then wipe it from the address bar ----------
+let inviteCode = null;
+try {
+  const m = location.hash.match(/^#j=([A-Za-z0-9_-]+)/);
+  if (m) { inviteCode = unb64u(m[1]).slice(0, 200); history.replaceState(null, '', location.pathname + location.search); }
+} catch(e){ inviteCode = null; }
 
 // ---------- syntax highlight ----------
 const KW = 'import|from|export|const|let|var|function|return|if|else|await|async|new|class|extends|implements|interface|type|for|of|in|try|catch|finally|throw|this|private|public|protected|readonly|static|while|break|continue|switch|case|default|null|undefined|true|false|void|as';
@@ -336,7 +509,8 @@ const BLOCKS = [
 ];
 const CLOSERS = [["return { processed: batch.length, failed };"], ["return result;"], ["return ids.length;"], []];
 
-// ---------- state ----------
+// ---------- skins ----------
+const SKINS = ['vscode', 'excel', 'notion', 'terminal'];
 const FILES = [
   ['sync.service.ts', 'orders', 'SyncService'],
   ['order.repository.ts', 'orders', 'OrderRepository'],
@@ -345,13 +519,40 @@ const FILES = [
   ['tenant.middleware.ts', 'shared', 'TenantMiddleware'],
   ['metrics.service.ts', 'shared', 'MetricsService'],
 ];
-let myId = null, db = null;
+const SHEETS = ['Orders', 'Inventory', 'Q4 Summary', 'Pivot', 'Returns', 'Forecast'];
+const PAGES = ['Q4 Sync Notes', 'Order Pipeline Review', 'Auth Migration Plan', 'Infra Weekly', 'Tenant Onboarding', 'Metrics Roadmap'];
+const TMUX = ['sync', 'orders', 'auth', 'redis', 'tenant', 'metrics'];
+const MAX_ROOMS = FILES.length;
+const fileOf = i => FILES[i % FILES.length];
+const MENU_LABELS = {
+  vscode:   ['File', 'Edit', 'Selection', 'View', 'Go', 'Run', 'Terminal', 'Help'],
+  excel:    ['File', 'Home', 'Insert', 'View', 'Formulas', 'Data', 'Review', 'Help'],
+  notion:   ['File', 'Edit', '', 'View', '', '', '', 'Help'],
+  terminal: ['Shell', 'Edit', '', 'View', '', '', 'Window', 'Help'],
+};
+function tabLabel(i){
+  if (skin === 'excel') return SHEETS[i % SHEETS.length];
+  if (skin === 'notion') return PAGES[i % PAGES.length];
+  if (skin === 'terminal') return `${i}:${TMUX[i % TMUX.length]}`;
+  return fileOf(i)[0];
+}
+function windowTitle(){
+  if (skin === 'excel') return 'Q4_order_sync.xlsx - Excel';
+  if (skin === 'notion') return view === 'recipe' ? 'recipe' : PAGES[active % PAGES.length];
+  if (skin === 'terminal') return 'zsh — api-gateway';
+  return `${view === 'recipe' ? 'recipe.md' : fileOf(active)[0]} — api-gateway — Visual Studio Code`;
+}
+
+// ---------- state ----------
+let myId = null, db = null, rtdb = null;
 let style = store.get('style', 'comment');
+let skin = SKINS.includes(store.get('skin', '')) ? store.get('skin', '') : 'vscode';
 let nick = store.get('nick', '');
 let panic = false, scrollBottom = true;
 let view = 'room', recipeOpen = false;
 let alertMode = store.get('alert', 'on');
-// rooms: [{code, id, msgs, seen, first, unread, unsub}]
+let replyTo = null;
+// rooms: [{code, id, msgs, seen, first, unread, unsub, peers, presOff}]
 let rooms = [];
 let active = 0;
 (() => {
@@ -359,22 +560,62 @@ let active = 0;
   try { codes = JSON.parse(store.get('rooms', '[]')) || []; } catch(e){}
   const legacy = store.get('room', '');
   if (!codes.length && legacy) codes = [legacy];
-  rooms = codes.slice(0, FILES.length).map(code => ({ code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null }));
+  rooms = codes.slice(0, MAX_ROOMS).map(newRoom);
   active = Math.min(+store.get('active', '0') || 0, Math.max(0, rooms.length - 1));
 })();
-const cur = () => rooms[active];
+function newRoom(code){ return { code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null, peers: {}, presOff: null }; }
+function cur(){ return rooms[active]; }
 const saveRooms = () => { store.set('rooms', JSON.stringify(rooms.map(r => r.code))); store.set('active', String(active)); store.del('room'); };
-const fileOf = i => FILES[i % FILES.length];
 
-const displayName = m => String(m.name || 'dev').slice(0, 16);
-
-// own messages: blue; each friend gets a stable colour from the palette
+// ---------- colours ----------
 const MY_COLOR = '#6cb6ff';
-const PALETTE = ['#89c26d', '#e5a35f', '#e08cc4', '#d4c160', '#6fd1bd', '#b79cf2', '#f08a7e'];
-const colorOf = m => m.uid === myId ? MY_COLOR : PALETTE[hash(String(m.uid || m.name)) % PALETTE.length];
+const PALETTE = ['#89c26d', '#e5a35f', '#e08cc4', '#d4c160', '#b79cf2', '#f08a7e', '#6fd1bd'];
+// each friend gets the least-used colour the first time they appear, then keeps it (remembered in this browser)
+const colorMap = (() => { try { return JSON.parse(store.get('colors', '{}')) || {}; } catch(e){ return {}; } })();
+function colorOfUid(uid, name){
+  if (uid && uid === myId) return MY_COLOR;
+  if (!uid) return PALETTE[hash(String(name)) % PALETTE.length];
+  if (!(uid in colorMap)) {
+    const counts = PALETTE.map((_, i) => Object.values(colorMap).filter(v => v === i).length);
+    colorMap[uid] = counts.indexOf(Math.min(...counts));
+    store.set('colors', JSON.stringify(colorMap));
+  }
+  return PALETTE[colorMap[uid] % PALETTE.length];
+}
+const colorOf = m => colorOfUid(m.uid, m.name);
+const displayName = m => String(m.name || 'dev').slice(0, 16);
+const imgName = id => 'IMG_' + String(1000 + hash(String(id)) % 9000);
+
+// ---------- presence (who is here / typing) ----------
+function peersOf(r){
+  const p = (r && r.peers) || {};
+  return Object.entries(p).filter(([, v]) => v && typeof v === 'object').map(([uid, v]) => ({ uid, name: String(v.name || 'dev').slice(0,16), typing: !!v.typing, away: !!v.away }));
+}
+function typers(){
+  if (panic || view === 'recipe') return [];
+  return peersOf(cur()).filter(p => p.typing && p.uid !== myId);
+}
+let lastTypersKey = '';
+function updatePeers(){
+  const ps = peersOf(cur());
+  $('peerN').textContent = Math.max(1, ps.length || (myId ? 1 : 0));
+  const key = typers().map(p => p.uid).join(',');
+  if (key !== lastTypersKey) { lastTypersKey = key; render(); }
+}
+
+// ---------- message rendering: VS Code ----------
+function quoteOf(m){
+  if (!m.re) return null;
+  const orig = (cur()?.msgs || []).find(x => x.id === m.re.id);
+  return { name: String(m.re.name || '').slice(0,16), text: String(m.re.text || ''), color: orig ? colorOf(orig) : colorOfUid(null, m.re.name) };
+}
 function msgLine(m){
-  const name = esc(displayName(m)), text = esc(m.text), t = hhmm(m.ms);
+  const name = esc(displayName(m)), text = esc(m.text || ''), t = hhmm(m.ms);
   const mine = m.uid === myId;
+  if (m.img) {
+    const v = 'img_' + t.replace(':','') + '_' + String(m.id).slice(-3).replace(/[^a-z0-9]/gi,'x');
+    return `<span class="k2">import</span> <span class="v">${v}</span> <span class="k2">from</span> <span class="s imgref" data-img="${esc(m.img)}">'./assets/${imgName(m.img)}.jpg'</span>; <span class="cm">// </span><span class="mc nm">${name}</span>${text ? `<span class="cm"> — </span><span class="mc">${text}</span>` : ''}`;
+  }
   if (style === 'log')
     return `<span class="k">this</span>.<span class="v">logger</span>.<span class="fn">${mine?'debug':'info'}</span>(<span class="s">'[</span><span class="mc nm">${name}</span><span class="s"> ${t}] </span><span class="mc">${text}</span><span class="s">'</span>);`;
   if (style === 'str') {
@@ -383,7 +624,150 @@ function msgLine(m){
   }
   return `<span class="cm">// </span><span class="tag">${mine?'TODO':'NOTE'}</span><span class="cm">(</span><span class="mc nm">${name}</span><span class="cm">, ${t}): </span><span class="mc">${text}</span>`;
 }
+function peerFlags(){
+  return typers().map(p => `<span class="pflag" style="--mc:${colorOfUid(p.uid, p.name)}"><i></i><b>${esc(p.name)}</b></span>`).join('');
+}
+function renderCode(msgs){
+  const lines = [];
+  const push = (code, ind=0, cls='') => lines.push({ html: hl(code), ind, cls });
+  HEADER.forEach(l => push(l));
+  let methodIdx = 0, sinceOpen = 0;
+  const openMethod = () => { push(METHODS[methodIdx % METHODS.length]); methodIdx++; sinceOpen = 0; };
+  const closeMethod = () => { CLOSERS[methodIdx % CLOSERS.length].forEach(l => push('    '+l)); push('  }'); push(''); };
+  openMethod();
+  push('    const started = Date.now();');
+  msgs.forEach((m, i) => {
+    const r = rng(hash(String(m.id)));
+    if (!panic) {
+      const q = quoteOf(m);
+      if (q) lines.push({ html: `<span class="cm">// ↳ re </span><span class="mc nm">${esc(q.name)}</span><span class="cm">: ${esc(q.text)}</span>`, ind: 4, cls: 'msg req', mc: q.color });
+      lines.push({ html: msgLine(m), ind: 4, cls: 'msg' + (m.uid===myId?' mine':'') + (m._new?' new':''), mc: colorOf(m), mid: m.id });
+    }
+    const nBlocks = panic ? 1 + Math.floor(r()*2) : Math.floor(r()*1.7);
+    for (let b=0; b<nBlocks; b++) BLOCKS[Math.floor(r()*BLOCKS.length)].forEach(l => push(l ? '    '+l : ''));
+    sinceOpen++;
+    if (sinceOpen >= 6 + Math.floor(r()*4) && i < msgs.length-1) { closeMethod(); openMethod(); }
+  });
+  if (!msgs.length || panic) BLOCKS.slice(2,8).forEach(b => b.forEach(l => push('    '+l)));
+  closeMethod();
+  push('}');
+  push('');
+  const curLine = lines.length - 3;
+  const flags = peerFlags();
+  $('cursorPos').textContent = `Ln ${curLine+1}, Col ${5 + (msgs.length * 7) % 30}`;
+  return lines.map((l, i) =>
+    `<div class="ln ${l.cls}${i===curLine?' cur':''}"${l.mc ? ` style="--mc:${l.mc}"` : ''}${l.mid ? ` data-mid="${esc(l.mid)}"` : ''}><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}${i===curLine ? flags : ''}</span></div>`
+  ).join('');
+}
 
+// ---------- message rendering: Excel ----------
+const REGIONS = ['Kanto', 'Kansai', 'Chubu', 'Kyushu', 'Tohoku', 'Hokkaido'];
+const STATUS = ['Shipped', 'Pending', 'Shipped', 'Delivered', 'Backorder', 'Shipped'];
+const yen = n => '¥' + n.toLocaleString('en-US');
+function xlFiller(r, ms){
+  const d = new Date(ms - Math.floor(r()*86400000*5));
+  const qty = 1 + Math.floor(r()*48), unit = 800 + Math.floor(r()*120)*50;
+  return [d.toISOString().slice(0,10), 'ORD-' + (40000 + Math.floor(r()*9999)), REGIONS[Math.floor(r()*REGIONS.length)], qty, yen(unit), yen(qty*unit), STATUS[Math.floor(r()*STATUS.length)]];
+}
+function renderExcel(msgs){
+  const COLS = 'ABCDEFGH'.split('');
+  let rowN = 1;
+  const rows = [];
+  const cell = (v, cls='') => `<td class="${cls}">${v}</td>`;
+  rows.push(`<tr><td class="rn">${rowN++}</td>${['Date','Order','Region','Qty','Unit','Amount','Status',''].map(h => cell(`<b>${h}</b>`)).join('')}</tr>`);
+  const fill = (r, ms) => { const f = xlFiller(r, ms); rows.push(`<tr><td class="rn">${rowN++}</td>${cell(f[0])}${cell(f[1])}${cell(f[2])}${cell(f[3],'num')}${cell(f[4],'num')}${cell(f[5],'num')}${cell(f[6])}${cell('')}</tr>`); };
+  const base = rng(hash(cur()?.id || 'x'));
+  for (let i=0;i<3;i++) fill(base, Date.now());
+  msgs.forEach(m => {
+    const r = rng(hash(String(m.id)));
+    if (!panic) {
+      const q = quoteOf(m);
+      const mine = m.uid === myId;
+      const body = m.img
+        ? `<span class="xlink imgref" data-img="${esc(m.img)}">📎 ${imgName(m.img)}.jpg</span>${m.text ? ' ' + esc(m.text) : ''}`
+        : esc(m.text || '');
+      if (q) rows.push(`<tr class="msg req" style="--mc:${q.color}"><td class="rn">${rowN++}</td>${cell('')}${cell(`<span class="mc">↳ ${esc(q.name)}</span>`)}<td class="xq" colspan="6">${esc(q.text)}</td></tr>`);
+      rows.push(`<tr class="msg${mine?' mine':''}${m._new?' new':''}" data-mid="${esc(m.id)}" style="--mc:${colorOf(m)}"><td class="rn">${rowN++}</td>${cell(hhmm(m.ms))}${cell(`<span class="mc nm">${esc(displayName(m))}</span>`)}<td class="xm" colspan="6">${body}</td></tr>`);
+    }
+    const n = panic ? 1 + Math.floor(r()*2) : Math.floor(r()*1.6);
+    for (let i=0;i<n;i++) fill(r, m.ms);
+  });
+  const ty = typers();
+  const last = rowN;
+  rows.push(`<tr><td class="rn">${rowN++}</td><td class="xsel"></td>${COLS.slice(1).map((c, ci) => {
+    const p = ty[ci]; return p ? `<td class="xpeer" style="--mc:${colorOfUid(p.uid, p.name)}" data-n="${esc(p.name)}"></td>` : '<td></td>';
+  }).join('')}</tr>`);
+  for (let i=0;i<6;i++) rows.push(`<tr><td class="rn">${rowN++}</td>${COLS.map(() => '<td></td>').join('')}</tr>`);
+  $('cursorPos').textContent = '';
+  $('xaddr').textContent = 'A' + last;
+  return `<table class="xl"><colgroup><col style="width:42px"><col style="width:84px"><col style="width:96px"><col style="width:92px"><col style="width:56px"><col style="width:78px"><col style="width:96px"><col style="width:88px"><col style="width:80px"></colgroup>
+    <thead><tr><th class="rn"></th>${COLS.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+
+// ---------- message rendering: Notion ----------
+const N_FILL = [
+  ['h2', 'Agenda'], ['li', 'Review order sync latency (p95 target: 300ms)'], ['li', 'Retry policy for upstream timeouts'],
+  ['todo', 'Update runbook for webhook replays'], ['li', 'Tenant-scoped cache keys — rollout status'], ['done', 'Migrate metrics to new dashboard'],
+  ['h2', 'Notes'], ['p', 'Backfill finished for Kanto and Kansai; Chubu pending.'], ['todo', 'Confirm on-call rotation for next sprint'],
+  ['li', 'Batch size stays at 50 until load test'], ['p', 'Decision: keep Redis TTL at 300s.'], ['done', 'Share load test results'],
+];
+function renderNotion(msgs){
+  const out = [];
+  const page = view === 'recipe' ? 'recipe' : PAGES[active % PAGES.length];
+  out.push(`<div class="nt"><div class="nicon">📄</div><h1>${esc(page)}</h1><div class="props">Owner&nbsp;&nbsp;Platform Team &nbsp;·&nbsp; Last edited ${hhmm(Date.now())}</div>`);
+  const blk = ([k, t]) => out.push(k === 'h2' ? `<h2>${esc(t)}</h2>` : `<div class="b ${k}">${esc(t)}</div>`);
+  N_FILL.slice(0, 4).forEach(blk);
+  if (!panic) out.push('<h2>Discussion</h2>');
+  msgs.forEach(m => {
+    const r = rng(hash(String(m.id)));
+    if (!panic) {
+      const q = quoteOf(m);
+      const body = m.img ? `<span class="nfile imgref" data-img="${esc(m.img)}">📎 ${imgName(m.img)}.jpg</span>${m.text ? ' ' + esc(m.text) : ''}` : esc(m.text || '');
+      out.push(`<div class="ncm msg${m._new?' new':''}" data-mid="${esc(m.id)}" style="--mc:${colorOf(m)}"><span class="av">${esc(displayName(m).slice(0,1).toUpperCase())}</span><div><div><span class="who">${esc(displayName(m))}</span><span class="when">${hhmm(m.ms)}</span></div>${q ? `<div class="nre">↳ ${esc(q.name)}: ${esc(q.text)}</div>` : ''}<div class="ntext">${body}</div></div></div>`);
+    }
+    if (panic || r() < 0.15) blk(N_FILL[4 + Math.floor(r()*(N_FILL.length-4))]);
+  });
+  const ty = typers();
+  if (ty.length) out.push(`<div class="ntyping">${ty.map(p => esc(p.name)).join(', ')} ${ty.length>1?'are':'is'} typing…</div>`);
+  if (panic) N_FILL.slice(6).forEach(blk);
+  out.push('</div>');
+  $('cursorPos').textContent = '';
+  return out.join('');
+}
+
+// ---------- message rendering: terminal (tmux) ----------
+const T_FILL = [
+  r => `<span class="g1">INFO </span> sync.worker  batch processed: ${Math.floor(r()*50)} items`,
+  r => `<span class="g1">INFO </span> http  GET /api/v1/orders 200 ${3+Math.floor(r()*40)}ms`,
+  r => `<span class="y1">WARN </span> reconcile  retry ${1+Math.floor(r()*2)}/3 — upstream timeout`,
+  r => `<span class="b1">DEBUG</span> redis  cache ${r()>.3?'HIT':'MISS'} orders:${Math.floor(r()*1e6).toString(36)}`,
+  r => `<span class="g1">INFO </span> http  POST /api/v1/webhooks/stripe 201 ${10+Math.floor(r()*90)}ms`,
+];
+function renderTmux(msgs){
+  const out = [];
+  const line = (ms, html, cls='', extra='') => out.push(`<div class="tl ${cls}"${extra}><span class="d1">${hhmmss(ms)}</span> ${html}</div>`);
+  const base = rng(hash(cur()?.id || 'x'));
+  const t0 = msgs.length ? msgs[0].ms : Date.now();
+  for (let i=0;i<4;i++) line(t0 - (4-i)*53000, T_FILL[Math.floor(base()*T_FILL.length)](base));
+  msgs.forEach(m => {
+    const r = rng(hash(String(m.id)));
+    if (!panic) {
+      const q = quoteOf(m);
+      if (q) out.push(`<div class="tl msg req" style="--mc:${q.color}"><span class="d1">         ↳ ${esc(q.name)}: ${esc(q.text)}</span></div>`);
+      const body = m.img ? `<span class="imgref tlink" data-img="${esc(m.img)}">./assets/${imgName(m.img)}.jpg</span>${m.text ? ' ' + esc(m.text) : ''}` : esc(m.text || '');
+      line(m.ms, `<span class="mc">${esc(displayName(m))}</span> <span class="d1">›</span> <span class="mc">${body}</span>`, 'msg' + (m._new ? ' new' : ''), ` data-mid="${esc(m.id)}" style="--mc:${colorOf(m)}"`);
+    }
+    const n = panic ? 1 + Math.floor(r()*2) : Math.floor(r()*1.5);
+    for (let i=0;i<n;i++) line(m.ms + (i+1)*7000, T_FILL[Math.floor(r()*T_FILL.length)](r));
+  });
+  const ty = typers();
+  if (ty.length) out.push(`<div class="tl"><span class="d1">-- ${ty.map(p => esc(p.name)).join(', ')} typing --</span></div>`);
+  out.push('<div class="tl"><span class="tcur">█</span></div>');
+  $('cursorPos').textContent = hhmm(Date.now()) + ' ' + new Date().toDateString().slice(4,10);
+  return out.join('');
+}
+
+// ---------- recipe ----------
 const RECIPE = [
   '# recipe',
   '',
@@ -392,12 +776,20 @@ const RECIPE = [
   '## 开始',
   '- 打开网址 → 输入名字 → 输入房间码（暗号）',
   '- 房间码相同的人在同一个聊天室',
+  '- 朋友发来的邀请链接：点开就直接进房间，不用输房间码',
   '- 名字和房间会记在这个浏览器里，下次直接进入',
   '',
   '## 聊天',
-  '- 在下面终端的 `$` 后打字，回车发送',
+  '- 在下面的输入框打字，回车发送',
   '- 自己的消息是 **蓝色**，每个朋友有自己固定的颜色',
   '- 行号旁边的色条也能看出是谁：虚线 = 自己，实线 = 朋友',
+  '- **回复**：点一下某条消息，输入框前出现 `↳ 名字`，再发就是回复它；点 ✕ 取消',
+  '- **发图片**：直接粘贴（Ctrl/⌘+V）、拖进窗口，或 File › Attach Image…',
+  '- 图片显示成一个文件名：电脑上鼠标停上去预览，点击看大图；手机上点一下看大图',
+  '',
+  '## 谁在线',
+  '- 状态栏 `👥 数字` = 当前房间在线人数，点开能看到是谁、谁在输入、谁离开了',
+  '- 朋友正在打字时，光标所在行会出现带名字的小旗子（像多人协作编辑）',
   '',
   '## 隐藏',
   '- 电脑：按 `Esc`，或点当前标签页',
@@ -405,27 +797,37 @@ const RECIPE = [
   '- 再操作一次恢复',
   '',
   '## 新消息提醒',
-  '- 状态栏闪橙色，右下角弹出 Source Control 通知，点通知可直接跳到那个房间',
-  '- 状态栏 `⚠` 数字 = 所有房间的未读总数；标签上的白点 = 那个房间有未读',
+  '- 状态栏闪橙色，右下角弹出一条伪装通知，点它直接跳到那个房间',
+  '- 状态栏的未读数 = 所有房间的未读总数；标签上的白点 = 那个房间有未读',
   '- 浏览器在后台时，标签页标题会闪',
   '- 不想被打扰：`:alert quiet`（只计数，不闪不弹）；恢复：`:alert on`',
   '',
-  '## 多个房间',
-  '- `:room` 或菜单 File › New Workspace… 开新房间（新标签页，最多 6 个）',
+  '## 多个房间 / 邀请',
+  '- `:room` 或 File › New Workspace… 开新房间（新标签页，最多 6 个）',
   '- 点标签切换，点 ✕ 关闭（记录还在，用房间码能再打开）',
+  '- File › Copy Invite Link（或 `:invite`）复制当前房间的邀请链接，发给朋友',
+  '',
+  '## 换皮肤',
+  '- View › Skin，或 `:skin vscode|excel|notion|terminal`',
+  '- Excel：消息是表格里的行，房间是底部的工作表；输入框在公式栏',
+  '- Notion：消息是页面里的评论；输入框是「Add a comment…」',
+  '- Terminal：像 tmux 分屏，消息混在日志里；房间是底部的窗口',
   '',
   '## 菜单',
-  '- 顶部 File / Edit / View / Terminal / Help 都能点；手机上是左上角 ☰',
+  '- 顶部菜单都能点；手机上是左上角 ☰',
   '',
   '## 指令',
-  '- `:help`                        列出所有指令',
-  '- `:nick 名字`                   改显示名',
-  '- `:style comment|log|str`       消息在代码里的样子',
-  '- `:room` / `:close`             开 / 关房间',
-  '- `:clear`                       删除自己在当前房间的全部消息（会再确认一次）',
-  '- `:logs off|slow|normal|fast`   终端假日志的速度',
-  '- `:alert on|quiet`              新消息提醒方式',
-  '- `:recipe`                      打开这份说明',
+  '- `:help`                         列出所有指令',
+  '- `:nick 名字`                    改显示名',
+  '- `:skin vscode|excel|notion|terminal`  换伪装',
+  '- `:style comment|log|str`        VS Code 里消息的样子',
+  '- `:room` / `:close`              开 / 关房间',
+  '- `:invite`                       复制邀请链接',
+  '- `:img`                          选一张图片发送',
+  '- `:clear`                        删除自己在当前房间的全部消息（会再确认一次）',
+  '- `:logs off|slow|normal|fast`    终端假日志的速度',
+  '- `:alert on|quiet`               新消息提醒方式',
+  '- `:recipe`                       打开这份说明',
   '',
   '## 注意',
   '好好吃饭哦',
@@ -438,76 +840,98 @@ function mdHl(line){
   return h.replace(/^- /, '<span class="md-l">-</span> ');
 }
 function renderRecipe(){
-  editor.innerHTML = RECIPE.map((l, i) =>
-    `<div class="ln"><span class="g">${i+1}</span><span class="c">${mdHl(l) || ' '}</span></div>`).join('');
+  if (skin === 'vscode') {
+    editor.innerHTML = RECIPE.map((l, i) => `<div class="ln"><span class="g">${i+1}</span><span class="c">${mdHl(l) || ' '}</span></div>`).join('');
+    $('cursorPos').textContent = 'Ln 1, Col 1';
+  } else if (skin === 'notion') {
+    editor.innerHTML = `<div class="nt"><div class="nicon">📖</div><h1>recipe</h1>${RECIPE.slice(1).map(l =>
+      /^## /.test(l) ? `<h2>${esc(l.slice(3))}</h2>` : /^- /.test(l) ? `<div class="b li">${esc(l.slice(2))}</div>` : l ? `<div class="b">${esc(l.replace(/^> /,''))}</div>` : '').join('')}</div>`;
+  } else if (skin === 'excel') {
+    editor.innerHTML = `<table class="xl"><colgroup><col style="width:42px"><col></colgroup><thead><tr><th class="rn"></th><th>A</th></tr></thead><tbody>${RECIPE.map((l, i) =>
+      `<tr><td class="rn">${i+1}</td><td class="xm">${/^#/.test(l) ? `<b>${esc(l.replace(/^#+ /,''))}</b>` : esc(l)}</td></tr>`).join('')}</tbody></table>`;
+  } else {
+    editor.innerHTML = `<div class="tl"><span class="g1">$</span> cat recipe.md</div>` + RECIPE.map(l => `<div class="tl">${mdHl(l) || ' '}</div>`).join('');
+  }
   editor.scrollTop = 0;
-  $('cursorPos').textContent = 'Ln 1, Col 1';
 }
+
+// ---------- main render ----------
 function render(){
   if (view === 'recipe') { renderRecipe(); return; }
   const msgs = cur()?.msgs || [];
   const nearBottom = editor.scrollHeight - editor.scrollTop - editor.clientHeight < 80;
-  const lines = [];
-  const push = (code, ind=0, cls='') => lines.push({ html: hl(code), ind, cls });
-  HEADER.forEach(l => push(l));
-  let methodIdx = 0, sinceOpen = 0;
-  const openMethod = () => { push(METHODS[methodIdx % METHODS.length]); methodIdx++; sinceOpen = 0; };
-  const closeMethod = () => { CLOSERS[methodIdx % CLOSERS.length].forEach(l => push('    '+l)); push('  }'); push(''); };
-  openMethod();
-  push('    const started = Date.now();');
-  msgs.forEach((m, i) => {
-    const r = rng(hash(String(m.id)));
-    if (!panic) lines.push({ html: msgLine(m), ind: 4, cls: 'msg' + (m.uid===myId?' mine':'') + (m._new?' new':''), mc: colorOf(m) });
-    const nBlocks = panic ? 1 + Math.floor(r()*2) : Math.floor(r()*1.7);
-    for (let b=0; b<nBlocks; b++) BLOCKS[Math.floor(r()*BLOCKS.length)].forEach(l => push(l ? '    '+l : ''));
-    sinceOpen++;
-    if (sinceOpen >= 6 + Math.floor(r()*4) && i < msgs.length-1) { closeMethod(); openMethod(); }
-    m._new = false;
-  });
-  if (!msgs.length || panic) BLOCKS.slice(2,8).forEach(b => b.forEach(l => push('    '+l)));
-  closeMethod();
-  push('}');
-  push('');
-  const curLine = lines.length - 3;
-  editor.innerHTML = lines.map((l, i) =>
-    `<div class="ln ${l.cls}${i===curLine?' cur':''}"${l.mc ? ` style="--mc:${l.mc}"` : ''}><span class="g">${i+1}</span><span class="c" style="--ind:${l.ind}ch">${l.html || ' '}</span></div>`
-  ).join('');
-  $('cursorPos').textContent = `Ln ${curLine+1}, Col ${Math.floor(Math.random()*30)+5}`;
+  editor.innerHTML = skin === 'excel' ? renderExcel(msgs) : skin === 'notion' ? renderNotion(msgs) : skin === 'terminal' ? renderTmux(msgs) : renderCode(msgs);
+  msgs.forEach(m => { m._new = false; });
   if (nearBottom || scrollBottom) editor.scrollTop = editor.scrollHeight;
   scrollBottom = false;
 }
 
-// ---------- unread (disguised as warnings) ----------
+// ---------- chrome per skin ----------
+const STATUS_TEXT = {
+  vscode:   { sBranch: '⎇ main*', sSync: '⟳', sSpaces: 'Spaces: 2', sEnc: 'UTF-8', sEol: 'LF', panicBtn: '✓ Prettier' },
+  excel:    { sBranch: 'Ready', sSync: '', sSpaces: '', sEnc: '', sEol: '', panicBtn: '▦ Normal' },
+  notion:   { sBranch: '', sSync: '', sSpaces: '', sEnc: '', sEol: '', panicBtn: '✓ Saved' },
+  terminal: { sBranch: '[api]', sSync: '', sSpaces: '', sEnc: '', sEol: '', panicBtn: '"mbp"' },
+};
+const PLACEHOLDER = { vscode: '', excel: '', notion: 'Add a comment…', terminal: '' };
+const THEME = { vscode: '#3c3c3c', excel: '#217346', notion: '#fbfbfa', terminal: '#2b2b2b' };
+function applySkin(){
+  document.body.className = 'skin-' + skin;
+  const labels = MENU_LABELS[skin];
+  document.querySelectorAll('#menu > span').forEach((s, i) => { s.textContent = labels[i] || ''; s.style.display = labels[i] ? '' : 'none'; });
+  Object.entries(STATUS_TEXT[skin]).forEach(([id, t]) => { $(id).textContent = t; });
+  $('styleBtn').style.display = skin === 'vscode' ? '' : 'none';
+  inp.placeholder = PLACEHOLDER[skin];
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = THEME[skin];
+  scrollBottom = true;
+  renderTabs(); render();
+}
+
+function roomLabelText(){
+  if (skin === 'excel') return '＋ Sheet';
+  if (skin === 'notion') return '＋ New page';
+  if (skin === 'terminal') return '＋ new-window';
+  return '⧉ ' + (cur()?.id ? 'ssh: ' + cur().id.slice(0, 6) : 'local');
+}
 function renderTabs(){
   const tabs = $('tabs');
   const list = rooms.length ? rooms : [null];
+  const recipeLabel = skin === 'vscode' ? '<span style="color:#519aba;font-size:10px">M↓</span> recipe.md' : skin === 'terminal' ? `${list.length}:recipe` : 'recipe';
   tabs.innerHTML = list.map((r, i) =>
-    `<div class="tab${i===active && view==='room'?' on':''}${r && r.unread ? ' unread' : ''}" data-i="${i}">${fileOf(i)[0]} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
-  ).join('') + (recipeOpen ? `<div class="tab${view==='recipe'?' on':''}" data-doc="recipe"><span style="color:#519aba;font-size:10px">M↓</span> recipe.md <span class="x" data-xdoc="recipe">✕</span></div>` : '');
+    `<div class="tab${i===active && view==='room'?' on':''}${r && r.unread ? ' unread' : ''}" data-i="${i}">${esc(tabLabel(i))} <span class="dot"></span>${r ? '<span class="x" data-x="'+i+'">✕</span>' : ''}</div>`
+  ).join('') + (recipeOpen ? `<div class="tab${view==='recipe'?' on':''}" data-doc="recipe">${recipeLabel} <span class="x" data-xdoc="recipe">✕</span></div>` : '');
   const [file, dir, cls] = fileOf(active);
   const shown = view === 'recipe' ? 'recipe.md' : file;
-  $('crumbs').innerHTML = view === 'recipe'
+  if (skin === 'notion') $('crumbs').innerHTML = `Engineering &nbsp;/&nbsp; ${esc(view === 'recipe' ? 'recipe' : PAGES[active % PAGES.length])}`;
+  else $('crumbs').innerHTML = view === 'recipe'
     ? `<span style="color:#519aba;font-size:10px">M↓</span> recipe.md › # recipe`
     : `src › ${dir} › <span style="color:#3178c6;font-size:10px;font-weight:700">TS</span> ${file} › <span style="color:#ee9d28">◇</span> ${cls}`;
-  $('ttl').textContent = `${shown} — api-gateway`;
+  $('ttl').textContent = skin === 'vscode' ? `${shown} — api-gateway` : skin === 'excel' ? 'Q4_order_sync.xlsx  ·  Saved' : skin === 'notion' ? windowTitle() : 'zsh — api-gateway — 132×43';
   document.querySelectorAll('.tree > div').forEach(d => d.classList.toggle('sel', d.textContent.trim() === shown));
+  $('roomLabel').textContent = roomLabelText();
   const on = tabs.querySelector('.tab.on'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  $('roomLabel').textContent = cur()?.id ? 'ssh: ' + cur().id.slice(0, 6) : 'local';
   updateUnread();
+  updatePeers();
 }
+
+// ---------- unread + alerts ----------
+let baseTitle = document.title, blinkTimer = null, toastTimer = null, toastRoom = -1;
+const totalUnread = () => rooms.reduce((a, r) => a + r.unread, 0);
 function updateUnread(){
-  const n = rooms.reduce((a, r) => a + r.unread, 0);
-  $('probStatus').innerHTML = `⊗ 0 &nbsp;⚠ ${n}`;
+  const n = totalUnread();
+  $('probStatus').innerHTML = skin === 'excel' ? (n ? `Accessibility: Investigate (${n})` : 'Accessibility: Good to go')
+    : skin === 'notion' ? (n ? `${n} new comment${n>1?'s':''}` : '')
+    : skin === 'terminal' ? (n ? `[${n}]` : '')
+    : `⊗ 0 &nbsp;⚠ ${n}`;
   $('probBadge').textContent = n;
   document.querySelectorAll('.tab').forEach(t => { const r = rooms[+t.dataset.i]; t.classList.toggle('unread', !!(r && r.unread)); });
   $('bell').classList.toggle('has', n > 0);
-  baseTitle = `${view === 'recipe' ? 'recipe.md' : fileOf(active)[0]} — api-gateway — Visual Studio Code`;
+  baseTitle = windowTitle();
   if (!blinkTimer) document.title = (n ? '● ' : '') + baseTitle;
   if (n === 0) stopBlink();
 }
-// ---------- alerts ----------
-let baseTitle = document.title, blinkTimer = null, toastTimer = null, toastRoom = -1;
-const totalUnread = () => rooms.reduce((a, r) => a + r.unread, 0);
+function clearActiveUnread(){ if (cur() && cur().unread) { cur().unread = 0; updateUnread(); } }
+const isAway = () => document.hidden || panic || !document.hasFocus();
 function startBlink(){
   if (blinkTimer) return;
   let on = false;
@@ -525,20 +949,32 @@ function hideToast(){ const t = $('toast'); t.classList.remove('show'); setTimeo
 $('toast').addEventListener('click', e => {
   hideToast();
   if (e.target.id === 'toastX') return;
+  if (toastRoom < 0) return;
   if (panic) togglePanic(false);
-  if (toastRoom >= 0) { if (view === 'recipe') { view = 'room'; } switchRoom(toastRoom); renderTabs(); render(); clearActiveUnread(); }
+  if (view === 'recipe') view = 'room';
+  switchRoom(toastRoom); renderTabs(); render(); clearActiveUnread();
 });
 function notify(r, newMsgs){
   if (alertMode === 'quiet' || panic) return;   // boss mode: count silently
   const idx = rooms.indexOf(r);
   const from = [...new Set(newMsgs.map(m => displayName(m)))].slice(0, 3).map(esc).join(', ');
   const n = newMsgs.length;
-  showToast(`Source Control: ${n} incoming change${n>1?'s':''} from ${from}<small>${fileOf(idx)[0]} · click to open</small>`, idx);
+  const where = esc(tabLabel(idx));
+  const text = skin === 'excel' ? `${from} edited <b>${where}</b> (${n} change${n>1?'s':''})<small>Q4_order_sync.xlsx · click to view</small>`
+    : skin === 'notion' ? `${from} commented on <b>${where}</b><small>${n} new · click to open</small>`
+    : skin === 'terminal' ? `Activity in window ${where}<small>${n} new line${n>1?'s':''} · click to switch</small>`
+    : `Source Control: ${n} incoming change${n>1?'s':''} from ${from}<small>${where} · click to open</small>`;
+  showToast(text, idx);
   const st = document.querySelector('.status');
   st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
   if (document.hidden || !document.hasFocus()) startBlink();
 }
-window.addEventListener('focus', stopBlink);
+window.addEventListener('focus', () => { stopBlink(); if (!panic) clearActiveUnread(); });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && !panic && document.hasFocus()) clearActiveUnread();
+  if (document.hidden && isMobile() && !panic) togglePanic(true);   // phone: leaving the browser hides the chat
+  setAway(document.hidden);
+});
 $('bell').addEventListener('click', () => {
   const i = rooms.findIndex(r => r.unread);
   if (i < 0) { showToast('No new notifications', -1); return; }
@@ -546,27 +982,27 @@ $('bell').addEventListener('click', () => {
   if (view === 'recipe') view = 'room';
   switchRoom(i); renderTabs(); render(); clearActiveUnread();
 });
-function clearActiveUnread(){ if (cur() && cur().unread) { cur().unread = 0; updateUnread(); } }
-function setUnread(){ clearActiveUnread(); }
-const isAway = () => document.hidden || panic || !document.hasFocus();
-window.addEventListener('focus', () => { if (!panic) clearActiveUnread() });
-document.addEventListener('visibilitychange', () => { if (!document.hidden && !panic && document.hasFocus()) clearActiveUnread() });
+
+// ---------- rooms / tabs ----------
 function switchRoom(i){
   if (!rooms[i]) return;
-  if (view === 'recipe') { view = 'room'; }
+  if (view === 'recipe') view = 'room';
   else if (i === active) return;
+  stopTyping();
   active = i; saveRooms();
   rooms[i].unread = 0;
   scrollBottom = true;
+  setReply(null);
   renderTabs(); render();
 }
 async function closeRoom(i){
   const r = rooms[i]; if (!r) return;
   if (r.unsub) r.unsub();
+  leavePresence(r);
   rooms.splice(i, 1);
   if (active >= rooms.length) active = Math.max(0, rooms.length - 1);
   else if (i < active) active--;
-  saveRooms(); scrollBottom = true; renderTabs(); render();
+  saveRooms(); scrollBottom = true; setReply(null); renderTabs(); render();
   termLine(`<span class="d1">closed workspace ${r.id ? r.id.slice(0,6) : ''}</span>`);
 }
 function openRecipe(){
@@ -622,13 +1058,13 @@ let logSpeed = store.get('logs', 'slow');
 })();
 for (let i=0;i<8;i++) termLine(pick(GEN)());
 
-// ---------- quick input (room code / name) ----------
+// ---------- quick input ----------
 function ask(title, placeholder, value='', password=false){
   return new Promise(resolve => {
     const qi = $('qi'), qin = $('qiInput');
     $('qiTitle').textContent = title;
     qin.placeholder = placeholder; qin.value = value; qin.type = password ? 'password' : 'text';
-    qi.hidden = false; setTimeout(() => qin.focus(), 0);
+    qi.hidden = false; setTimeout(() => { qin.focus(); if (value) qin.select(); }, 0);
     const done = v => { qi.hidden = true; qin.removeEventListener('keydown', onKey); resolve(v); };
     const onKey = e => {
       e.stopPropagation();
@@ -639,20 +1075,135 @@ function ask(title, placeholder, value='', password=false){
   });
 }
 
+// ---------- reply ----------
+function setReply(m){
+  if (!m) { replyTo = null; $('replyChip').hidden = true; return; }
+  replyTo = { id: String(m.id).slice(0,40), name: displayName(m), text: (m.text || (m.img ? '[' + imgName(m.img) + '.jpg]' : '')).slice(0, 60) };
+  $('replyText').textContent = `↳ ${replyTo.name}: ${replyTo.text}`;
+  $('replyChip').hidden = false;
+  if (!isMobile()) inp.focus();
+}
+$('replyX').addEventListener('click', e => { e.preventDefault(); setReply(null); });
+
+// ---------- images ----------
+const imgCache = new Map();
+async function loadImg(id){
+  if (imgCache.has(id)) return imgCache.get(id);
+  const p = (async () => {
+    const snap = await getDoc(doc(db, 'rooms', cur().id, 'imgs', id));
+    if (!snap.exists()) throw new Error('missing');
+    return snap.data().data;
+  })();
+  imgCache.set(id, p);
+  p.catch(() => imgCache.delete(id));
+  return p;
+}
+async function compressImage(file){
+  const bmp = await createImageBitmap(file);
+  let scale = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+  let q = 0.72, out = '';
+  for (let tries = 0; tries < 8; tries++) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(bmp.width * scale)); c.height = Math.max(1, Math.round(bmp.height * scale));
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(bmp, 0, 0, c.width, c.height);
+    out = c.toDataURL('image/jpeg', q);
+    if (out.length < 650000) return out;
+    if (q > 0.4) q -= 0.12; else scale *= 0.75;
+  }
+  throw new Error('image too large');
+}
+async function sendImage(file){
+  if (!file || !/^image\//.test(file.type)) return;
+  const roomId = cur()?.id;
+  if (!db || !roomId || !myId) { termLine('<span class="r1">fatal: not connected to remote</span>'); return; }
+  const caption = inp.value.trim().startsWith(':') ? '' : inp.value.trim().slice(0, 600);
+  inp.value = '';
+  termLine(`<span class="d1">uploading ${esc(file.name || 'image')}…</span>`);
+  try {
+    const data = await compressImage(file);
+    const ref = await addDoc(collection(db, 'rooms', roomId, 'imgs'), { uid: myId, data, ts: serverTimestamp() });
+    imgCache.set(ref.id, Promise.resolve(data));
+    const msg = { uid: myId, name: (nick || 'dev').slice(0,16), text: caption, img: ref.id, ts: serverTimestamp() };
+    if (replyTo) msg.re = replyTo;
+    await addDoc(collection(db, 'rooms', roomId, 'msgs'), msg);
+    setReply(null); stopTyping();
+    termLine(`<span class="d1">[main ${hex7()}] chore: add asset ${imgName(ref.id)}.jpg</span>`);
+  } catch (e) {
+    termLine(`<span class="r1">error: upload failed (${esc(e?.code || e?.message || 'unknown')})</span>`);
+  }
+}
+$('fileIn').addEventListener('change', () => { const f = $('fileIn').files[0]; $('fileIn').value = ''; sendImage(f); });
+inp.addEventListener('paste', e => {
+  const item = [...(e.clipboardData?.items || [])].find(it => it.type.startsWith('image/'));
+  if (item) { e.preventDefault(); sendImage(item.getAsFile()); }
+});
+document.addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) e.preventDefault(); });
+document.addEventListener('drop', e => {
+  const f = [...(e.dataTransfer?.files || [])].find(f => f.type.startsWith('image/'));
+  if (f) { e.preventDefault(); sendImage(f); }
+});
+// hover preview (desktop) + lightbox (click / tap)
+let popFor = null;
+editor.addEventListener('mouseover', async e => {
+  const el = e.target.closest('[data-img]');
+  if (!el || isMobile() || panic) return;
+  popFor = el.dataset.img;
+  const pop = $('imgPop');
+  const r = el.getBoundingClientRect();
+  pop.style.left = Math.min(r.left, window.innerWidth - 340) + 'px';
+  pop.style.top = (r.bottom + 6 + 260 > window.innerHeight ? r.top - 266 : r.bottom + 6) + 'px';
+  pop.innerHTML = '<span class="d1">loading…</span>'; pop.hidden = false;
+  try { const src = await loadImg(popFor); if (popFor === el.dataset.img && !pop.hidden) pop.innerHTML = `<img src="${src}">`; }
+  catch(err){ pop.innerHTML = '<span class="r1">image not found</span>'; }
+});
+editor.addEventListener('mouseout', e => { if (e.target.closest('[data-img]')) { popFor = null; $('imgPop').hidden = true; } });
+async function openLightbox(id){
+  const lb = $('lightbox');
+  lb.innerHTML = '<span class="d1">loading…</span>'; lb.hidden = false;
+  try { const src = await loadImg(id); if (!lb.hidden) lb.innerHTML = `<img src="${src}"><div class="lbcap">${imgName(id)}.jpg · click anywhere to close</div>`; }
+  catch(err){ lb.innerHTML = '<span class="r1">image not found</span>'; }
+}
+$('lightbox').addEventListener('click', () => { $('lightbox').hidden = true; });
+
+// click a message = reply to it; click an image = open it
+editor.addEventListener('click', e => {
+  if (panic || view === 'recipe') return;
+  const img = e.target.closest('[data-img]');
+  if (img) { $('imgPop').hidden = true; openLightbox(img.dataset.img); return; }
+  const sel = window.getSelection && String(window.getSelection());
+  if (sel) return;
+  const row = e.target.closest('[data-mid]'); if (!row) return;
+  const m = (cur()?.msgs || []).find(x => x.id === row.dataset.mid);
+  if (m) setReply(m);
+});
+
+// ---------- invite ----------
+const inviteLink = code => location.origin + location.pathname + '#j=' + b64u(code);
+async function copyInvite(){
+  const r = cur();
+  if (!r) { termLine('<span class="r1">no workspace open — :room first</span>'); return; }
+  const link = inviteLink(r.code);
+  try { await navigator.clipboard.writeText(link); showToast(`Invite link copied<small>anyone with this link joins ${esc(tabLabel(active))}</small>`, -1); termLine('<span class="g1">✔ invite link copied to clipboard</span>'); }
+  catch(e){ await ask('Copy this invite link', '', link); }
+}
+
 // ---------- commands ----------
 const HELP = [
   '<span class="help">commands:</span>',
   '<span class="help">  :nick &lt;name&gt;           change your display name</span>',
-  '<span class="help">  :style comment|log|str  how messages look in the code</span>',
+  '<span class="help">  :skin vscode|excel|notion|terminal   change the disguise</span>',
+  '<span class="help">  :style comment|log|str  how messages look in VS Code</span>',
   '<span class="help">  :logs off|slow|normal|fast  terminal log speed</span>',
   '<span class="help">  :room                   open another room in a new tab (up to 6)</span>',
   '<span class="help">  :close                  close the current tab (rejoin later with its code)</span>',
+  '<span class="help">  :invite                 copy an invite link for this room</span>',
+  '<span class="help">  :img                    pick an image to send (or paste / drag one in)</span>',
   '<span class="help">  :clear                  delete all of YOUR messages in this room (asks first)</span>',
   '<span class="help">  :alert on|quiet         new-message alerts: flash + popup, or count only</span>',
-  '<span class="help">  :recipe                 open the guide (recipe.md)</span>',
+  '<span class="help">  :recipe                 open the guide</span>',
+  '<span class="help">  click a message         reply to it</span>',
   '<span class="help">  click a tab             switch room; click the current tab = boss key</span>',
   '<span class="help">  Esc                     boss key: hide all chat lines / show again</span>',
-  '<span class="help">  (phone) tap file tab    same as Esc; leaving the browser also hides the chat</span>',
   '<span class="help">  Ctrl+`                  focus this input</span>',
 ];
 async function command(c){
@@ -661,11 +1212,16 @@ async function command(c){
   else if (cmd === 'nick') {
     if (!arg) { termLine('<span class="r1">usage: :nick &lt;name&gt;</span>'); return; }
     nick = arg.slice(0,16); store.set('nick', nick); updateWho();
+    rooms.forEach(r => r.id && rtdb && myId && dbUpdate(presRefFor(r), { name: nick }).catch(() => {}));
     termLine(`<span class="d1">git config user.name "${esc(nick)}"</span>`);
   }
   else if (cmd === 'style') {
     if (['comment','log','str'].includes(arg)) { style = arg; store.set('style', style); render(); termLine(`<span class="d1">✔ style → ${arg}</span>`); }
     else termLine('<span class="r1">usage: :style comment|log|str</span>');
+  }
+  else if (cmd === 'skin') {
+    if (SKINS.includes(arg)) { skin = arg; store.set('skin', skin); applySkin(); termLine(`<span class="d1">✔ skin → ${arg}</span>`); }
+    else termLine('<span class="r1">usage: :skin vscode|excel|notion|terminal</span>');
   }
   else if (cmd === 'logs') {
     if (arg in SPEEDS) { logSpeed = arg; store.set('logs', arg); termLine(`<span class="d1">✔ logs → ${arg}</span>`); }
@@ -673,15 +1229,14 @@ async function command(c){
   }
   else if (cmd === 'room' || cmd === 'open') {
     if (!db) { termLine('<span class="r1">fatal: not connected to remote</span>'); return; }
-    if (rooms.length >= FILES.length) { termLine(`<span class="r1">error: too many open editors (max ${FILES.length}) — :close one first</span>`); return; }
+    if (rooms.length >= MAX_ROOMS) { termLine(`<span class="r1">error: too many open editors (max ${MAX_ROOMS}) — :close one first</span>`); return; }
     const code = await ask('Connect to Remote Workspace', 'Enter workspace token', '', true);
     if (code) await addRoom(code);
     if (!isMobile()) inp.focus();
   }
-  else if (cmd === 'close') {
-    if (!rooms.length) return;
-    await closeRoom(active);
-  }
+  else if (cmd === 'close') { if (rooms.length) await closeRoom(active); }
+  else if (cmd === 'invite') await copyInvite();
+  else if (cmd === 'img' || cmd === 'image') $('fileIn').click();
   else if (cmd === 'recipe') openRecipe();
   else if (cmd === 'alert') {
     if (['on','quiet'].includes(arg)) { alertMode = arg; store.set('alert', arg); termLine(`<span class="d1">✔ alert → ${arg}</span>`); }
@@ -690,11 +1245,13 @@ async function command(c){
   else if (cmd === 'clear') {
     const roomId = cur()?.id;
     if (!db || !roomId || !myId) return;
-    const ok = await ask(`Delete ALL your messages in ${fileOf(active)[0]}?`, "Type 'yes' to confirm — this cannot be undone");
+    const ok = await ask(`Delete ALL your messages in ${tabLabel(active)}?`, "Type 'yes' to confirm — this cannot be undone");
     if (!ok || ok.toLowerCase() !== 'yes') { termLine('<span class="d1">cancelled</span>'); return; }
-    const snap = await getDocs(query(collection(db, 'rooms', roomId, 'msgs'), where('uid', '==', myId)));
     let n = 0;
-    for (const d of snap.docs) { try { await deleteDoc(d.ref); n++; } catch(e){} }
+    for (const sub of ['msgs', 'imgs']) {
+      const snap = await getDocs(query(collection(db, 'rooms', roomId, sub), where('uid', '==', myId)));
+      for (const d of snap.docs) { try { await deleteDoc(d.ref); if (sub === 'msgs') n++; } catch(e){} }
+    }
     termLine(`<span class="g1">✔ removed ${n} entries</span>`);
   }
   else termLine(`<span class="r1">zsh: command not found: ${esc(cmd)}</span>`);
@@ -703,8 +1260,11 @@ async function command(c){
 async function send(text){
   const roomId = cur()?.id;
   if (!db || !roomId || !myId) { termLine('<span class="r1">fatal: not connected to remote — type :room to open a workspace</span>'); return; }
+  const msg = { uid: myId, name: (nick || 'dev').slice(0,16), text: text.slice(0,600), ts: serverTimestamp() };
+  if (replyTo) msg.re = replyTo;
+  setReply(null); stopTyping();
   try {
-    await addDoc(collection(db, 'rooms', roomId, 'msgs'), { uid: myId, name: (nick || 'dev').slice(0,16), text: text.slice(0,600), ts: serverTimestamp() });
+    await addDoc(collection(db, 'rooms', roomId, 'msgs'), msg);
     termLine(`<span class="d1">[main ${hex7()}] chore: update sync config</span>`);
     termLine(`<span class="d1"> 1 file changed, ${1+(Math.random()*3|0)} insertions(+)</span>`);
   } catch (e) {
@@ -720,12 +1280,28 @@ $('form').addEventListener('submit', e => {
   else { if (view === 'recipe') { view = 'room'; scrollBottom = true; renderTabs(); render(); } send(v); }
 });
 
+// ---------- typing indicator ----------
+let amTyping = null, typTimer = null;
+function stopTyping(){
+  clearTimeout(typTimer);
+  if (amTyping && rtdb && myId) dbUpdate(presRefFor(amTyping), { typing: false }).catch(() => {});
+  amTyping = null;
+}
+inp.addEventListener('input', () => {
+  const r = cur();
+  const typing = inp.value.trim() && !inp.value.startsWith(':');
+  if (!typing || !r?.id || !rtdb || !myId) { stopTyping(); return; }
+  if (amTyping !== r) { stopTyping(); amTyping = r; dbUpdate(presRefFor(r), { typing: true }).catch(() => {}); }
+  clearTimeout(typTimer); typTimer = setTimeout(stopTyping, 4000);
+});
+
 // ---------- boss key ----------
 function togglePanic(force){
   panic = force ?? !panic;
   inp.value = '';
-  closeMenu(); hideToast();
-  if (panic && view === 'recipe') { view = 'room'; renderTabs(); }
+  closeMenu(); hideToast(); stopTyping();
+  $('imgPop').hidden = true; $('lightbox').hidden = true;
+  if (panic) { setReply(null); if (view === 'recipe') { view = 'room'; renderTabs(); } }
   render();
   if (panic) { editor.scrollTop = Math.max(0, editor.scrollHeight * 0.4); inp.blur(); }
   else { clearActiveUnread(); editor.scrollTop = editor.scrollHeight; if (!isMobile()) inp.focus(); }
@@ -737,7 +1313,6 @@ document.addEventListener('keydown', e => {
   if (e.key === '`' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (panic) togglePanic(false); inp.focus(); }
 });
 $('panicBtn').addEventListener('click', () => togglePanic());
-const isMobile = () => window.matchMedia('(max-width:760px)').matches;
 // keep layout above the on-screen keyboard (iOS / Android)
 if (window.visualViewport) {
   const fit = () => {
@@ -748,13 +1323,24 @@ if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', fit);
   fit();
 }
-// switching away from the browser on a phone hides the chat automatically
-document.addEventListener('visibilitychange', () => { if (document.hidden && isMobile() && !panic) togglePanic(true); });
 $('styleBtn').addEventListener('click', () => { const o = ['comment','log','str']; style = o[(o.indexOf(style)+1)%3]; store.set('style', style); render(); });
 $('liveBtn').addEventListener('click', () => command(':room'));
 $('fsBtn').addEventListener('click', async () => {
   try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); }
   catch(e){ termLine('<span class="d1">fullscreen not allowed — use the browser\'s fullscreen (F11 / ⌃⌘F)</span>'); }
+});
+$('peersBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  const ps = peersOf(cur());
+  const dd = $('dropdown');
+  menuActions = [];
+  dd.innerHTML = `<div class="grp">${skin === 'vscode' ? 'Live Share · participants' : 'Here now'}</div>` + (ps.length ? ps.map(p =>
+    `<div class="mi" style="cursor:default"><span><span style="color:${colorOfUid(p.uid, p.name)}">●</span> ${esc(p.name)}${p.uid === myId ? ' (you)' : ''}</span><span class="kb">${p.typing ? 'typing…' : p.away ? 'away' : 'online'}</span></div>`).join('')
+    : `<div class="mi" style="cursor:default"><span>${rtdb ? 'just you' : 'presence unavailable'}</span></div>`);
+  dd.hidden = false;
+  const r = $('peersBtn').getBoundingClientRect();
+  dd.style.top = Math.max(4, r.top - dd.offsetHeight - 4) + 'px';
+  dd.style.left = Math.max(4, Math.min(r.left, window.innerWidth - dd.offsetWidth - 4)) + 'px';
 });
 
 // resizable panel
@@ -772,35 +1358,39 @@ $('fsBtn').addEventListener('click', async () => {
 const MENUS = {
   File: () => [
     ['New Workspace…', () => command(':room')],
+    ['Copy Invite Link', copyInvite],
+    ['Attach Image…', () => $('fileIn').click()],
     ['Close Editor', () => view === 'recipe' ? closeRecipe() : command(':close')],
     '-',
-    ['Open recipe.md', openRecipe],
+    ['Open recipe', openRecipe],
   ],
   Edit: () => [
     ['Change Display Name…', async () => { const n = await ask('git config user.name', 'New display name', nick); if (n) command(':nick ' + n); }],
+    ...(replyTo ? [['Cancel Reply', () => setReply(null)]] : []),
     '-',
     ['Clear My Messages in This Workspace…', () => command(':clear')],
   ],
   View: () => [
-    '#Message Style',
-    ...['comment','log','str'].map(k => [k[0].toUpperCase() + k.slice(1), () => command(':style ' + k), style === k]),
+    '#Skin',
+    ...[['vscode','VS Code'],['excel','Excel'],['notion','Notion'],['terminal','Terminal (tmux)']].map(([k, l]) => [l, () => command(':skin ' + k), skin === k]),
+    ...(skin === 'vscode' ? ['-', '#Message Style', ...['comment','log','str'].map(k => [k[0].toUpperCase() + k.slice(1), () => command(':style ' + k), style === k])] : []),
+    '-',
+    '#New Message Alerts',
+    ['Flash + Popup', () => command(':alert on'), alertMode === 'on'],
+    ['Count Only (Quiet)', () => command(':alert quiet'), alertMode === 'quiet'],
     '-',
     ['Toggle Chat', () => togglePanic(), false, 'Esc'],
-    ['Toggle Sidebar', () => $('mainEl').classList.toggle('nosb')],
+    ...(skin === 'vscode' ? [['Toggle Sidebar', () => $('mainEl').classList.toggle('nosb')]] : []),
     ['Full Screen', () => $('fsBtn').click()],
   ],
   Terminal: () => [
     '#Log Speed',
     ...['off','slow','normal','fast'].map(k => [k[0].toUpperCase() + k.slice(1), () => command(':logs ' + k), logSpeed === k]),
     '-',
-    '#New Message Alerts',
-    ['Flash + Popup', () => command(':alert on'), alertMode === 'on'],
-    ['Count Only (Quiet)', () => command(':alert quiet'), alertMode === 'quiet'],
-    '-',
     ['Clear Terminal', () => { term.innerHTML = ''; }],
   ],
   Help: () => [
-    ['recipe.md', openRecipe],
+    ['recipe', openRecipe],
     ['Show All Commands', () => command(':help')],
   ],
 };
@@ -818,7 +1408,7 @@ function openMenu(anchor, names){
   const dd = $('dropdown');
   menuActions = [];
   dd.innerHTML = names.length === 1 ? itemsHtml(MENUS[names[0]]())
-    : names.map(n => `<div class="grp" style="color:#ccc;font-weight:600">${n}</div>` + itemsHtml(MENUS[n]())).join('<div class="sep"></div>');
+    : names.map(n => `<div class="grp mh">${MENU_LABELS[skin][['File','Edit','','View','','','Terminal','Help'].indexOf(n)] || n}</div>` + itemsHtml(MENUS[n]())).join('<div class="sep"></div>');
   dd.hidden = false;
   const r = anchor.getBoundingClientRect();
   dd.style.top = (r.bottom + 2) + 'px';
@@ -833,9 +1423,13 @@ $('menu').addEventListener('click', e => {
 });
 $('menu').addEventListener('mouseover', e => {
   const sp = e.target.closest('[data-m]');
-  if (sp && !$('dropdown').hidden && !sp.classList.contains('open')) openMenu(sp, [sp.dataset.m]);
+  if (sp && !$('dropdown').hidden && !sp.classList.contains('open') && document.querySelector('.menu span.open')) openMenu(sp, [sp.dataset.m]);
 });
-$('hamb').addEventListener('click', e => { e.stopPropagation(); if ($('dropdown').hidden) openMenu($('hamb'), ['File','Edit','View','Terminal','Help']); else closeMenu(); });
+$('hamb').addEventListener('click', e => {
+  e.stopPropagation();
+  if ($('dropdown').hidden) openMenu($('hamb'), skin === 'notion' ? ['File','Edit','View','Help'] : ['File','Edit','View','Terminal','Help']);
+  else closeMenu();
+});
 $('dropdown').addEventListener('click', e => {
   e.stopPropagation();
   const mi = e.target.closest('[data-a]'); if (!mi) return;
@@ -845,7 +1439,35 @@ document.addEventListener('click', () => { if (!$('dropdown').hidden) closeMenu(
 
 function updateWho(){ $('who').textContent = (nick || 'dev') + '@mbp'; }
 
-// ---------- data ----------
+// ---------- presence (Realtime Database) ----------
+let presenceWarned = false;
+function presenceWarn(e){
+  if (presenceWarned) return; presenceWarned = true;
+  termLine(`<span class="y1">warning: live share unavailable (${esc(e?.code || e?.message || 'unknown')}) — online list / typing disabled</span>`);
+}
+const presRefFor = r => dbRef(rtdb, `presence/${r.id}/${myId}`);
+const presData = () => ({ name: (nick || 'dev').slice(0,16), typing: false, away: document.hidden, t: rtdbNow() });
+async function joinPresence(r){
+  if (!rtdb || !r.id || !myId) return;
+  const pr = presRefFor(r);
+  try { await onDisconnect(pr).remove(); await dbSet(pr, presData()); }
+  catch(e){ presenceWarn(e); return; }
+  if (r.presOff) r.presOff();
+  r.presOff = onValue(dbRef(rtdb, `presence/${r.id}`), snap => {
+    r.peers = snap.val() || {};
+    if (rooms[active] === r) updatePeers();
+  }, e => presenceWarn(e));
+}
+function leavePresence(r){
+  if (r.presOff) { r.presOff(); r.presOff = null; }
+  if (rtdb && r.id && myId) dbRemove(presRefFor(r)).catch(() => {});
+}
+function setAway(away){
+  if (!rtdb || !myId) return;
+  rooms.forEach(r => r.id && dbUpdate(presRefFor(r), { away }).catch(() => {}));
+}
+
+// ---------- messages (Firestore) ----------
 async function subscribe(r){
   r.id = await roomKey(r.code);
   const label = r.id.slice(0, 6);
@@ -856,8 +1478,9 @@ async function subscribe(r){
     clearTimeout(timer);
     const list = snap.docs.map(d => {
       const data = d.data({ serverTimestamps: 'estimate' });
-      return { id: d.id, uid: data.uid, name: data.name, text: data.text, ms: data.ts?.toMillis ? data.ts.toMillis() : Date.now() };
-    }).filter(m => typeof m.text === 'string').reverse();
+      const re = data.re && typeof data.re === 'object' ? { id: String(data.re.id || ''), name: String(data.re.name || ''), text: String(data.re.text || '') } : null;
+      return { id: d.id, uid: data.uid, name: data.name, text: typeof data.text === 'string' ? data.text : '', img: typeof data.img === 'string' ? data.img : null, re, ms: data.ts?.toMillis ? data.ts.toMillis() : Date.now() };
+    }).filter(m => m.text || m.img).reverse();
     let incoming = 0; const fresh = [];
     for (const m of list) {
       if (!r.seen.has(m.id)) { r.seen.add(m.id); if (!r.first) { m._new = true; if (m.uid !== myId) { incoming++; fresh.push(m); } } }
@@ -868,36 +1491,40 @@ async function subscribe(r){
     if (incoming && (!isActive || view === 'recipe' || isAway())) { r.unread += incoming; updateUnread(); notify(r, fresh); }
     if (r.first) termLine(`<span class="g1">✔ connected</span> <span class="d1">${label} (${list.length} entries)</span>`);
     r.first = false;
-    if (isActive && view === 'room') { render(); $('roomLabel').textContent = 'ssh: ' + label; }
+    if (isActive && view === 'room') { render(); $('roomLabel').textContent = roomLabelText(); }
   }, err => {
     clearTimeout(timer);
     termLine(`<span class="r1">error: ${label} disconnected (${esc(err?.code||'unknown')}) — reload to reconnect</span>`);
   });
+  joinPresence(r);
 }
 async function addRoom(code){
   const id = await roomKey(code);
   const existing = rooms.findIndex(r => r.id === id || r.code === code);
   if (existing >= 0) { switchRoom(existing); termLine('<span class="d1">workspace already open — switched tab</span>'); return; }
-  const r = { code, id: null, msgs: [], seen: new Set(), first: true, unread: 0, unsub: null };
+  if (rooms.length >= MAX_ROOMS) { termLine(`<span class="r1">error: too many open editors (max ${MAX_ROOMS}) — :close one first</span>`); return; }
+  const r = newRoom(code);
   rooms.push(r);
+  stopTyping();
   active = rooms.length - 1; saveRooms();
-  scrollBottom = true; renderTabs(); render();
+  view = 'room'; scrollBottom = true; setReply(null); renderTabs(); render();
   await subscribe(r);
   renderTabs();
 }
 
-renderTabs();
-render();
+// ---------- start ----------
+applySkin();
 updateWho();
-termLine(window.matchMedia('(max-width:760px)').matches ? '<span class="d1">Type :help for commands. Tap the file tab or “✓ Prettier” to hide the chat.</span>' : '<span class="d1">Type :help for commands. Press Esc anytime to hide the chat.</span>');
+termLine(isMobile() ? '<span class="d1">Type :help for commands. Tap the current tab or the status-bar button to hide the chat.</span>' : '<span class="d1">Type :help for commands. Press Esc anytime to hide the chat.</span>');
 
 (async () => {
   if (String(firebaseConfig.apiKey).startsWith('PASTE')) {
     termLine('<span class="r1">fatal: firebaseConfig is empty — paste your Firebase config at the top of index.html</span>');
     return;
   }
+  let app;
   try {
-    const app = initializeApp(firebaseConfig);
+    app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     db = getFirestore(app);
     await signInAnonymously(auth);
@@ -906,19 +1533,28 @@ termLine(window.matchMedia('(max-width:760px)').matches ? '<span class="d1">Type
     termLine(`<span class="r1">fatal: auth failed (${esc(e?.code||e?.message||'unknown')}) — is Anonymous sign-in enabled?</span>`);
     return;
   }
+  try {
+    rtdb = getDatabase(app);
+    // re-announce presence whenever the connection comes back
+    onValue(dbRef(rtdb, '.info/connected'), s => { if (s.val() === true) rooms.forEach(r => r.id && joinPresence(r)); });
+  } catch (e) { rtdb = null; presenceWarn(e); }
+
   if (!nick) { const n = await ask('git config user.name', 'Your display name (friends will see this)'); nick = (n || 'dev').slice(0,16); store.set('nick', nick); updateWho(); }
+  for (const r of rooms) await subscribe(r);
+  saveRooms(); renderTabs();
+  if (inviteCode) {
+    await addRoom(inviteCode);
+    showToast(`Joined workspace via invite<small>${esc(tabLabel(active))}</small>`, -1);
+  }
   if (!rooms.length) {
     const c = await ask('Connect to Remote Workspace', 'Enter workspace token (same code as your friends)', '', true);
     if (!c) { termLine('<span class="y1">no workspace token — type :room to connect</span>'); return; }
     await addRoom(c);
-    if (!store.get('recipeAsked', '')) {
-      store.set('recipeAsked', '1');
-      const yn = await ask('Open recipe.md? (Y/N)', 'Y = show the guide · N = skip (Help › recipe.md anytime)');
-      if (yn && /^y/i.test(yn)) openRecipe();
-    }
-  } else {
-    for (const r of rooms) await subscribe(r);
-    saveRooms(); renderTabs();
+  }
+  if (!store.get('recipeAsked', '')) {
+    store.set('recipeAsked', '1');
+    const yn = await ask('Open recipe? (Y/N)', 'Y = show the guide · N = skip (Help › recipe anytime)');
+    if (yn && /^y/i.test(yn)) openRecipe();
   }
   if (!isMobile()) inp.focus();
 })();
