@@ -368,6 +368,25 @@
   body.reading-focus .work{grid-template-rows:35px 22px 1fr 0 0 !important}
   body.reading-focus .panel,body.reading-focus .sash{display:none !important}
   .rs .tip{color:#6e7681;padding:6px 0 2px;border-top:1px solid rgba(128,128,128,.25);margin-top:4px}
+
+  .bk .bp.bph .bpt{font-weight:600;font-size:calc(var(--bfs) * 1.2)}
+  .bk .bp.bph{padding-top:calc(var(--bfs) * 1.2)}
+  .bkch{color:#c8c8c8;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-left:1px solid rgba(128,128,128,.4);padding-left:10px}
+  .skin-excel .bkch,.skin-notion .bkch{color:#555}
+  .bkfol{cursor:pointer;font-size:11px;color:#8b8b8b;border:1px solid rgba(128,128,128,.4);border-radius:8px;padding:0 6px;margin-left:4px}
+  .bkfol:hover{color:inherit}
+  .bkfol.on{color:var(--status);border-color:var(--status)}
+  .bkhl{cursor:pointer;background:rgba(234,92,0,.25);border-radius:3px;padding:0 6px}
+  mark.bfind{background:rgba(234,92,0,.45);color:inherit;border-radius:2px;box-shadow:0 0 0 1px rgba(234,92,0,.7)}
+  .rtoday{margin:2px 0 8px}.rtoday b{color:var(--status)}
+  .skin-terminal .rtoday b{color:#23d18b}
+  .rbars{display:flex;gap:6px;align-items:flex-end;height:70px;margin:4px 0 10px}
+  .rbar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;width:26px;height:100%;cursor:default}
+  .rbar i{display:block;width:14px;min-height:2px;background:var(--status);border-radius:2px 2px 0 0;opacity:.85}
+  .skin-excel .rbar i{background:#217346}.skin-notion .rbar i{background:#2383e2}.skin-terminal .rbar i{background:#23d18b}
+  .rbar b{font-weight:400;font-size:10px;color:#8b8b8b;margin-top:3px}
+  .rbook{display:flex;gap:10px;justify-content:space-between;padding:2px 0}
+  #shareRead{display:inline-block;margin-top:8px;font-size:12px}
   .md-h{color:#569cd6;font-weight:600}.md-q{color:#6a9955}.md-c{color:#ce9178}.md-b{color:#dcdcaa;font-weight:600}.md-l{color:#6796e6}
   .new{animation:flash 1.4s ease-out}
   @keyframes flash{from{background:#264f78}to{background:transparent}}
@@ -542,7 +561,7 @@ const firebaseConfig = {
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, linkWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, getDoc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, getDoc, query, orderBy, limit, onSnapshot, getDocs, where, serverTimestamp, increment, documentId } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getDatabase, ref as dbRef, set as dbSet, update as dbUpdate, remove as dbRemove, onValue, onDisconnect, serverTimestamp as rtdbNow } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // ---------- helpers ----------
@@ -757,7 +776,7 @@ function updatePeers(){
   $('peerN').textContent = Math.max(1, ps.length || (myId ? 1 : 0));
   const key = typers().map(p => p.uid).join(',');
   if (key !== lastTypersKey) { lastTypersKey = key; render(); }
-  else if (view === 'book') { const h = document.querySelector('.bkreaders'); if (h) h.innerHTML = readersHtml(); }
+  else if (view === 'book') { const h = document.querySelector('.bkreaders'); if (h) h.innerHTML = readersHtml(); onBookPresence(); }
 }
 
 // ---------- message rendering: VS Code ----------
@@ -975,7 +994,10 @@ const RECIPE = [
   '- 书会显示成一份文档（VS Code 里叫 RFC-xxxx.md），按 Esc 一样会隐藏',
   '- 翻页：顶部 / 底部的 ‹ Prev / Next ›、键盘 ← →，或 `:p 页码`；每本书会记住你读到哪一页、哪个位置',
   '- 看着累：点顶部的 **Aa** 调字号、行距、栏宽、字体（黑体 / 宋体 / 等宽）、柔和对比；键盘 − = 也能调字号',
-  '- 顶部会显示朋友在读第几页，点一下跳过去',
+  '- 顶部会显示朋友在读第几页，点名字跳过去；点旁边的 follow 进入**跟读**：她翻页你自动跟着翻，你自己翻页就退出',
+  '- **Contents**：章节目录（自动识别「第X章 / 序章 / Chapter 1」等），可以输入关键字筛选；顶部会显示当前章节',
+  '- **Find**（或 `:find 关键词`）：全书搜索，列出每个位置的上下文，点一下跳过去，关键词会高亮；点顶部的 “关键词 ✕” 取消高亮',
+  '- **Notes (n)**：全书批注总览，按段落排序，可以筛选，点一下跳过去',
   '- **划线批注**：选中一段文字 → 点「💬 Comment」→ 写下想法',
   '- 点段落前的编号 = 给整段写批注；批注下面可以 Reply 互相讨论',
   '- 朋友写了新批注会弹提醒，点提醒直接跳到那一页',
@@ -993,6 +1015,7 @@ const RECIPE = [
   '- **只有你自己看得到**，换设备登录也会同步',
   '- 待办：输入后回车添加，点 ☐ 勾选，悬停出现 ✕ 删除',
   '- 便签：随便写，停手一秒多就自动保存',
+  '- **阅读统计**：读书时自动记录（离开或两分钟没动静就暂停计时）——今天读了多久、几页，最近 7 天的柱状图，每本书的累计；可以一键分享到留言板',
   '',
   '## 换皮肤',
   '- View › Skin，或 `:skin vscode|excel|notion|terminal`',
@@ -1464,14 +1487,15 @@ async function epubToText(buf){
   const items = {};
   opf.querySelectorAll('manifest > item').forEach(it => { items[it.getAttribute('id')] = it.getAttribute('href'); });
   const title = (opf.getElementsByTagNameNS('*', 'title')[0]?.textContent || '').trim();
-  const parts = [];
+  const parts = [], chapters = [];
   for (const ref of opf.querySelectorAll('spine > itemref')) {
     const href = items[ref.getAttribute('idref')]; if (!href) continue;
     let path; try { path = normPath(base + decodeURIComponent(href.split('#')[0])); } catch (e) { path = normPath(base + href.split('#')[0]); }
-    const t = await z.text(path); if (t) parts.push(htmlToText(t));
+    const t = await z.text(path);
+    if (t) { const tx = htmlToText(t); parts.push(tx); const first = tx.split('\n').map(x => x.trim()).find(Boolean); if (first && first.length <= 40) chapters.push(first); }
   }
   if (!parts.length) throw new Error('no readable chapters found in this EPUB');
-  return { title, text: parts.join('\n\n') };
+  return { title, text: parts.join('\n\n'), chapters };
 }
 function palmdocDecompress(src){
   const out = [];
@@ -1535,7 +1559,7 @@ async function extractBook(file){
   const base = file.name.replace(/\.[^.]+$/, '') || 'untitled';
   if (['pdf', 'doc', 'docx'].includes(ext)) throw new Error(`.${ext} is not supported — save it as .txt or .epub first`);
   const buf = await file.arrayBuffer();
-  if (ext === 'epub') { const r = await epubToText(buf); return { title: r.title || base, text: r.text }; }
+  if (ext === 'epub') { const r = await epubToText(buf); return { title: r.title || base, text: r.text, chapters: r.chapters }; }
   if (['mobi', 'azw', 'azw3', 'prc', 'pdb'].includes(ext)) { const r = mobiToText(buf); return { title: r.title || base, text: r.text }; }
   if (ext === 'fb2') { const r = fb2ToText(buf); return { title: r.title || base, text: r.text }; }
   if (['html', 'htm', 'xhtml'].includes(ext)) return { title: base, text: htmlToText(decodeText(buf)) };
@@ -1576,7 +1600,8 @@ async function uploadBook(file){
     if (chunks.length > 60) { termLine('<span class="r1">error: book too long</span>'); return; }
     const title = String(book0.title || 'untitled').replace(/\s+/g, ' ').trim().slice(0, 80) || 'untitled';
     const meta = { uid: myId, name: nick, title, ts: serverTimestamp(), chunks: chunks.length,
-      pages: chunks.map(c => c.pageStarts.length), paras: chunks.map(c => c.paras.length), chars: text.length };
+      pages: chunks.map(c => c.pageStarts.length), paras: chunks.map(c => c.paras.length), chars: text.length,
+      toc: buildToc(chunks, book0.chapters) };
     const ref = await addDoc(collection(db, 'rooms', r.id, 'books'), meta);
     for (let i = 0; i < chunks.length; i++) {
       termLine(`<span class="d1">uploading part ${i + 1}/${chunks.length}…</span>`);
@@ -1622,7 +1647,8 @@ async function openBook(r, id){
   try { snap = await getDoc(doc(db, 'rooms', r.id, 'books', id)); } catch (e) { termLine(`<span class="r1">error: ${esc(e?.code || 'unknown')}</span>`); return; }
   if (!snap.exists()) { termLine('<span class="r1">error: book not found</span>'); return; }
   const meta = snap.data();
-  book = { room: r, id, meta, chunks: new Map(), page: 0, total: (meta.pages || []).reduce((a, b) => a + b, 0), notes: [], seen: new Set(), first: true, unsub: null };
+  flushStats(); followUid = null;
+  book = { room: r, id, meta, chunks: new Map(), page: 0, total: (meta.pages || []).reduce((a, b) => a + b, 0), notes: [], seen: new Set(), first: true, unsub: null, toc: Array.isArray(meta.toc) ? meta.toc : null, hl: null };
   book.page = Math.max(0, Math.min(+store.get('bp_' + id, '0') || 0, book.total - 1));
   const b = book;
   b.unsub = onSnapshot(query(collection(db, 'rooms', r.id, 'books', id, 'notes'), orderBy('ts', 'asc'), limit(1000)), s => {
@@ -1642,6 +1668,7 @@ async function openBook(r, id){
 }
 function closeBook(){
   if (!book) return;
+  flushStats(); followUid = null;
   if (book.unsub) book.unsub();
   if (rtdb && myId && book.room.id) dbUpdate(presRefFor(book.room), { rb: null, rp: null }).catch(() => {});
   book = null; view = 'room'; scrollBottom = true;
@@ -1652,17 +1679,34 @@ function setReading(){
   if (!book || !rtdb || !myId || !book.room.id) return;
   dbUpdate(presRefFor(book.room), { rb: book.id, rp: book.page + 1 }).catch(() => {});
 }
-async function goPage(p){
+async function goPage(p, para = null, fromFollow = false){
   if (!book) return;
+  if (!fromFollow && followUid) stopFollow('you turned the page');
+  const old = book.page;
   book.page = Math.max(0, Math.min(p, book.total - 1));
   store.set('bp_' + book.id, String(book.page));
+  if (book.page > old) countPage(book.page);
   render(); editor.scrollTop = 0;
+  if (para != null) {
+    const b = book;
+    const go = () => { const el = editor.querySelector(`.bp[data-p="${para}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
+    if (book.chunks.has(pageLoc(book.page).c)) requestAnimationFrame(go);
+    else ensurePage().then(() => { if (book === b) { render(); requestAnimationFrame(go); } });
+  }
   setReading();
 }
 function readersHtml(){
   if (!book) return '';
   const rs = peersOf(book.room).filter(p => p.rb === book.id && p.uid !== myId && p.rp);
-  return rs.map(p => `<span class="bkr" style="--mc:${colorOfUid(p.uid, p.name)}" data-jump="${p.rp - 1}">● ${esc(p.name)} p.${p.rp}</span>`).join(' ');
+  return rs.map(p => `<span class="bkr" style="--mc:${colorOfUid(p.uid, p.name)}" data-jump="${p.rp - 1}" title="Jump to their page">● ${esc(p.name)} p.${p.rp}</span><span class="bkfol${followUid === p.uid ? ' on' : ''}" data-follow="${esc(p.uid)}" title="${followUid === p.uid ? 'Stop following' : 'Turn pages together with ' + esc(p.name)}">${followUid === p.uid ? 'following ✓' : 'follow'}</span>`).join(' ');
+}
+function escFind(t){
+  const q = book && book.hl;
+  if (!q) return esc(t);
+  const lo = t.toLowerCase(), ql = q.toLowerCase();
+  let out = '', pos = 0, i;
+  while ((i = lo.indexOf(ql, pos)) >= 0) { out += esc(t.slice(pos, i)) + `<mark class="bfind">${esc(t.slice(i, i + q.length))}</mark>`; pos = i + q.length; }
+  return out + esc(t.slice(pos));
 }
 function highlightPara(text, notes){
   const ranges = notes.filter(n => n.quote).map(n => { const i = text.indexOf(n.quote); return i < 0 ? null : { s: i, e: i + n.quote.length, n }; })
@@ -1670,10 +1714,10 @@ function highlightPara(text, notes){
   let out = '', pos = 0;
   for (const r of ranges) {
     if (r.s < pos) continue;
-    out += esc(text.slice(pos, r.s)) + `<mark class="bm" style="--mc:${colorOf(r.n)}">${esc(text.slice(r.s, r.e))}</mark>`;
+    out += escFind(text.slice(pos, r.s)) + `<mark class="bm" style="--mc:${colorOf(r.n)}">${escFind(text.slice(r.s, r.e))}</mark>`;
     pos = r.e;
   }
-  return out + esc(text.slice(pos));
+  return out + escFind(text.slice(pos));
 }
 function renderBook(){
   if (!book) { view = 'room'; render(); return; }
@@ -1681,7 +1725,12 @@ function renderBook(){
   const ch = book.chunks.get(L.c);
   const pct = Math.round((book.page + 1) / Math.max(1, book.total) * 100);
   const nav = `<span class="bkb" data-nav="-1">‹ Prev</span><span>${book.page + 1} / ${book.total} <span class="bkpct">· ${pct}%</span></span><span class="bkb" data-nav="1">Next ›</span><span class="bkb" data-nav="go">Go to…</span>`;
-  const head = `<div class="bkhead"><span class="bkt">${esc(book.meta.title || 'untitled')}</span>${nav}<span class="bkaa" data-aa="1" title="Reading settings">Aa</span><span class="sp"></span><span class="bkreaders">${readersHtml()}</span></div>`;
+  const chap = currentChapter();
+  const nNotes = book.notes.filter(n => !n.parent).length;
+  const head = `<div class="bkhead"><span class="bkt">${esc(book.meta.title || 'untitled')}</span>${chap ? `<span class="bkch" title="${esc(chap)}">${esc(chap)}</span>` : ''}${nav}`
+    + `<span class="bkb" data-toc="1">Contents</span><span class="bkb" data-find="1">Find</span><span class="bkb" data-notes="1">Notes${nNotes ? ' (' + nNotes + ')' : ''}</span>`
+    + (book.hl ? `<span class="bkhl" data-clearhl="1" title="Clear search highlight">“${esc(book.hl)}” ✕</span>` : '')
+    + `<span class="bkaa" data-aa="1" title="Reading settings">Aa</span><span class="sp"></span><span class="bkreaders">${readersHtml()}</span></div>`;
   if (!ch) {
     editor.innerHTML = `<div ${bkAttrs()} data-book="1">${head}<div class="bkempty">loading…</div></div>`;
     const b = book;
@@ -1694,7 +1743,7 @@ function renderBook(){
   for (let i = s; i < e; i++) {
     const g = L.base + i;
     const ns = tops.filter(n => n.para === g);
-    rows.push(`<div class="bp" data-p="${g}"><span class="bpn${ns.length ? ' has' : ''}" data-pcomment="${g}" title="Comment on this paragraph">${g + 1}</span><span class="bpt">${highlightPara(String(ch.paras[i]), ns)}</span></div>`);
+    rows.push(`<div class="bp${isHeading(String(ch.paras[i]).trim()) ? ' bph' : ''}" data-p="${g}"><span class="bpn${ns.length ? ' has' : ''}" data-pcomment="${g}" title="Comment on this paragraph">${g + 1}</span><span class="bpt">${highlightPara(String(ch.paras[i]), ns)}</span></div>`);
     if (ns.length) rows.push(`<div class="bth">${ns.map(n => `<div class="bn" style="--mc:${colorOf(n)}"><div class="bnh"><span class="bav">${esc(displayName(n).slice(0, 1).toUpperCase())}</span><b>${esc(displayName(n))}</b><span class="bnt">${hhmm(n.ms)}</span>${n.uid === myId ? `<span class="bnx" data-delnote="${esc(n.id)}" title="Delete">✕</span>` : ''}</div>${n.quote ? `<div class="bnq">“${esc(n.quote)}”</div>` : ''}<div class="bnb">${esc(n.text)}</div>${reps.filter(x => x.parent === n.id).map(x => `<div class="bnr2" style="--mc:${colorOf(x)}"><b>${esc(displayName(x))}</b><span class="tx">${esc(x.text)}</span>${x.uid === myId ? `<span class="bnx" data-delnote="${esc(x.id)}" title="Delete">✕</span>` : ''}</div>`).join('')}<span class="bnrep" data-reply="${esc(n.id)}">Reply</span></div>`).join('')}</div>`);
   }
   editor.innerHTML = `<div ${bkAttrs()} data-book="1">${head}<div class="bkbody">${rows.join('')}</div><div class="bknav">${nav}</div></div>`;
@@ -1717,7 +1766,12 @@ async function bookClick(e){
     else goPage(book.page + (+v));
     return;
   }
+  const fo = e.target.closest('[data-follow]'); if (fo) { if (followUid === fo.dataset.follow) stopFollow(); else startFollow(fo.dataset.follow); return; }
   const j = e.target.closest('[data-jump]'); if (j) { goPage(+j.dataset.jump); return; }
+  if (e.target.closest('[data-toc]')) { openToc(); return; }
+  if (e.target.closest('[data-find]')) { const q = await ask('Find in book', 'Word or phrase', book.hl || ''); if (q) searchBook(q); return; }
+  if (e.target.closest('[data-notes]')) { openNotesList(); return; }
+  if (e.target.closest('[data-clearhl]')) { book.hl = null; render(); return; }
   const del = e.target.closest('[data-delnote]');
   if (del) { try { await deleteDoc(doc(db, 'rooms', book.room.id, 'books', book.id, 'notes', del.dataset.delnote)); } catch (err) { termLine(`<span class="r1">error: ${esc(err?.code || 'unknown')}</span>`); } return; }
   const rp = e.target.closest('[data-reply]');
@@ -1762,18 +1816,7 @@ function notifyNote(b, notes){
   showToast(text, async () => {
     if (book !== b) return;
     view = 'book'; renderTabs();
-    // jump to the page holding the newest comment
-    let acc = 0, base = 0;
-    for (let c = 0; c < b.meta.paras.length; c++) {
-      if (p.para < base + b.meta.paras[c]) {
-        if (!b.chunks.has(c)) { const s = await getDoc(doc(db, 'rooms', b.room.id, 'books', b.id, 'chunks', String(c))); if (s.exists()) b.chunks.set(c, s.data()); }
-        const ch = b.chunks.get(c); const local = p.para - base; let lp = 0;
-        if (ch) ch.pageStarts.forEach((ps, i) => { if (ps <= local) lp = i; });
-        goPage(acc + lp); return;
-      }
-      acc += b.meta.pages[c]; base += b.meta.paras[c];
-    }
-    render();
+    goPage(await pageOfPara(p.para), p.para);
   });
   const st = document.querySelector('.status');
   st.classList.remove('alert'); void st.offsetWidth; st.classList.add('alert');
@@ -1799,6 +1842,7 @@ const todoCol = () => collection(db, 'users', myId, 'todos');
 const padDoc = () => doc(db, 'users', myId, 'pad', 'main');
 function subscribeMine(){
   if (!db || !myId) return;
+  subscribeStats();
   todoUnsub = onSnapshot(query(todoCol(), orderBy('ts', 'asc'), limit(300)), s => {
     myTodos = s.docs.map(d => { const x = d.data({ serverTimestamps: 'estimate' }); return { id: d.id, text: String(x.text || ''), done: !!x.done, ms: x.ts?.toMillis ? x.ts.toMillis() : Date.now() }; });
     if (view === 'notes') renderNotes();
@@ -1827,6 +1871,7 @@ function renderNotes(){
   if (existing) {   // live update without destroying what you're typing
     $('todoList').innerHTML = todoListHtml();
     $('todoStats').textContent = stats;
+    if ($('readStats')) $('readStats').innerHTML = readingHtml();
     const pad = $('padIn');
     if (document.activeElement !== pad && pad.value !== myPad.text) pad.value = myPad.text;
     return;
@@ -1834,6 +1879,7 @@ function renderNotes(){
   editor.innerHTML = `<div class="bk nv"><div class="bkhead"><span class="bkt">${esc(docName('notes'))}</span><span>private · only you can see this</span><span class="sp"></span><span id="todoStats">${stats}</span></div>
     <div class="nvsec"><div class="nvh">${skin === 'vscode' || skin === 'terminal' ? '## ' : ''}To-do</div><div id="todoList">${todoListHtml()}</div></div>
     <div class="tdadd"><input id="todoIn" maxlength="300" placeholder="+ Add a task — Enter to save" autocomplete="off"></div>
+    <div class="nvsec"><div class="nvh">${skin === 'vscode' || skin === 'terminal' ? '## ' : ''}Reading</div><div id="readStats">${readingHtml()}</div></div>
     <div class="nvsec"><div class="nvh">${skin === 'vscode' || skin === 'terminal' ? '## ' : ''}Notes</div><textarea class="nvpad" id="padIn" maxlength="20000" placeholder="Anything — saved automatically, synced to your account"></textarea><div class="pads" id="padStatus">${myPad.ms ? 'saved ' + hhmm(myPad.ms) : ''}</div></div></div>`;
   $('padIn').value = myPad.text;
   $('todoIn').addEventListener('keydown', async e => {
@@ -1855,6 +1901,7 @@ function renderNotes(){
   });
 }
 async function notesClick(e){
+  if (e.target.closest('#shareRead')) { shareReading(); return; }
   const tg = e.target.closest('[data-toggle]');
   if (tg) { const t = myTodos.find(x => x.id === tg.dataset.toggle); if (t) { try { await setDoc(doc(db, 'users', myId, 'todos', t.id), { text: t.text, done: !t.done, ts: serverTimestamp() }); } catch (err) {} } return; }
   const dl = e.target.closest('[data-deltodo]');
@@ -2060,6 +2107,200 @@ document.addEventListener('keydown', e => {
   else if (e.key === '=' || e.key === '+') { e.preventDefault(); setRs('fs', rs.fs + 1); }
 });
 
+
+// ---------- contents (table of chapters) ----------
+const HEAD_RE1 = /^第\s*[0-9０-９零〇一二两三四五六七八九十百千]+\s*[章节節回卷集部篇話话幕]/;
+const HEAD_RE2 = /^(序章|序言|序幕|序|前言|引子|楔子|尾声|尾聲|后记|後記|终章|終章|番外|附录|附錄)(\s|[:：.、·—\-（(]|$)/;
+const HEAD_RE3 = /^((chapter|part|book)\s+([0-9]+|[ivxlc]+)\b|prologue\b|epilogue\b|interlude\b)/i;
+const isHeading = t => t.length <= 40 && (HEAD_RE1.test(t) || HEAD_RE2.test(t) || HEAD_RE3.test(t) || /^番外/.test(t));
+function buildToc(chunks, chapterTitles){
+  const extra = new Set((chapterTitles || []).map(x => String(x).trim()).filter(x => x && x.length <= 40));
+  const toc = []; let page = 0;
+  chunks.forEach(c => {
+    c.pageStarts.forEach((ps, lp) => {
+      const pe = c.pageStarts[lp + 1] ?? c.paras.length;
+      for (let i = ps; i < pe; i++) {
+        const t = String(c.paras[i]).trim();
+        if ((isHeading(t) || extra.has(t)) && toc.length < 500 && !(toc.length && toc[toc.length - 1].t === t)) toc.push({ t, p: page });
+      }
+      page++;
+    });
+  });
+  return toc;
+}
+async function loadAllChunks(label){
+  const b = book;
+  const missing = [];
+  for (let c = 0; c < b.meta.chunks; c++) if (!b.chunks.has(c)) missing.push(c);
+  for (let k = 0; k < missing.length; k++) {
+    if (missing.length > 1) termLine(`<span class="d1">${label}: loading part ${k + 1}/${missing.length}…</span>`);
+    const s = await getDoc(doc(db, 'rooms', b.room.id, 'books', b.id, 'chunks', String(missing[k])));
+    if (s.exists()) b.chunks.set(missing[k], s.data());
+  }
+  return b;
+}
+async function ensureToc(){
+  const b = book;
+  if (b.toc) return b.toc;
+  await loadAllChunks('contents');
+  const chunks = []; for (let c = 0; c < b.meta.chunks; c++) chunks.push(b.chunks.get(c) || { paras: [], pageStarts: [] });
+  b.toc = buildToc(chunks, []);
+  if (b.meta.uid === myId) updateDoc(doc(db, 'rooms', b.room.id, 'books', b.id), { toc: b.toc }).catch(() => {});   // save it for everyone
+  return b.toc;
+}
+function currentChapter(){
+  if (!book || !book.toc || !book.toc.length) return '';
+  let cur = '';
+  for (const e of book.toc) { if (e.p <= book.page) cur = e.t; else break; }
+  return cur;
+}
+async function openToc(){
+  const b = book;
+  let toc;
+  try { toc = await ensureToc(); } catch (e) { termLine(`<span class="r1">error: ${esc(e?.code || e?.message || 'unknown')}</span>`); return; }
+  if (book !== b) return;
+  if (!toc.length) { showToast('No chapters found<small>this book has no recognisable chapter headings — use Go to… or Find</small>', null); return; }
+  const cur = currentChapter();
+  const items = toc.map(e => ({ label: (e.t === cur ? '▸ ' : '') + e.t, detail: `p.${e.p + 1}`, value: e.p }));
+  render();   // header now shows the chapter name
+  const p = await quickPick(`Contents — ${b.meta.title || ''}`, items, 'Type to filter chapters');
+  if (p != null && book === b) goPage(p);
+}
+
+// ---------- find in book ----------
+async function searchBook(q){
+  const b = book;
+  q = String(q).trim(); if (!q) return;
+  try { await loadAllChunks('find'); } catch (e) { termLine(`<span class="r1">error: ${esc(e?.code || 'unknown')}</span>`); return; }
+  if (book !== b) return;
+  const ql = q.toLowerCase(), res = [];
+  let page = 0, base = 0;
+  for (let c = 0; c < b.meta.chunks && res.length < 300; c++) {
+    const ch = b.chunks.get(c) || { paras: [], pageStarts: [] };
+    ch.pageStarts.forEach((ps, lp) => {
+      const pe = ch.pageStarts[lp + 1] ?? ch.paras.length;
+      for (let i = ps; i < pe && res.length < 300; i++) {
+        const t = String(ch.paras[i]), k = t.toLowerCase().indexOf(ql);
+        if (k >= 0) res.push({ p: page, g: base + i, snip: (k > 18 ? '…' : '') + t.slice(Math.max(0, k - 18), k + q.length + 30).replace(/\s+/g, ' ') + (k + q.length + 30 < t.length ? '…' : '') });
+      }
+      page++;
+    });
+    base += b.meta.paras[c];
+  }
+  b.hl = q;
+  if (!res.length) { render(); showToast(`No results for “${esc(q)}”`, null); return; }
+  const pickd = await quickPick(`Find “${q}” — ${res.length}${res.length >= 300 ? '+' : ''} result${res.length > 1 ? 's' : ''}`, res.map(r => ({ label: r.snip, detail: `p.${r.p + 1}`, value: r })), 'Type to narrow down');
+  if (book !== b) return;
+  if (pickd) goPage(pickd.p, pickd.g); else render();
+}
+
+// ---------- notes overview ----------
+async function pageOfPara(g){
+  const b = book;
+  let acc = 0, base = 0;
+  for (let c = 0; c < b.meta.paras.length; c++) {
+    if (g < base + b.meta.paras[c]) {
+      if (!b.chunks.has(c)) { const s = await getDoc(doc(db, 'rooms', b.room.id, 'books', b.id, 'chunks', String(c))); if (s.exists()) b.chunks.set(c, s.data()); }
+      const ch = b.chunks.get(c); const local = g - base; let lp = 0;
+      if (ch) ch.pageStarts.forEach((ps, i) => { if (ps <= local) lp = i; });
+      return acc + lp;
+    }
+    acc += b.meta.pages[c]; base += b.meta.paras[c];
+  }
+  return b.page;
+}
+async function openNotesList(){
+  const b = book;
+  const tops = b.notes.filter(n => !n.parent).slice().sort((x, y) => x.para - y.para || x.ms - y.ms);
+  if (!tops.length) { showToast('No comments yet<small>select text and click 💬 Comment, or click a paragraph number</small>', null); return; }
+  const replies = id => b.notes.filter(n => n.parent === id).length;
+  const items = tops.map(n => ({ label: `${displayName(n)}: ${n.text}`, detail: `¶${n.para + 1}${n.quote ? ' · “' + n.quote.slice(0, 16) + (n.quote.length > 16 ? '…' : '') + '”' : ''}${replies(n.id) ? ' · ' + replies(n.id) + ' repl' + (replies(n.id) > 1 ? 'ies' : 'y') : ''}`, value: n }));
+  const n = await quickPick(`Comments — ${tops.length}`, items, 'Type to filter by name or text');
+  if (n && book === b) goPage(await pageOfPara(n.para), n.para);
+}
+
+// ---------- read along with a friend ----------
+let followUid = null;
+function startFollow(uid){
+  const p = peersOf(book.room).find(x => x.uid === uid);
+  if (!p) return;
+  followUid = uid;
+  showToast(`Following ${esc(p.name)}<small>pages turn with theirs · turn a page yourself to stop</small>`, null);
+  onBookPresence(); render();
+}
+function stopFollow(why){
+  if (!followUid) return;
+  const p = book && peersOf(book.room).find(x => x.uid === followUid);
+  followUid = null;
+  showToast(`Stopped following${p ? ' ' + esc(p.name) : ''}${why ? `<small>${esc(why)}</small>` : ''}`, null);
+  const h = document.querySelector('.bkreaders'); if (h) h.innerHTML = readersHtml();
+}
+function onBookPresence(){
+  if (!followUid || !book) return;
+  const p = peersOf(book.room).find(x => x.uid === followUid);
+  if (!p || p.rb !== book.id || !p.rp) { stopFollow('they stopped reading this book'); return; }
+  if (p.rp - 1 !== book.page) goPage(p.rp - 1, null, true);
+}
+
+// ---------- reading stats (private) ----------
+const dayKey = (d = new Date()) => d.toLocaleDateString('sv-SE');
+let lastActivity = Date.now(), pend = null;   // pend = {bookId, title, secs, pages}
+['mousemove', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(ev => document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true, capture: true }));
+const countedPages = new Set();
+function pendFor(){
+  if (!book) return null;
+  if (!pend || pend.bookId !== book.id) { flushStats(); pend = { bookId: book.id, title: String(book.meta.title || 'untitled').slice(0, 80), secs: 0, pages: 0 }; }
+  return pend;
+}
+function countPage(p){ const k = `${dayKey()}:${book.id}:${p}`; if (countedPages.has(k)) return; countedPages.add(k); const x = pendFor(); if (x) x.pages++; }
+setInterval(() => {
+  if (view === 'book' && book && !document.hidden && !panic && Date.now() - lastActivity < 120000) { const x = pendFor(); if (x) x.secs += 15; }
+}, 15000);
+setInterval(() => flushStats(), 60000);
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushStats(); });
+function flushStats(){
+  if (!pend || !db || !myId || (!pend.secs && !pend.pages)) return;
+  const x = pend; pend = { ...x, secs: 0, pages: 0 };
+  const day = dayKey();
+  setDoc(doc(db, 'users', myId, 'stats', day), { secs: increment(x.secs), pages: increment(x.pages), books: { [x.bookId]: { title: x.title, secs: increment(x.secs), pages: increment(x.pages) } } }, { merge: true }).catch(() => {});
+  setDoc(doc(db, 'users', myId, 'bookstats', x.bookId), { title: x.title, secs: increment(x.secs), pages: increment(x.pages), last: serverTimestamp() }, { merge: true }).catch(() => {});
+}
+let myDays = [], myBookStats = [];
+function subscribeStats(){
+  onSnapshot(query(collection(db, 'users', myId, 'stats'), orderBy(documentId(), 'desc'), limit(14)), s => {
+    myDays = s.docs.map(d => ({ day: d.id, secs: +d.data().secs || 0, pages: +d.data().pages || 0, books: d.data().books || {} }));
+    if (view === 'notes') renderNotes();
+  }, () => {});
+  onSnapshot(query(collection(db, 'users', myId, 'bookstats'), orderBy('last', 'desc'), limit(12)), s => {
+    myBookStats = s.docs.map(d => { const x = d.data({ serverTimestamps: 'estimate' }); return { id: d.id, title: String(x.title || ''), secs: +x.secs || 0, pages: +x.pages || 0, ms: x.last?.toMillis ? x.last.toMillis() : 0 }; });
+    if (view === 'notes') renderNotes();
+  }, () => {});
+}
+const fmtMin = secs => secs >= 3600 ? `${Math.floor(secs / 3600)} h ${Math.round(secs % 3600 / 60)} min` : `${Math.round(secs / 60)} min`;
+function readingHtml(){
+  const today = myDays.find(d => d.day === dayKey()) || { secs: 0, pages: 0 };
+  const live = pend && pend.secs ? pend.secs : 0, livePages = pend && pend.pages ? pend.pages : 0;
+  const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5), k = dayKey(d); const x = myDays.find(y => y.day === k); days.push({ k, label: d.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2), secs: (x ? x.secs : 0) + (k === dayKey() ? live : 0) }); }
+  const max = Math.max(60, ...days.map(d => d.secs));
+  const week = days.reduce((a, d) => a + d.secs, 0);
+  const bars = days.map(d => `<span class="rbar" title="${d.k} · ${fmtMin(d.secs)}"><i style="height:${Math.round(d.secs / max * 100)}%"></i><b>${d.label}</b></span>`).join('');
+  const books = myBookStats.slice(0, 6).map(x => `<div class="rbook"><span class="tdt">${esc(x.title)}</span><span class="pads">${fmtMin(x.secs)} · ${x.pages} p${x.ms ? ' · ' + fmtDay(x.ms) : ''}</span></div>`).join('');
+  return `<div class="rtoday">Today <b>${fmtMin(today.secs + live)}</b> · <b>${today.pages + livePages}</b> pages <span class="pads">· last 7 days ${fmtMin(week)}</span></div>
+    <div class="rbars">${bars}</div>${books || '<div class="pads">Open a book with File › Read Together… — time and pages are counted while you read.</div>'}
+    ${today.secs + live > 0 ? '<span class="bkb" id="shareRead">Share today’s reading to the board</span>' : ''}`;
+}
+async function shareReading(){
+  const r = cur();
+  if (!r?.id) { termLine('<span class="r1">open a workspace first</span>'); return; }
+  flushStats();
+  const today = myDays.find(d => d.day === dayKey()) || { secs: 0, pages: 0, books: {} };
+  const titles = Object.values(today.books || {}).map(b => '《' + String(b.title || '').slice(0, 30) + '》').slice(0, 4).join('、');
+  const zh = secs => secs >= 3600 ? `${Math.floor(secs / 3600)} 小时 ${Math.round(secs % 3600 / 60)} 分钟` : `${Math.max(1, Math.round(secs / 60))} 分钟`;
+  const text = `📖 今天读了 ${zh(today.secs)}，${today.pages} 页${titles ? '：' + titles : ''}`;
+  try { await addDoc(collection(db, 'rooms', r.id, 'board'), { uid: myId, name: nick, text: text.slice(0, 2000), ts: serverTimestamp() }); showToast(`Shared to ${esc(docName('board'))}<small>${esc(tabLabel(active))}</small>`, () => openBoard()); }
+  catch (e) { termLine(`<span class="r1">error: ${esc(e?.code || 'unknown')}</span>`); }
+}
+
 // ---------- reply ----------
 function setReply(m){
   if (!m) { replyTo = null; $('replyChip').hidden = true; return; }
@@ -2180,6 +2421,7 @@ const HELP = [
   '<span class="help">commands:</span>',
   '<span class="help">  :read                   read together: open / upload a book in this room</span>',
   '<span class="help">  :p &lt;n&gt;                  jump to page n of the open book</span>',
+  '<span class="help">  :toc / :find &lt;word&gt;     contents / search in the open book</span>',
   '<span class="help">  :board                  message board for this room</span>',
   '<span class="help">  :todo                   your private notes &amp; to-dos</span>',
   '<span class="help">  :signout                sign out / switch account</span>',
@@ -2208,6 +2450,8 @@ async function command(c){
   else if (cmd === 'board') openBoard();
   else if (cmd === 'todo' || cmd === 'notes') openNotes();
   else if (cmd === 'book') $('bookIn').click();
+  else if ((cmd === 'find' || cmd === 'search') && view === 'book' && book) { if (arg) searchBook(arg); else { const q = await ask('Find in book', 'Word or phrase'); if (q) searchBook(q); } }
+  else if (cmd === 'toc' && view === 'book' && book) openToc();
   else if (cmd === 'p' || cmd === 'page') { if (view === 'book' && book) goPage((parseInt(arg, 10) || 1) - 1); else termLine('<span class="r1">no book open — :read first</span>'); }
   else if (cmd === 'style') {
     if (['comment','log','str'].includes(arg)) { style = arg; store.set('style', style); render(); termLine(`<span class="d1">✔ style → ${arg}</span>`); }
@@ -2462,7 +2706,7 @@ async function joinPresence(r){
   if (r.presOff) r.presOff();
   r.presOff = onValue(dbRef(rtdb, `presence/${r.id}`), snap => {
     r.peers = snap.val() || {};
-    if (rooms[active] === r) updatePeers();
+    if (rooms[active] === r || (book && book.room === r)) updatePeers();
   }, e => presenceWarn(e));
 }
 function leavePresence(r){
